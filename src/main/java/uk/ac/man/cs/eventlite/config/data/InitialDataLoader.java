@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Profile;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Configuration
 @Profile("default")
@@ -36,6 +40,14 @@ public class InitialDataLoader {
 				log.info("Database already populated with events. Skipping event initialization.");
 			} else {
 				// Build and save initial events here.
+                for (int i = 1; i < 4; i++) {
+                    Event event = new Event();
+                    event.setName("COMP23412 Showcase 0" + i);
+                    event.setVenue(1);
+                    event.setDate(LocalDate.parse("2023-05-0" + i));
+                    event.setTime(LocalTime.parse("12:00"));
+                    eventService.save(event);
+                }
 			}
 		};
 	}

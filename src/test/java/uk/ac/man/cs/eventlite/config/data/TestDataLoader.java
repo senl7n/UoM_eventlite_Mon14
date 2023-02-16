@@ -10,10 +10,14 @@ import org.springframework.context.annotation.Profile;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
+
 import uk.ac.man.cs.eventlite.entities.Event;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import uk.ac.man.cs.eventlite.entities.Venue;
+
 
 @Configuration
 @Profile("test")
@@ -27,10 +31,16 @@ public class TestDataLoader {
     @Autowired
     private VenueService venueService;
 
+
     @Bean
     CommandLineRunner initDatabase() {
         return args -> {
             // Build and save test events and venues here.
+        	Venue venue = new Venue();
+			venue.setId(1);
+			venue.setName("Kilburn Building");
+			venue.setCapacity(250);
+			venueService.save(venue);
             // The test database is configured to reside in memory, so must be initialized
             // every time.
             for (int i = 1; i < 4; i++) {
@@ -43,4 +53,5 @@ public class TestDataLoader {
             }
         };
     }
+
 }

@@ -1,9 +1,20 @@
 package uk.ac.man.cs.eventlite.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
+
+@Entity
+@Table(name ="venues")
 public class Venue {
-
+    @Id
+    @GeneratedValue
 	private long id;
-
+    @NotEmpty
+    @Max(255)
 	private String name;
 
 	private int capacity;

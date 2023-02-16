@@ -3,66 +3,78 @@ package uk.ac.man.cs.eventlite.entities;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+@Entity
+@Table(name = "events")
 public class Event {
+	@Id
+    @GeneratedValue
+    private long id;
 
-	private long id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING)
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	private LocalDate date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @DateTimeFormat(pattern = "HH:mm")
+    private LocalTime time;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING)
-	@DateTimeFormat(pattern = "HH:mm")
-	private LocalTime time;
+    @NotEmpty
+    @Max(255)
+    private String name;
 
-	private String name;
+    private long venue;
 
-	private long venue;
+    public Event() {
+    }
 
-	public Event() {
-	}
+    public long getId() {
+        return id;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public LocalDate getDate() {
+        return date;
+    }
 
-	public LocalDate getDate() {
-		return date;
-	}
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
+    public LocalTime getTime() {
+        return time;
+    }
 
-	public LocalTime getTime() {
-		return time;
-	}
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
 
-	public void setTime(LocalTime time) {
-		this.time = time;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public long getVenue() {
+        return venue;
+    }
 
-	public long getVenue() {
-		return venue;
-	}
-
-	public void setVenue(long venue) {
-		this.venue = venue;
-	}
+    public void setVenue(long venue) {
+        this.venue = venue;
+    }
 }

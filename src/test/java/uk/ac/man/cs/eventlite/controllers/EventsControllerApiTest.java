@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.config.Security;
 import uk.ac.man.cs.eventlite.dao.EventService;
+import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
@@ -35,46 +36,52 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 @Import({ Security.class, EventModelAssembler.class })
 public class EventsControllerApiTest {
 
-	@Autowired
-	private MockMvc mvc;
+    @Autowired
+    private MockMvc mvc;
 
-	@MockBean
-	private EventService eventService;
+    @MockBean
+    private EventService eventService;
 
-	@Test
-	public void getIndexWhenNoEvents() throws Exception {
-		when(eventService.findAll()).thenReturn(Collections.<Event>emptyList());
+    @MockBean
+    private VenueService venueService;
 
-		mvc.perform(get("/api/events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(handler().methodName("getAllEvents")).andExpect(jsonPath("$.length()", equalTo(1)))
-				.andExpect(jsonPath("$._links.self.href", endsWith("/api/events")));
+    @Test
+    public void getIndexWhenNoEvents() throws Exception {
+        when(eventService.findAll()).thenReturn(Collections.<Event>emptyList());
 
-		verify(eventService).findAll();
-	}
+        mvc.perform(get("/api/events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(handler().methodName("getAllEvents")).andExpect(jsonPath("$.length()", equalTo(1)))
+                .andExpect(jsonPath("$._links.self.href", endsWith("/api/events")));
 
-	@Test
-	public void getIndexWithEvents() throws Exception {
-		Venue v = new Venue();
-		Event e = new Event();
-		e.setId(0);
-		e.setName("Event");
-		e.setDate(LocalDate.now());
-		e.setTime(LocalTime.now());
-		e.setVenue(v);
-		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(e));
+        verify(eventService).findAll();
+    }
 
-		mvc.perform(get("/api/events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(handler().methodName("getAllEvents")).andExpect(jsonPath("$.length()", equalTo(2)))
-				.andExpect(jsonPath("$._links.self.href", endsWith("/api/events")))
-				.andExpect(jsonPath("$._embedded.events.length()", equalTo(1)));
+    @Test
+    public void getIndexWithEvents() throws Exception {
+        Venue v = new Venue();
+        v.setName("Venue");
+        v.setCapacity(200);
+        venueService.save(v);
+        Event e = new Event();
+        e.setId(0);
+        e.setName("Event");
+        e.setDate(LocalDate.now());
+        e.setTime(LocalTime.now());
+        e.setVenue(v);
+        when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(e));
 
-		verify(eventService).findAll();
-	}
+        mvc.perform(get("/api/events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(handler().methodName("getAllEvents")).andExpect(jsonPath("$.length()", equalTo(2)))
+                .andExpect(jsonPath("$._links.self.href", endsWith("/api/events")))
+                .andExpect(jsonPath("$._embedded.events.length()", equalTo(1)));
 
-	@Test
-	public void getEventNotFound() throws Exception {
-		mvc.perform(get("/api/events/99").accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.error", containsString("event 99"))).andExpect(jsonPath("$.id", equalTo(99)))
-				.andExpect(handler().methodName("getEvent"));
-	}
+        verify(eventService).findAll();
+    }
+
+    @Test
+    public void getEventNotFound() throws Exception {
+        mvc.perform(get("/api/events/99").accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error", containsString("event 99"))).andExpect(jsonPath("$.id", equalTo(99)))
+                .andExpect(handler().methodName("getEvent"));
+    }
 }

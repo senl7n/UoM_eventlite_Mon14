@@ -1,13 +1,8 @@
 package uk.ac.man.cs.eventlite.entities;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
@@ -17,42 +12,37 @@ import javax.validation.constraints.NotEmpty;
 public class Venue {
     @Id
     @GeneratedValue
-	private long id;
+    private long id;
     @NotEmpty
     @Max(255)
-    @Column(name = "name")
-	private String name;
-    
-    @Column(name = "capacity")
-	private int capacity;
-    
-    @OneToMany(mappedBy = "Event")
-    private Set<Event> venue = new HashSet<Event>();
-    
-	public Venue() {
-	}
+    private String name;
 
-	public long getId() {
-		return id;
-	}
+    private int capacity;
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public Venue() {
+    }
 
-	public String getName() {
-		return name;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public int getCapacity() {
-		return capacity;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setCapacity(int capacity) {
-		this.capacity = capacity;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
 }

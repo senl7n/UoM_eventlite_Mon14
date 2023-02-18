@@ -52,9 +52,9 @@ public class InitialDataLoader {
 			} else {
 				// Build and save initial events here.
 				Venue venue = new Venue();
-				venue.setId(1);
 				venue.setName("Kilburn Building");
 				venue.setCapacity(250);
+                venueService.save(venue);
                 for (int i = 1; i < 4; i++) {
                     Event event = new Event();
                     event.setName("COMP23412 Showcase 0" + i);

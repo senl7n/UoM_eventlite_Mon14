@@ -46,7 +46,7 @@ public class TestDataLoader {
             for (int i = 1; i < 4; i++) {
                 Event event = new Event();
                 event.setName("COMP23412 Showcase 0" + i);
-                event.setVenue(1);
+                event.setVenue(venue);
                 event.setDate(LocalDate.parse("2023-05-0" + i));
                 event.setTime(LocalTime.parse("12:00"));
                 eventService.save(event);

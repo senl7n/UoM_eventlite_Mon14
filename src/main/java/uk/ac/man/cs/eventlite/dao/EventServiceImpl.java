@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
 
 import uk.ac.man.cs.eventlite.entities.Event;
 
@@ -23,7 +24,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
 	public Iterable<Event> findAll() {
-		return eventRepository.findAll();
+		return eventRepository.findAll(Sort.by("date").and(Sort.by("time")));
 	}
 
     @Override

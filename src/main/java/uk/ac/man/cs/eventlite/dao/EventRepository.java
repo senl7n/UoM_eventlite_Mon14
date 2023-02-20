@@ -8,5 +8,4 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     public long count();
     public Iterable<Event> findAll(Sort sort);
     public Event save(Event event);
-    public Event findById(long id);
 }

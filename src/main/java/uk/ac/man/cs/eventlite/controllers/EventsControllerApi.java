@@ -10,11 +10,7 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.dao.EventService;
@@ -49,4 +45,10 @@ public class EventsControllerApi {
 		return eventAssembler.toCollectionModel(eventService.findAll())
 				.add(linkTo(methodOn(EventsControllerApi.class).getAllEvents()).withSelfRel());
 	}
+
+    //delete event
+    @DeleteMapping("/events/{id}")
+    public void deleteEvent(@PathVariable("id") long id) {
+        eventService.deleteById(id);
+    }
 }

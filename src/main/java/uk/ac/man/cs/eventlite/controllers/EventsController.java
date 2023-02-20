@@ -5,11 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
@@ -33,7 +29,7 @@ public class EventsController {
 		return "events/not_found";
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/events/{id}")
 	public String getEvent(@PathVariable("id") long id, Model model) {
 		throw new EventNotFoundException(id);
 	}
@@ -46,5 +42,12 @@ public class EventsController {
 
 		return "events/index";
 	}
+
+    //delete event
+    @DeleteMapping("/{id}")
+    public String deleteEvent(@PathVariable("id") long id, Model model) {
+        eventService.deleteById(id);
+        return "redirect:/events";
+    }
 
 }

@@ -10,4 +10,7 @@ public interface EventService {
 
     public Event save(Event event);
 
+    public Event delete(Event event);
+
+    public Event deleteById(long id);
 }

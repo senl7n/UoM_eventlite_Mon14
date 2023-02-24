@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
+import java.util.Optional;
+
 @Service
 
 public class VenueServiceImpl implements VenueService {
@@ -34,6 +36,9 @@ public class VenueServiceImpl implements VenueService {
         return VenueRepository.save(venue);
     }
 
-
+    @Override
+    public Optional<Venue> findById(long id) {
+        return VenueRepository.findById(id);
+    }
 
 }

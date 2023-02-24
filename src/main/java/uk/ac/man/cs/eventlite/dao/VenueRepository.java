@@ -9,5 +9,4 @@ public interface VenueRepository extends CrudRepository<Venue, Long>
 
 	public Iterable<Venue> findAll();
 	public Venue save(Venue venue);
-	
 }

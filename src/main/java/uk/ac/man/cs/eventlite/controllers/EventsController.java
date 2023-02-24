@@ -59,6 +59,7 @@ public class EventsController {
         return "redirect:/events";
     }
 
+    //edit event
     @GetMapping("/edit/{id}")
     public String editPage(@PathVariable("id") long id,
                            @RequestParam(value = "error", required = false) String error,
@@ -70,7 +71,6 @@ public class EventsController {
         return "events/edit";
     }
 
-    //edit event
     @PostMapping("/edit/{id}")
     public String editEvent(@PathVariable("id") long id,
                             @RequestParam("name") String name,

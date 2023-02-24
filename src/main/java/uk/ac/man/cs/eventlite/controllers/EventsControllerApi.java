@@ -4,18 +4,23 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @RestController
 @RequestMapping(value = "/api/events", produces = { MediaType.APPLICATION_JSON_VALUE, MediaTypes.HAL_JSON_VALUE })
@@ -47,8 +52,37 @@ public class EventsControllerApi {
 	}
 
     //delete event
-    @DeleteMapping("/events/{id}")
+    @DeleteMapping("/{id}")
     public void deleteEvent(@PathVariable("id") long id) {
         eventService.deleteById(id);
+    }
+
+    //edit event
+    @GetMapping("/edit/{id}")
+    public String editPage(@PathVariable("id") long id,
+                           @RequestParam(value = "error", required = false) String error,
+                           Model model) {
+        model.addAttribute("event", eventService.findById(id));
+        if (error != null) {
+            model.addAttribute("error", "Something went wrong! Please try again.");
+        }
+        return "events/edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editEvent(@PathVariable("id") long id,
+                            @RequestParam("name") String name,
+                            @RequestParam("date") String date,
+                            @RequestParam("time") String time,
+                            @RequestParam("venue_id") long venue_id,
+                            @ModelAttribute Event event) {
+        LocalDate date1 = LocalDate.parse(date);
+        LocalTime time1 = LocalTime.parse(time);
+        if (eventService.update(id, name, date1, time1, venue_id)) {
+            return "redirect:/events";
+        }
+        else {
+            return "redirect:/events/edit/" + id + "?error=1";
+        }
     }
 }

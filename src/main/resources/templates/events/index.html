@@ -26,7 +26,7 @@
           <td th:text="${e.venue.name}">Event venue</td>
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
-          <td><a href=/description>Event description</a></td>
+          <td><a th:href="@{/events/description(id=${e.id})}">See more</a></td>
         </tr>
       </tbody>
     </table>

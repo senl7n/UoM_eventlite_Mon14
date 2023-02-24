@@ -16,6 +16,7 @@
           <th><i class="fas fa-map-marker-alt"></i> Venue</th>
           <th><i class="fas fa-calendar"></i> Date</th>
           <th><i class="fas fa-clock"></i> Time</th>
+          <th><i class="fas fa-sticky-note"></i> Information</th>
         </tr>
       </thead>
       
@@ -25,6 +26,7 @@
           <td th:text="${e.venue.name}">Event venue</td>
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
+          <td><a th:href="@{/events/description(id=${e.id})}">See more</a></td>
         </tr>
       </tbody>
     </table>

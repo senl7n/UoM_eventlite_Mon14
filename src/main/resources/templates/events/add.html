@@ -8,6 +8,42 @@
 <body>
   <div layout:fragment="content">
     <h1>Add New Event</h1>
+
+    <form action='' method='post' style='margin: 20px;'>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='name'>Event</span>
+            <input type='text' class='form-control' name = 'name'
+                   th:value="${event.name}" aria-label='name' aria-describedby='name'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='venue'>Venue</span>
+            <input type='text' class='form-control' name = 'venue'
+                   th:value="${event.venue}" aria-label='venue' aria-describedby='venue'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='date'>Date</span>
+            <input type='text' class='form-control' name = 'date'
+                   th:value="${event.date}" aria-label='date' aria-describedby='date'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='time'>Time</span>
+            <input type='text' class='form-control' name = 'time'
+                   th:value="${event.time}" aria-label='time' aria-describedby='time'>
+        </div>
+<!--        <div class='input-group mb-3'>-->
+<!--            <span class='input-group-text' id='description'>Description</span>-->
+<!--            <input type='text' class='form-control' name = 'description'-->
+<!--                   th:value="${event.description}" aria-label='description' aria-describedby='description'>-->
+<!--        </div>-->
+
+        <a th:href="@{/events/index}" class="btn btn-primary btn-sm">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <button type="submit" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i> Confirm
+        </button>
+    </form>
+
   </div>
 </body>
 </html>

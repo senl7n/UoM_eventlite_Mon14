@@ -65,7 +65,7 @@ public class EventsController {
                            Model model) {
         model.addAttribute("event", eventService.findById(id));
         if (error != null) {
-            model.addAttribute("error", "Please enter a valid date and time");
+            model.addAttribute("error", "Something went wrong! Please try again.");
         }
         return "events/edit";
     }
@@ -84,8 +84,7 @@ public class EventsController {
             return "redirect:/events";
         }
         else {
-
-            return "redirect:/events/edit/" + id;
+            return "redirect:/events/edit/" + id + "?error=1";
         }
     }
 

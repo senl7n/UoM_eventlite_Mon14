@@ -33,28 +33,23 @@ public class InitialDataLoader {
 	@Bean
 	CommandLineRunner initDatabase() {
 		return args -> {
-			if (venueService.count() > 0) {
-				log.info("Database already populated with venues. Skipping venue initialization.");
-			} else {
-				// Build and save initial venues here.
-				
-					Venue venue = new Venue();
-					venue.setId(1);
-					venue.setName("Kilburn Building");
-					venue.setCapacity(250);
-					venueService.save(venue);
-                
-
-			}
 
 			if (eventService.count() > 0) {
 				log.info("Database already populated with events. Skipping event initialization.");
 			} else {
 				// Build and save initial events here.
-				Venue venue = new Venue();
-				venue.setName("Kilburn Building");
-				venue.setCapacity(250);
+                Venue venue = new Venue();
+                venue.setId(1);
+                venue.setName("Kilburn Building");
+                venue.setCapacity(250);
                 venueService.save(venue);
+
+                Venue venue2 = new Venue();
+                venue2.setId(2);
+                venue2.setName("Engineering Building");
+                venue2.setCapacity(250);
+                venueService.save(venue2);
+
                 for (int i = 1; i < 4; i++) {
                     Event event = new Event();
                     event.setName("COMP23412 Showcase 0" + i);

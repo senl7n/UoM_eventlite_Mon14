@@ -3,21 +3,25 @@ package uk.ac.man.cs.eventlite.controllers;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -50,7 +54,7 @@ public class EventsController {
 
 		return "events/index";
 	}
-	
+
 	@GetMapping("/description")
 	public String getEventInfomation(@RequestParam(name="id") long id, Model model) {
 		ArrayList<Event> events = (ArrayList<Event>) eventService.findAll();
@@ -60,9 +64,80 @@ public class EventsController {
 				event = e;
 			}
 		}
-		
+
 		model.addAttribute("event", event);
 		return "/events/description/description";
 	}
+
+    //delete event
+    @DeleteMapping("/{id}")
+    public String deleteEvent(@PathVariable("id") long id) {
+        eventService.deleteById(id);
+        return "redirect:/events";
+    }
+
+    //edit event
+    @GetMapping("/edit/{id}")
+    public String editPage(@PathVariable("id") long id,
+                           @RequestParam(value = "error", required = false) String error,
+                           Model model) {
+        model.addAttribute("event", eventService.findById(id));
+        if (error != null) {
+            model.addAttribute("error", "Something went wrong! Please try again.");
+        }
+        return "events/edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String editEvent(@PathVariable("id") long id,
+                            @RequestParam("name") String name,
+                            @RequestParam("date") String date,
+                            @RequestParam("time") String time,
+                            @RequestParam("venue_id") long venue_id,
+                            @ModelAttribute Event event) {
+        LocalDate date1 = LocalDate.parse(date);
+        LocalTime time1 = LocalTime.parse(time);
+        if (eventService.update(id, name, date1, time1, venue_id)) {
+            return "redirect:/events";
+        }
+        else {
+            return "redirect:/events/edit/" + id + "?error=1";
+        }
+    }
+
+    //add event
+    @GetMapping("/add")
+    public String addPage(@RequestParam(value = "error", required = false) String error,
+                          Model model) {
+        if (error != null) {
+            model.addAttribute("error", "Something went wrong! Please try again.");
+        }
+        else {
+            model.addAttribute("error", "");
+        }
+        return "events/add";
+    }
+
+    @PostMapping("/add")
+    public String addEvent(@RequestParam("name") String name,
+                           @RequestParam("date") String date,
+                           @RequestParam("time") String time,
+                           @RequestParam("venue_id") long venue_id) {
+        try {
+            LocalDate date1 = LocalDate.parse(date);
+            LocalTime time1 = LocalTime.parse(time);
+        }
+        catch (Exception e) {
+            return "redirect:/events/add?error=1";
+        }
+        LocalDate date1 = LocalDate.parse(date);
+        LocalTime time1 = LocalTime.parse(time);
+        if (eventService.add(name, date1, time1, venue_id)) {
+            return "redirect:/events";
+        }
+        else {
+            return "redirect:/events/add?error=1";
+        }
+    }
 
 }

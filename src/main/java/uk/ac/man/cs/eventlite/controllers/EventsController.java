@@ -93,11 +93,12 @@ public class EventsController {
                             @RequestParam("name") String name,
                             @RequestParam("date") String date,
                             @RequestParam("time") String time,
+                            @RequestParam("description") String description,
                             @RequestParam("venue_id") long venue_id,
                             @ModelAttribute Event event) {
         LocalDate date1 = LocalDate.parse(date);
         LocalTime time1 = LocalTime.parse(time);
-        if (eventService.update(id, name, date1, time1, venue_id)) {
+        if (eventService.update(id, name, date1, time1, venue_id, description)) {
             return "redirect:/events";
         }
         else {
@@ -122,6 +123,7 @@ public class EventsController {
     public String addEvent(@RequestParam("name") String name,
                            @RequestParam("date") String date,
                            @RequestParam("time") String time,
+                           @RequestParam("description") String description,
                            @RequestParam("venue_id") long venue_id) {
         try {
             LocalDate date1 = LocalDate.parse(date);
@@ -132,7 +134,7 @@ public class EventsController {
         }
         LocalDate date1 = LocalDate.parse(date);
         LocalTime time1 = LocalTime.parse(time);
-        if (eventService.add(name, date1, time1, venue_id)) {
+        if (eventService.add(name, date1, time1, venue_id, description)) {
             return "redirect:/events";
         }
         else {

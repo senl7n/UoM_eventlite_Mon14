@@ -45,7 +45,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public boolean update(long id, String name, LocalDate date, LocalTime time, long venueId) {
+    public boolean update(long id, String name, LocalDate date, LocalTime time, long venueId, String description) {
         if (eventRepository.findById(id) == null || venueRepository.findById(venueId).isEmpty()) {
             return false;
         }
@@ -55,6 +55,7 @@ public class EventServiceImpl implements EventService {
         event.setDate(date);
         event.setTime(time);
         event.setVenue(venueRepository.findById(venueId).get());
+        event.setDescription(description);
         eventRepository.save(event);
         return true;
     }
@@ -65,7 +66,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public boolean add(String name, LocalDate date, LocalTime time, long venueId) {
+    public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description) {
         if (venueRepository.findById(venueId).isEmpty()) {
             return false;
         }
@@ -74,6 +75,7 @@ public class EventServiceImpl implements EventService {
         event.setDate(date);
         event.setTime(time);
         event.setVenue(venueRepository.findById(venueId).get());
+        event.setDescription(description);
         eventRepository.save(event);
         return true;
     }

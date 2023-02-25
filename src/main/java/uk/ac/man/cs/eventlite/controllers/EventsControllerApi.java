@@ -4,7 +4,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
@@ -74,11 +73,12 @@ public class EventsControllerApi {
                             @RequestParam("name") String name,
                             @RequestParam("date") String date,
                             @RequestParam("time") String time,
+                            @RequestParam("description") String description,
                             @RequestParam("venue_id") long venue_id,
                             @ModelAttribute Event event) {
         LocalDate date1 = LocalDate.parse(date);
         LocalTime time1 = LocalTime.parse(time);
-        if (eventService.update(id, name, date1, time1, venue_id)) {
+        if (eventService.update(id, name, date1, time1, venue_id, description)) {
             return "redirect:/events";
         }
         else {
@@ -103,6 +103,7 @@ public class EventsControllerApi {
     public String addEvent(@RequestParam("name") String name,
                            @RequestParam("date") String date,
                            @RequestParam("time") String time,
+                           @RequestParam("description") String description,
                            @RequestParam("venue_id") long venue_id) {
         try {
             LocalDate date1 = LocalDate.parse(date);
@@ -113,7 +114,7 @@ public class EventsControllerApi {
         }
         LocalDate date1 = LocalDate.parse(date);
         LocalTime time1 = LocalTime.parse(time);
-        if (eventService.add(name, date1, time1, venue_id)) {
+        if (eventService.add(name, date1, time1, venue_id, description)) {
             return "redirect:/events";
         }
         else {

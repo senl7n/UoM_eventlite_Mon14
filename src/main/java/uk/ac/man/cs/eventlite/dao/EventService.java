@@ -15,10 +15,10 @@ public interface EventService {
 
     public void deleteById(long id);
 
-    public boolean update(long id, String name, LocalDate date, LocalTime time, long venueId);
+    public boolean update(long id, String name, LocalDate date, LocalTime time, long venueId, String description);
 
     public Event findById(long id);
 
-    public boolean add(String name, LocalDate date, LocalTime time, long venueId);
+    public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description);
 
 }

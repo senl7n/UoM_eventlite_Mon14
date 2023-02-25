@@ -8,11 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort;
 
 import uk.ac.man.cs.eventlite.entities.Event;
-import uk.ac.man.cs.eventlite.entities.Venue;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -64,6 +62,20 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event findById(long id) {
         return eventRepository.findById(id);
+    }
+
+    @Override
+    public boolean add(String name, LocalDate date, LocalTime time, long venueId) {
+        if (venueRepository.findById(venueId).isEmpty()) {
+            return false;
+        }
+        Event event = new Event();
+        event.setName(name);
+        event.setDate(date);
+        event.setTime(time);
+        event.setVenue(venueRepository.findById(venueId).get());
+        eventRepository.save(event);
+        return true;
     }
 
 }

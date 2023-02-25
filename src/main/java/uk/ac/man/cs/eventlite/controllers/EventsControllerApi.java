@@ -85,4 +85,39 @@ public class EventsControllerApi {
             return "redirect:/events/edit/" + id + "?error=1";
         }
     }
+
+    //add event
+    @GetMapping("/add")
+    public String addPage(@RequestParam(value = "error", required = false) String error,
+                          Model model) {
+        if (error != null) {
+            model.addAttribute("error", "Something went wrong! Please try again.");
+        }
+        else {
+            model.addAttribute("error", "");
+        }
+        return "events/add";
+    }
+
+    @PostMapping("/add")
+    public String addEvent(@RequestParam("name") String name,
+                           @RequestParam("date") String date,
+                           @RequestParam("time") String time,
+                           @RequestParam("venue_id") long venue_id) {
+        try {
+            LocalDate date1 = LocalDate.parse(date);
+            LocalTime time1 = LocalTime.parse(time);
+        }
+        catch (Exception e) {
+            return "redirect:/events/add?error=1";
+        }
+        LocalDate date1 = LocalDate.parse(date);
+        LocalTime time1 = LocalTime.parse(time);
+        if (eventService.add(name, date1, time1, venue_id)) {
+            return "redirect:/events";
+        }
+        else {
+            return "redirect:/events/add?error=1";
+        }
+    }
 }

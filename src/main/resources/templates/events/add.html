@@ -6,44 +6,41 @@
     <title>Add</title>
 </head>
 <body>
-  <div layout:fragment="content">
-    <h1>Add New Event</h1>
+<div layout:fragment="content">
+    <h1>Add a Event</h1>
 
-    <form action='' method='post' style='margin: 20px;'>
+    <form action="/events/add" th:method="post">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='name'>Event</span>
-            <input type='text' class='form-control' name = 'name'
-                   th:value="${event.name}" aria-label='name' aria-describedby='name'>
+            <input type='text' class='form-control' name = 'name' aria-label='name' aria-describedby='name'>
         </div>
         <div class='input-group mb-3'>
-            <span class='input-group-text' id='venue'>Venue</span>
-            <input type='text' class='form-control' name = 'venue'
-                   th:value="${event.venue}" aria-label='venue' aria-describedby='venue'>
+            <span class='input-group-text' id='venue'>Venue ID</span>
+            <input type='text' class='form-control' name = 'venue_id' aria-label='venue' aria-describedby='venue'>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='date'>Date</span>
-            <input type='text' class='form-control' name = 'date'
-                   th:value="${event.date}" aria-label='date' aria-describedby='date'>
+            <input type='text' class='form-control' name = 'date' aria-label='date' aria-describedby='date'>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='time'>Time</span>
-            <input type='text' class='form-control' name = 'time'
-                   th:value="${event.time}" aria-label='time' aria-describedby='time'>
+            <input type='text' class='form-control' name = 'time' aria-label='time' aria-describedby='time'>
         </div>
-<!--        <div class='input-group mb-3'>-->
-<!--            <span class='input-group-text' id='description'>Description</span>-->
-<!--            <input type='text' class='form-control' name = 'description'-->
-<!--                   th:value="${event.description}" aria-label='description' aria-describedby='description'>-->
-<!--        </div>-->
+        <!--        <div class='input-group mb-3'>-->
+        <!--            <span class='input-group-text' id='description'>Description</span>-->
+        <!--            <input type='text' class='form-control' name = 'description'-->
+        <!--                   aria-label='description' aria-describedby='description'>-->
+        <!--        </div>-->
 
-        <a th:href="@{/events/index}" class="btn btn-primary btn-sm">
+        <a href="/events" class="btn btn-primary btn-sm">
             <i class="fas fa-arrow-left"></i> Back
         </a>
         <button type="submit" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i> Confirm
+            <i class="fas fa-check"></i> Confirm
         </button>
+        <input style="margin-top: 50px" type="text" class="form-control" name="error" th:value="${error}" disabled>
     </form>
-
-  </div>
+</div>
 </body>
 </html>

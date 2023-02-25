@@ -64,6 +64,11 @@ public class EventServiceImpl implements EventService {
     public Event findById(long id) {
         return eventRepository.findById(id);
     }
+    
+    @Override
+    public Iterable<Event> findByName(String name) {
+        return eventRepository.findByName(name);
+    }
 
     @Override
     public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description) {

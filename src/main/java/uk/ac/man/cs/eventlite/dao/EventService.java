@@ -18,6 +18,8 @@ public interface EventService {
     public boolean update(long id, String name, LocalDate date, LocalTime time, long venueId, String description);
 
     public Event findById(long id);
+    
+    public Iterable<Event> findByName(String name);
 
     public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description);
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import uk.ac.man.cs.eventlite.dao.EventRepository;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -32,6 +33,9 @@ public class EventsController {
 
 	@Autowired
 	private VenueService venueService;
+	
+	@Autowired
+	private EventRepository eventRepository;
 
 	@ExceptionHandler(EventNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -141,5 +145,15 @@ public class EventsController {
             return "redirect:/events/add?error=1";
         }
     }
+    
+    //search event    
+    @GetMapping("/static/index")
+    public String search(@RequestParam(name="q") String query, Model model) {
+        Iterable<Event> events = eventRepository.findByName(query);
+        model.addAttribute("events", events);
+        return "searchResult";
+    }
+
+    
 
 }

@@ -147,16 +147,21 @@ public class EventsController {
     //search event    
     @GetMapping("/search")
     public String search(@RequestParam(name="q") String query, Model model) {
-    	Iterable<Event> events = eventService.findByNameContains(query);
-		if (events.iterator().hasNext()) {
-		        model.addAttribute("events", events);
-		    	model.addAttribute("found", true);
-		        return "/events/searchResult";
-		    } else {
-		    	model.addAttribute("found", false);
-		        model.addAttribute("events", eventService.findAll());
-		        return "/events/searchResult";
-		    }
+		if (query == null || query.trim().isEmpty()) {
+			model.addAttribute("found", false);
+	        model.addAttribute("events", eventService.findAll());
+		}
+		else {
+			Iterable<Event> events = eventService.findByNameContainingIgnoreCase(query);
+			if (events.iterator().hasNext()) {
+				model.addAttribute("events", events);
+				model.addAttribute("found", true);
+			} else {
+				model.addAttribute("found", false);
+				model.addAttribute("events", eventService.findAll());
+			}
+		}
+		return "/events/searchResult";
     }
  
     

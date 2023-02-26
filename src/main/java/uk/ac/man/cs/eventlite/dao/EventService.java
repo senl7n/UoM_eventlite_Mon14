@@ -19,7 +19,7 @@ public interface EventService {
 
     public Event findById(long id);
     
-    public Iterable<Event> findByNameContains(String name);
+    public Iterable<Event> findByNameContainingIgnoreCase(String name);
 
     public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description);
 

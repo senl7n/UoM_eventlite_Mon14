@@ -14,4 +14,5 @@ public interface EventRepository extends CrudRepository<Event, Long> {
     public Event save(Event event);
 
     public Event findById(long id);
+    public Iterable<Event> findByNameContainingIgnoreCase(String name);
 }

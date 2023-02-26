@@ -24,7 +24,8 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private VenueRepository venueRepository;
-
+    
+    private Event envent;
     public long count() {
         return eventRepository.count();
 	}
@@ -63,6 +64,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event findById(long id) {
         return eventRepository.findById(id);
+    }
+    
+    @Override
+    public Iterable<Event> findByNameContainingIgnoreCase(String name) {
+        return eventRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Override

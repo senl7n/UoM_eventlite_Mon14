@@ -147,9 +147,16 @@ public class EventsController {
     //search event    
     @GetMapping("/search")
     public String search(@RequestParam(name="q") String query, Model model) {
-        Iterable<Event> events = eventService.findByName(query);
-        model.addAttribute("events", events);
-        return "/events/searchResult";
+    	Iterable<Event> events = eventService.findByName(query);
+		if (events.iterator().hasNext()) {
+		        model.addAttribute("events", events);
+		    	model.addAttribute("found", true);
+		        return "/events/searchResult";
+		    } else {
+		    	model.addAttribute("found", false);
+		        model.addAttribute("events", eventService.findAll());
+		        return "/events/searchResult";
+		    }
     }
  
     

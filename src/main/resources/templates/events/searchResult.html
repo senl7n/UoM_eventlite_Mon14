@@ -9,6 +9,14 @@
   <div layout:fragment="content">
     <h1>Search Result</h1>
 
+		<div th:if="${found}">
+		  <h3>Events found:</h3>
+		</div>
+
+		<div th:if="${not found}">
+		  <h3>No events found.</h3>
+		</div>
+
     <table class="table table-striped table-hover">
       <thead>
         <tr>

@@ -68,9 +68,9 @@ public class EventServiceImpl implements EventService {
     
     @Override
     public Iterable<Event> findByName(String name) {
-    	if(eventRepository.findByName(name) == null) {
-    		return eventRepository.findAll(Sort.by("date").and(Sort.by("time")));
-    	}
+//    	if(eventRepository.findByName(name) == null) {
+//    		return eventRepository.findAll(Sort.by("date").and(Sort.by("time")));
+//    	}
         return eventRepository.findByName(name);
     }
 

@@ -24,7 +24,8 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private VenueRepository venueRepository;
-
+    
+    private Event envent;
     public long count() {
         return eventRepository.count();
 	}
@@ -67,6 +68,9 @@ public class EventServiceImpl implements EventService {
     
     @Override
     public Iterable<Event> findByName(String name) {
+    	if(eventRepository.findByName(name) == null) {
+    		return eventRepository.findAll(Sort.by("date").and(Sort.by("time")));
+    	}
         return eventRepository.findByName(name);
     }
 

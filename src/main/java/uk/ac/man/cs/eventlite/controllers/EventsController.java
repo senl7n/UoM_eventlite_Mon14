@@ -34,8 +34,6 @@ public class EventsController {
 	@Autowired
 	private VenueService venueService;
 	
-	@Autowired
-	private EventRepository eventRepository;
 
 	@ExceptionHandler(EventNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -147,13 +145,13 @@ public class EventsController {
     }
     
     //search event    
-    @GetMapping("/static/index")
+    @GetMapping("/search")
     public String search(@RequestParam(name="q") String query, Model model) {
-        Iterable<Event> events = eventRepository.findByName(query);
+        Iterable<Event> events = eventService.findByName(query);
         model.addAttribute("events", events);
-        return "searchResult";
+        return "/events/searchResult";
     }
-
+ 
     
 
 }

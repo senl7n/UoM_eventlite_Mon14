@@ -1,14 +1,17 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layouts/default}">
 <head>
   <title>All events</title>
 </head>
 <body>
   <div layout:fragment="content">
-    <h1>All events <a href="/events/add" class="btn btn-success btn-sm">
-      <i class="fas fa-plus"></i> Add new</a></h1>
+    <h1>All events
+        <td sec:authorize="isAuthenticated()">
+            <a href="/events/add" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add new</a>
+        </td>
+    </h1>
 
     <table class="table table-striped table-hover">
       <thead>
@@ -18,7 +21,8 @@
           <th><i class="fas fa-calendar"></i> Date</th>
           <th><i class="fas fa-clock"></i> Time</th>
           <th><i class="fas fa-sticky-note"></i> Information</th>
-          <th><i class="fas fa-edit"></i> Manage</th>
+          <!-- <a class="btn btn-primary" role="button" th:href="@{/sign-in}"><i class="fas fa-edit"></i> -->
+          <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
         </tr>
       </thead>
       
@@ -29,7 +33,7 @@
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
           <td><a th:href="@{/events/description(id=${e.id})}">See more</a></td>
-          <td>
+          <td sec:authorize="isAuthenticated()">
           <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
             <i class="fas fa-edit"></i> Edit
           </a>

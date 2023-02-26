@@ -9,6 +9,7 @@
 <div layout:fragment="content">
     <h1>Add a Event</h1>
 
+
     <form action="/events/add" th:method="post">
         <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
         <div class='input-group mb-3'>
@@ -32,6 +33,7 @@
             <input type='text' class='form-control' name = 'description'
                    aria-label='description' aria-describedby='description'>
         </div>
+        
 
         <a href="/events" class="btn btn-primary btn-sm">
             <i class="fas fa-arrow-left"></i> Back

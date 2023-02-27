@@ -45,7 +45,7 @@
           <td th:text="${e.name}">My Event</td>
           <td th:text="${e.venue.name}">Event venue</td>
           <td th:text="${{e.date}}">Event date</td>
-          <td th:text="${{e.time}}">Event time</td>
+          <td th:text="${#strings.isEmpty(e.time) ? 'N/A' : e.time}" style="text-align: center">Event time</td>
           <td><a th:href="@{/events/description(id=${e.id})}">See more</a></td>
           <td sec:authorize="isAuthenticated()">
           <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layouts/default}"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
+        layout:decorate="~{layouts/default}"
 >
   <head>
     <title>Search Result</title>
@@ -33,7 +33,7 @@
             <th><i class="fas fa-calendar"></i> Date</th>
             <th><i class="fas fa-clock"></i> Time</th>
             <th><i class="fas fa-sticky-note"></i> Information</th>
-            <th><i class="fas fa-edit"></i> Manage</th>
+            <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
           </tr>
         </thead>
 
@@ -46,7 +46,7 @@
             <td>
               <a th:href="@{/events/description(id=${e.id})}">See more</a>
             </td>
-            <td>
+            <td sec:authorize="isAuthenticated()">
               <a
                 th:href="@{/events/edit/{id}(id=${e.id})}"
                 class="btn btn-primary btn-sm"

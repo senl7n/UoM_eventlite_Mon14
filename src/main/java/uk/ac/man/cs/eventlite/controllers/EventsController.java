@@ -211,7 +211,6 @@ public class EventsController {
         }
     }
 
-    
     //search event    
     @GetMapping("/search")
     public String search(@RequestParam(name="q") String query, Model model) {
@@ -231,7 +230,5 @@ public class EventsController {
 		}
 		return "/events/searchResult";
     }
- 
-    
 
 }

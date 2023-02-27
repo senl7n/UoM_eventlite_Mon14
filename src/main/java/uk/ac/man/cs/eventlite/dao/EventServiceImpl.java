@@ -32,7 +32,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
 	public Iterable<Event> findAll() {
-		return eventRepository.findAll(Sort.by("date").and(Sort.by("time")));
+		return eventRepository.findAll(Sort.by("date").and(Sort.by("name")));
 	}
 
     @Override

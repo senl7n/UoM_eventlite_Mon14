@@ -41,7 +41,7 @@
       </thead>
       
       <tbody>
-        <tr th:each="e : ${events}">
+        <tr th:each="e : ${upcomingEvents}">
           <td th:text="${e.name}">My Event</td>
           <td th:text="${e.venue.name}">Event venue</td>
           <td th:text="${{e.date}}">Event date</td>

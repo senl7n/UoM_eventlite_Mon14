@@ -12,8 +12,15 @@
 	<div>Date: <span th:text=${event.date}> Event Date </span></div>
 	<div>Time: <span th:text=${event.time}> Event Time </span></div>
 	<p>Description: </p>
-	<p th:text=${event.description}> Event Description</p>	
+	<p th:text=${event.description}> Event Description</p>
+		
   </div>
+  <form method="post" th:action="@{/events/{id}(id=${event.id})}">
+    <button type="submit" class="btn btn-danger btn-sm">
+        <i class="fas fa-trash"></i> Delete
+    </button>
+</form>
+
 	
 </body>
 </html>

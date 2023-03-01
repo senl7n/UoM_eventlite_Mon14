@@ -51,12 +51,7 @@
           <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
             <i class="fas fa-edit"></i> Edit
           </a>
-          <form th:action="@{/events/{id}(id=${e.id})}" th:method="delete" style="margin:0px;display:inline;">
-            <button type="submit" class="btn btn-danger btn-sm">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-            </form>
-          </td>
+                  </td>
         </tr>
       </tbody>
     </table>

@@ -20,7 +20,11 @@ public interface EventService {
     public Event findById(long id);
     
     public Iterable<Event> findByNameContainingIgnoreCase(String name);
-
+    
     public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description);
+
+    public Iterable<Event> findUpcomingEvents();
+
+    public Iterable<Event> findPreviousEvents();
 
 }

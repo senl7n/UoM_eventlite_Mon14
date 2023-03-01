@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import javax.persistence.*;
@@ -62,6 +63,10 @@ public class Event {
 
     public void setTime(LocalTime time) {
         this.time = time;
+    }
+    
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(date, time);
     }
 
     public String getName() {

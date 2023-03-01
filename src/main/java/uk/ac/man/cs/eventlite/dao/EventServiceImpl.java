@@ -12,6 +12,7 @@ import uk.ac.man.cs.eventlite.entities.Event;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+
 @Service
 public class EventServiceImpl implements EventService {
 
@@ -29,6 +30,20 @@ public class EventServiceImpl implements EventService {
     public long count() {
         return eventRepository.count();
 	}
+    
+    @Override
+    public Iterable<Event> findUpcomingEvents() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        return eventRepository.findByDateAfterOrDateEqualsAndTimeAfterOrderByDateAscTimeAsc(currentDate, currentDate, currentTime);
+    }
+    
+    @Override
+    public Iterable<Event> findPreviousEvents() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        return eventRepository.findByDateBeforeOrDateEqualsAndTimeBeforeOrderByDateDescTimeDesc(currentDate, currentDate, currentTime);
+    }
 
     @Override
 	public Iterable<Event> findAll() {

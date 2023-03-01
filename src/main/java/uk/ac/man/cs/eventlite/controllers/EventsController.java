@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,6 +22,7 @@ import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -52,8 +54,7 @@ public class EventsController {
 	public String getAllEvents(Model model) {
 
 		model.addAttribute("events", eventService.findAll());
-//        model.addAttribute("venues", venueService.findAll());
-
+//      model.addAttribute("venues", venueService.findAll());
 		return "events/index";
 	}
 
@@ -149,16 +150,34 @@ public class EventsController {
     public String search(@RequestParam(name="q") String query, Model model) {
 		if (query == null || query.trim().isEmpty()) {
 			model.addAttribute("found", false);
-	        model.addAttribute("events", eventService.findAll());
+	        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+	        Iterable<Event> previousEvents = eventService.findPreviousEvents();
+	        model.addAttribute("upcomingEvents", upcomingEvents);
+	        model.addAttribute("previousEvents", previousEvents);
 		}
 		else {
 			Iterable<Event> events = eventService.findByNameContainingIgnoreCase(query);
 			if (events.iterator().hasNext()) {
-				model.addAttribute("events", events);
-				model.addAttribute("found", true);
+			    List<Event> upcomingEvents = new ArrayList<>();
+			    List<Event> previousEvents = new ArrayList<>();
+
+			    for (Event event : events) {
+			        if (event.getDateTime().isAfter(LocalDateTime.now())) {
+			            upcomingEvents.add(event);
+			        } else {
+			            previousEvents.add(event);
+			        }
+			    }
+	            model.addAttribute("upcomingEvents", upcomingEvents);
+	            model.addAttribute("previousEvents", previousEvents);
+	            model.addAttribute("found", true);
 			} else {
 				model.addAttribute("found", false);
-				model.addAttribute("events", eventService.findAll());
+		        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+		        Iterable<Event> previousEvents = eventService.findPreviousEvents();
+		        model.addAttribute("upcomingEvents", upcomingEvents);
+		        model.addAttribute("previousEvents", previousEvents);
+				
 			}
 		}
 		return "/events/searchResult";

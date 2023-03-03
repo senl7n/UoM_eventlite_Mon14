@@ -62,7 +62,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public boolean update(long id, String name, LocalDate date, LocalTime time, long venueId, String description) {
-        if (eventRepository.findById(id) == null || venueRepository.findById(venueId).isEmpty()) {
+        if (eventRepository.findById(id) == null || name.isEmpty() || venueRepository.findById(venueId).isEmpty()) {
             return false;
         }
         deleteById(id);
@@ -88,7 +88,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description) {
-        if (venueRepository.findById(venueId).isEmpty()) {
+        if (name.isEmpty() || venueRepository.findById(venueId).isEmpty()) {
             return false;
         }
         Event event = new Event();

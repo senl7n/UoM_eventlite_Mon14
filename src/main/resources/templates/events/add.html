@@ -9,28 +9,31 @@
 <div layout:fragment="content">
     <h1>Add a Event</h1>
 
-
     <form action="/events/add" th:method="post">
         <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='name'>Event</span>
-            <input type='text' class='form-control' name = 'name' aria-label='name' aria-describedby='name'>
+            <input th:value="${#strings.isEmpty(name) ? '' : name}" type='text' maxlength='255' class='form-control' name = 'name' aria-label='name' aria-describedby='name'>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='venue'>Venue ID</span>
-            <input type='text' class='form-control' name = 'venue_id' aria-label='venue' aria-describedby='venue'>
+            <select class="form-select" name="venue_id" aria-label="venue">
+                <option value="99">Choose...</option>
+                <option th:each="venue : ${venues}" th:value="${venue.id}" th:text="${venue.name}"
+                        th:selected="${venue_id == venue.id}"></option>
+            </select>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='date'>Date</span>
-            <input type='date' class='form-control' name = 'date' aria-label='date' aria-describedby='date'>
+            <input th:value="${#strings.isEmpty(date) ? '' : date}" type='date' class='form-control' name = 'date' aria-label='date' aria-describedby='date'>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='time'>Time</span>
-            <input type='time' class='form-control' name = 'time' aria-label='time' aria-describedby='time'>
+            <input th:value="${#strings.isEmpty(time) ? '' : time}" type='time' class='form-control' name = 'time' aria-label='time' aria-describedby='time'>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='description'>Description</span>
-            <input type='text' class='form-control' name = 'description'
+            <input th:value="${#strings.isEmpty(description) ? '' : description}" type='text' maxlength='499' class='form-control' name = 'description'
                    aria-label='description' aria-describedby='description'>
         </div>
         
@@ -41,7 +44,8 @@
         <button type="submit" class="btn btn-danger btn-sm">
             <i class="fas fa-check"></i> Confirm
         </button>
-        <input style="margin-top: 50px" type="text" class="form-control" name="error" th:value="${error}" disabled>
+        <input style="color: red; margin-top: 50px; background: none; border: none; outline: none;"
+               type="text" class="form-control" name="error" th:value="${error}" disabled>
     </form>
 </div>
 </body>

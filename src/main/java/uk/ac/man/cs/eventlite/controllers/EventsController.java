@@ -2,11 +2,10 @@ package uk.ac.man.cs.eventlite.controllers;
 
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -223,21 +222,31 @@ public class EventsController {
 	        model.addAttribute("previousEvents", previousEvents);
 		}
 		else {
-			Iterable<Event> events = eventService.findByNameContainingIgnoreCase(query);
-			if (events.iterator().hasNext()) {
-			    List<Event> upcomingEvents = new ArrayList<>();
-			    List<Event> previousEvents = new ArrayList<>();
+		       Iterable<Event> events = eventService.findByNameContainingIgnoreCase(query);
+		        if (events.iterator().hasNext()) {
+		            List<Event> upcomingEvents = new ArrayList<>();
+		            List<Event> previousEvents = new ArrayList<>();
 
-			    for (Event event : events) {
-			        if (event.getDateTime().isAfter(LocalDateTime.now())) {
-			            upcomingEvents.add(event);
-			        } else {
-			            previousEvents.add(event);
-			        }
-			    }
-	            model.addAttribute("upcomingEvents", upcomingEvents);
-	            model.addAttribute("previousEvents", previousEvents);
-	            model.addAttribute("found", true);
+		            for (Event event : events) {
+		                if (event.getTime() != null) {
+		                    if (event.getDateTime().isAfter(LocalDateTime.now())) {
+		                        upcomingEvents.add(event);
+		                    } else {
+		                        previousEvents.add(event);
+		                    }
+		                } else { 
+		                    if (event.getDate().isBefore(LocalDate.now())) {
+		                    	previousEvents.add(event);
+		                    } else {
+		                    	upcomingEvents.add(event);
+		                    }
+		                }
+		            }
+		            upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+		            previousEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+		            model.addAttribute("upcomingEvents", upcomingEvents);
+		            model.addAttribute("previousEvents", previousEvents);
+		            model.addAttribute("found", true);
 			} else {
 				model.addAttribute("found", false);
 		        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();

@@ -19,17 +19,14 @@ public interface EventRepository extends CrudRepository<Event, Long> {
 
     public Event findById(long id);
     public Iterable<Event> findByNameContainingIgnoreCase(String name);
-    
-    @Query("SELECT e FROM Event e WHERE e.date >= :today ORDER BY e.date ASC, e.time ASC")
-    public Iterable<Event> findUpcomingEvents(@Param("today") LocalDate today);
-
-    @Query("SELECT e FROM Event e WHERE e.date < :today ORDER BY e.date DESC, e.time DESC")
-    public Iterable<Event> findPreviousEvents(@Param("today") LocalDate today);
 	
     public Iterable<Event> findByDateAfterOrDateEqualsAndTimeAfterOrderByDateAscTimeAsc(LocalDate currentDate,
 			LocalDate currentDate2, LocalTime currentTime);
+    
+    public Iterable<Event> findByDateEqualsAndTimeIsNull(LocalDate currentDate);
 	
     public Iterable<Event> findByDateBeforeOrDateEqualsAndTimeBeforeOrderByDateDescTimeDesc(LocalDate currentDate,
 			LocalDate currentDate2, LocalTime currentTime);
+   
 
 }

@@ -35,15 +35,14 @@
           <th><i class="fas fa-map-marker-alt"></i> Venue</th>
           <th><i class="fas fa-calendar"></i> Date</th>
           <th><i class="fas fa-clock"></i> Time</th>
-          <th><i class="fas fa-sticky-note"></i> Information</th>
           <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
         </tr>
       </thead>
       
       <tbody>
         <tr th:each="e : ${events}">
-          <td th:text="${e.name}">My Event</td>
-          <td th:text="${e.venue.name}">Event venue</td>
+          <td ><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
+          <td th:text="${e.venue.name}">Event Venue</td>
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${#strings.isEmpty(e.time) ? 'N/A' : e.time}" style="text-align: center">Event time</td>
           <td><a th:href="@{/events/description(id=${e.id})}">See more</a></td>
@@ -51,7 +50,7 @@
           <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
             <i class="fas fa-edit"></i> Edit
           </a>
-                  </td>
+          </td>
         </tr>
       </tbody>
     </table>

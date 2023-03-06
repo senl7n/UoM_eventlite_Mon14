@@ -2,8 +2,6 @@ package uk.ac.man.cs.eventlite.dao;
 
 import uk.ac.man.cs.eventlite.entities.Venue;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Optional;
 
 public interface VenueService  {

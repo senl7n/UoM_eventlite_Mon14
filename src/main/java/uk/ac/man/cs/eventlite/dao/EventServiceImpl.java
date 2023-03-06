@@ -10,11 +10,9 @@ import org.springframework.data.domain.Sort;
 import uk.ac.man.cs.eventlite.entities.Event;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 
 
 @Service

@@ -50,6 +50,12 @@ public class InitialDataLoader {
                 venue2.setCapacity(250);
                 venueService.save(venue2);
 
+                Venue venue3 = new Venue();
+                venue3.setId(3);
+                venue3.setName("Stopford Building");
+                venue3.setCapacity(250);
+                venueService.save(venue3);
+
                 for (int i = 1; i < 4; i++) {
                     Event event = new Event();
                     event.setName("COMP23412 Showcase 0" + i);

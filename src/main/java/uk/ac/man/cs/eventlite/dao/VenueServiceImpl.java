@@ -1,10 +1,9 @@
 package uk.ac.man.cs.eventlite.dao;
 
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
@@ -26,7 +25,7 @@ public class VenueServiceImpl implements VenueService {
 
     @Override
    	public Iterable<Venue> findAll() {
-   		return VenueRepository.findAll();
+   		return VenueRepository.findAll((Sort.by("name")));
    	}
 
 

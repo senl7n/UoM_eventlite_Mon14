@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>Add</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>Add a Venue</h1>
+
+    <form action="/venues/add" th:method="post">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='name'>Venue</span>
+            <input th:value="${#strings.isEmpty(name) ? '' : name}" type='text' maxlength='255' class='form-control' name = 'name' aria-label='name' aria-describedby='name'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='address'>Address</span>
+            <input th:value="${#strings.isEmpty(address) ? '' : address}" type='text' maxlength='299' class='form-control' name = 'address' aria-label='address' aria-describedby='address'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='postcode'>Postcode</span>
+            <input th:value="${#strings.isEmpty(postcode) ? '' : date}" type='text' class='form-control' name = 'postcode' aria-label='postcode' aria-describedby='postcode'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='capacity'>Capacity</span>
+            <input th:value="${#strings.isEmpty(capacity) ? '' : capacity}" type='text' class='form-control' name = 'capacity' aria-label='capacity' aria-describedby='capacity'>
+        </div>
+
+        <a href="/venues" class="btn btn-primary btn-sm">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <button type="submit" class="btn btn-danger btn-sm">
+            <i class="fas fa-check"></i> Confirm
+        </button>
+        <input style="color: red; margin-top: 50px; background: none; border: none; outline: none;"
+               type="text" class="form-control" name="error" th:value="${error}" disabled>
+    </form>
+</div>
+</body>
+</html>

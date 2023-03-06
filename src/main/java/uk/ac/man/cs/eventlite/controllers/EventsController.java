@@ -93,6 +93,9 @@ public class EventsController {
         else if(error.equals("3")) {
             model.addAttribute("error", "Please enter a future date.");
         }
+        else {
+            model.addAttribute("error", "Unknown error.");
+        }
         return "events/edit";
     }
 
@@ -158,6 +161,9 @@ public class EventsController {
         }
         else if(error.equals("3")) {
             model.addAttribute("error", "Please enter a future date.");
+        }
+        else {
+            model.addAttribute("error", "Unknown error.");
         }
         model.addAttribute("name", name);
         model.addAttribute("date", date);

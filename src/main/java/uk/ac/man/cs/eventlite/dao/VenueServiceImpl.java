@@ -51,6 +51,7 @@ public class VenueServiceImpl implements VenueService {
             venue.get().setName(name);
             venue.get().setCapacity(capacity);
             venue.get().setAddress(address);
+            venue.get().setPostcode(postcode);
             VenueRepository.save(venue.get());
             return true;
         }

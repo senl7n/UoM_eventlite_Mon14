@@ -6,6 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 
 @Entity
 @Table(name ="venues")
@@ -17,7 +18,13 @@ public class Venue {
     @Max(255)
     private String name;
 
+    @Positive
     private int capacity;
+
+    @NotEmpty
+    @Max(299)
+    private String address;
+    private String postcode;
 
     public Venue() {
     }
@@ -44,5 +51,21 @@ public class Venue {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
     }
 }

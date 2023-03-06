@@ -13,5 +13,12 @@ public interface VenueService  {
 	public Venue save(Venue venue);
 
     public Optional<Venue> findById(long id);
+
+    public void deleteById(long id);
+
+    public boolean update(long id, String name, int capacity, String address, String postcode);
+
+    public boolean add(String name, int capacity, String address, String postcode);
+
 }
  

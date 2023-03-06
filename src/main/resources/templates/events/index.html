@@ -34,8 +34,7 @@
             <th><i class="fas fa-bolt"></i> Event</th>
             <th><i class="fas fa-map-marker-alt"></i> Venue</th>
             <th><i class="fas fa-calendar"></i> Date</th>
-            <th><i class="fas fa-clock"></i> Time</th>
-            <th><i class="fas fa-sticky-note"></i> Information</th>
+            <th style="text-align: center"><i class="fas fa-clock"></i> Time</th>
             <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
           </tr>
         </thead>
@@ -51,9 +50,6 @@
             <td th:text="${e.venue.name}">Event venue</td>
             <td th:text="${{e.date}}">Event date</td>
             <td th:text="${{e.time}}">Event time</td>
-            <td>
-              <a th:href="@{/events/description(id=${e.id})}">See more</a>
-            </td>
             <td sec:authorize="isAuthenticated()">
               <a
                 th:href="@{/events/edit/{id}(id=${e.id})}"
@@ -70,7 +66,7 @@
                   <i class="fas fa-trash"></i> Delete
                 </button>
               </form>
-              
+
             </td>
           </tr>
           <th:block th:if="${previousEvents.iterator().hasNext()}">
@@ -83,9 +79,6 @@
             <td th:text="${e.venue.name}">Event venue</td>
             <td th:text="${{e.date}}">Event date</td>
             <td th:text="${{e.time}}">Event time</td>
-            <td>
-              <a th:href="@{/events/description(id=${e.id})}">See more</a>
-            </td>
             <td sec:authorize="isAuthenticated()">
               <a
                 th:href="@{/events/edit/{id}(id=${e.id})}"
@@ -102,7 +95,7 @@
                   <i class="fas fa-trash"></i> Delete
                 </button>
               </form>
-              
+
             </td>
           </tr>
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>Edit</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1>Edit this Venue</h1>
+
+    <form th:action="@{/venues/edit/{id}(id=${venue.id})}" th:method="post" th:object="${venue}">
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='name'>Venue</span>
+            <input type='text' maxlength='255' class='form-control' name = 'name'
+                   th:value="${venue.name}" aria-label='name' aria-describedby='name'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='address'>Address</span>
+            <input type='text' maxlength='299' class='form-control' name = 'address'
+                   th:value="${venue.address}" aria-label='address' aria-describedby='address'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='postcode'>Postcode</span>
+            <input type='text' class='form-control' name = 'postcode'
+                   th:value="${venue.postcode}" aria-label='postcode' aria-describedby='postcode'>
+        </div>
+        <div class='input-group mb-3'>
+            <span class='input-group-text' id='time'>Capacity</span>
+            <input type='text' class='form-control' name = 'capacity'
+                   th:value="${venue.capacity}" aria-label='capacity' aria-describedby='capacity'>
+        </div>
+
+        <a href="/venues" class="btn btn-primary btn-sm">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <button type="submit" class="btn btn-danger btn-sm">
+            <i class="fas fa-check"></i> Confirm
+        </button>
+        <input style="color: red; margin-top: 50px; background: none; border: none; outline: none;"
+               type="text" class="form-control" name="error" th:value="${error}" disabled>
+    </form>
+</div>
+</body>
+</html>

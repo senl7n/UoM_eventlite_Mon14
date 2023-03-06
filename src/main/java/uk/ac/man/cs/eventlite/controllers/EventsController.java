@@ -12,19 +12,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import uk.ac.man.cs.eventlite.dao.EventRepository;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
-import uk.ac.man.cs.eventlite.entities.Venue;
-import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -57,8 +52,6 @@ public class EventsController {
 		
 		model.addAttribute("upcomingEvents", upcomingEvents);
 		model.addAttribute("previousEvents", previousEvents);
-//        model.addAttribute("venues", venueService.findAll());
-
 
 		return "events/index";
 	}
@@ -102,6 +95,9 @@ public class EventsController {
         }
         else if(error.equals("3")) {
             model.addAttribute("error", "Please enter a future date.");
+        }
+        else {
+            model.addAttribute("error", "Unknown error.");
         }
         return "events/edit";
     }
@@ -168,6 +164,9 @@ public class EventsController {
         }
         else if(error.equals("3")) {
             model.addAttribute("error", "Please enter a future date.");
+        }
+        else {
+            model.addAttribute("error", "Unknown error.");
         }
         model.addAttribute("name", name);
         model.addAttribute("date", date);

@@ -1,10 +1,11 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -64,10 +66,10 @@ public class EventsController {
 			}
 		}
 		
-
 		model.addAttribute("upcomingEvents", upcomingEvents);
 		model.addAttribute("previousEvents", previousEvents);
 //        model.addAttribute("venues", venueService.findAll());
+
 
 		return "events/index";
 	}
@@ -99,8 +101,18 @@ public class EventsController {
                            @RequestParam(value = "error", required = false) String error,
                            Model model) {
         model.addAttribute("event", eventService.findById(id));
-        if (error != null) {
-            model.addAttribute("error", "Something went wrong! Please try again.");
+        model.addAttribute("venues", venueService.findAll());
+        if (error == null) {
+            model.addAttribute("error", "");
+        }
+        else if (error.equals("1")) {
+            model.addAttribute("error", "Please enter a valid name/venue ID.");
+        }
+        else if(error.equals("2")) {
+            model.addAttribute("error", "Please enter a valid date.");
+        }
+        else if(error.equals("3")) {
+            model.addAttribute("error", "Please enter a future date.");
         }
         return "events/edit";
     }
@@ -111,10 +123,33 @@ public class EventsController {
                             @RequestParam("date") String date,
                             @RequestParam("time") String time,
                             @RequestParam("description") String description,
-                            @RequestParam("venue_id") long venue_id,
-                            @ModelAttribute Event event) {
+                            @RequestParam("venue_id") String venue_id_str,
+                            Model model) {
+        try {
+            long venue_id = Long.parseLong(venue_id_str);
+        }
+        catch (Exception e) {
+            return "redirect:/events/edit/" + id + "?error=1";
+        }
+        long venue_id = Long.parseLong(venue_id_str);
+        if (venue_id==99) return "redirect:/events/edit/" + id + "?error=1";
+        LocalTime time1 = null;
+        try {
+            LocalDate.parse(date);
+            if (!time.isEmpty()){
+                time1 = LocalTime.parse(time);
+            }
+        }
+        catch (DateTimeParseException e) {
+            return "redirect:/events/edit/" + id + "?error=2";
+        }
+        if (!time.isEmpty()){
+            time1 = LocalTime.parse(time);
+        }
         LocalDate date1 = LocalDate.parse(date);
-        LocalTime time1 = LocalTime.parse(time);
+        if (date1.isBefore(LocalDate.now())) {
+            return "redirect:/events/edit/" + id + "?error=3";
+        }
         if (eventService.update(id, name, date1, time1, venue_id, description)) {
             return "redirect:/events";
         }
@@ -126,13 +161,30 @@ public class EventsController {
     //add event
     @GetMapping("/add")
     public String addPage(@RequestParam(value = "error", required = false) String error,
+                          @RequestParam(value = "name", required = false) String name,
+                          @RequestParam(value = "date", required = false) String date,
+                          @RequestParam(value = "time", required = false) String time,
+                          @RequestParam(value = "description", required = false) String description,
+                          @RequestParam(value = "venue_id", required = false) String venue_id,
                           Model model) {
-        if (error != null) {
-            model.addAttribute("error", "Something went wrong! Please try again.");
-        }
-        else {
+        model.addAttribute("venues", venueService.findAll());
+        if (error == null) {
             model.addAttribute("error", "");
         }
+        else if (error.equals("1")) {
+            model.addAttribute("error", "Please enter a valid name/venue ID.");
+        }
+        else if(error.equals("2")) {
+            model.addAttribute("error", "Please enter a valid date.");
+        }
+        else if(error.equals("3")) {
+            model.addAttribute("error", "Please enter a future date.");
+        }
+        model.addAttribute("name", name);
+        model.addAttribute("date", date);
+        model.addAttribute("time", time);
+        model.addAttribute("description", description);
+        model.addAttribute("venue_id", venue_id);
         return "events/add";
     }
 
@@ -141,44 +193,86 @@ public class EventsController {
                            @RequestParam("date") String date,
                            @RequestParam("time") String time,
                            @RequestParam("description") String description,
-                           @RequestParam("venue_id") long venue_id) {
+                           @RequestParam("venue_id") String venue_id_str) {
         try {
-            LocalDate date1 = LocalDate.parse(date);
-            LocalTime time1 = LocalTime.parse(time);
+            long venue_id = Long.parseLong(venue_id_str);
         }
         catch (Exception e) {
-            return "redirect:/events/add?error=1";
+            return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id_str;
+        }
+        long venue_id = Long.parseLong(venue_id_str);
+        if (venue_id==99) return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id_str;
+        LocalTime time1 = null;
+        try {
+            LocalDate date1 = LocalDate.parse(date);
+            if (!time.isEmpty()){
+                time1 = LocalTime.parse(time);
+            }
+        }
+        catch (Exception e) {
+            return "redirect:/events/add?error=2&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
         }
         LocalDate date1 = LocalDate.parse(date);
-        LocalTime time1 = LocalTime.parse(time);
+        if (date1.isBefore(LocalDate.now())) {
+            return "redirect:/events/add?error=3&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+        }
+        if (!time.isEmpty()){
+            time1 = LocalTime.parse(time);
+        }
         if (eventService.add(name, date1, time1, venue_id, description)) {
             return "redirect:/events";
         }
         else {
-            return "redirect:/events/add?error=1";
+            return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
         }
     }
-    
+
     //search event    
     @GetMapping("/search")
     public String search(@RequestParam(name="q") String query, Model model) {
 		if (query == null || query.trim().isEmpty()) {
 			model.addAttribute("found", false);
-	        model.addAttribute("events", eventService.findAll());
+	        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+	        Iterable<Event> previousEvents = eventService.findPreviousEvents();
+	        model.addAttribute("upcomingEvents", upcomingEvents);
+	        model.addAttribute("previousEvents", previousEvents);
 		}
 		else {
-			Iterable<Event> events = eventService.findByNameContainingIgnoreCase(query);
-			if (events.iterator().hasNext()) {
-				model.addAttribute("events", events);
-				model.addAttribute("found", true);
+		       Iterable<Event> events = eventService.findByNameContainingIgnoreCase(query);
+		        if (events.iterator().hasNext()) {
+		            List<Event> upcomingEvents = new ArrayList<>();
+		            List<Event> previousEvents = new ArrayList<>();
+
+		            for (Event event : events) {
+		                if (event.getTime() != null) {
+		                    if (event.getDateTime().isAfter(LocalDateTime.now())) {
+		                        upcomingEvents.add(event);
+		                    } else {
+		                        previousEvents.add(event);
+		                    }
+		                } else { 
+		                    if (event.getDate().isBefore(LocalDate.now())) {
+		                    	previousEvents.add(event);
+		                    } else {
+		                    	upcomingEvents.add(event);
+		                    }
+		                }
+		            }
+		            upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+		            previousEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+		            model.addAttribute("upcomingEvents", upcomingEvents);
+		            model.addAttribute("previousEvents", previousEvents);
+		            model.addAttribute("found", true);
 			} else {
 				model.addAttribute("found", false);
-				model.addAttribute("events", eventService.findAll());
+		        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+		        Iterable<Event> previousEvents = eventService.findPreviousEvents();
+		        model.addAttribute("upcomingEvents", upcomingEvents);
+		        model.addAttribute("previousEvents", previousEvents);
+				
 			}
 		}
 		return "/events/searchResult";
     }
- 
-    
 
 }

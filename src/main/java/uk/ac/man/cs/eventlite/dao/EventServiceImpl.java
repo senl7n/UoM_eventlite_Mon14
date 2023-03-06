@@ -10,7 +10,12 @@ import org.springframework.data.domain.Sort;
 import uk.ac.man.cs.eventlite.entities.Event;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
+
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -25,10 +30,32 @@ public class EventServiceImpl implements EventService {
     @Autowired
     private VenueRepository venueRepository;
     
-    private Event envent;
+    private Event event;
     public long count() {
         return eventRepository.count();
 	}
+    
+    @Override
+    public Iterable<Event> findUpcomingEvents() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        List<Event> upcomingEvents = (List<Event>) eventRepository.findByDateAfterOrDateEqualsAndTimeAfterOrderByDateAscTimeAsc(currentDate, currentDate, currentTime);
+        List<Event> nullTimeEvents = (List<Event>) eventRepository.findByDateEqualsAndTimeIsNull(currentDate);
+        upcomingEvents.addAll(nullTimeEvents);
+        upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+        return upcomingEvents;
+    }
+
+
+    @Override
+    public Iterable<Event> findPreviousEvents() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        List<Event> previousEvents = (List<Event>) eventRepository.findByDateBeforeOrDateEqualsAndTimeBeforeOrderByDateDescTimeDesc(currentDate, currentDate, currentTime);
+        previousEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+        return previousEvents;
+        
+    }
 
     @Override
 	public Iterable<Event> findAll() {
@@ -47,7 +74,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public boolean update(long id, String name, LocalDate date, LocalTime time, long venueId, String description) {
-        if (eventRepository.findById(id) == null || venueRepository.findById(venueId).isEmpty()) {
+        if (eventRepository.findById(id) == null || name.isEmpty() || venueRepository.findById(venueId).isEmpty()) {
             return false;
         }
         deleteById(id);
@@ -73,7 +100,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description) {
-        if (venueRepository.findById(venueId).isEmpty()) {
+        if (name.isEmpty() || venueRepository.findById(venueId).isEmpty()) {
             return false;
         }
         Event event = new Event();

@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import javax.persistence.*;
@@ -17,7 +18,8 @@ public class Event {
 	@Id
     @GeneratedValue
     private long id;
-	
+
+    @NotEmpty
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
@@ -30,10 +32,11 @@ public class Event {
     @Max(255)
     private String name;
     
-    @Max(65535)
+    @Max(499)
     private String description;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
+
+    @NotEmpty
+    @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "venue_id")
     private Venue venue;
 
@@ -62,6 +65,10 @@ public class Event {
 
     public void setTime(LocalTime time) {
         this.time = time;
+    }
+    
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(date, time);
     }
 
     public String getName() {

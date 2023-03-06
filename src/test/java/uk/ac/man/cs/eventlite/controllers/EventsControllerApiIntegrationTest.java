@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +40,7 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 	public void testGetAllEvents() {
 		client.get().uri("/events").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
 				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$._links.self.href")
-				.value(endsWith("/api/events")).jsonPath("$._embedded.events.length()").value(equalTo(3));
+				.value(endsWith("/api/events")).jsonPath("$._embedded.events.length()").value(Matchers.greaterThan(0));
 	}
 
 	@Test

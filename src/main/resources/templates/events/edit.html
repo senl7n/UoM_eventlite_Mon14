@@ -12,13 +12,16 @@
     <form th:action="@{/events/edit/{id}(id=${event.id})}" th:method="post" th:object="${event}">
         <div class='input-group mb-3'>
             <span class='input-group-text' id='name'>Event</span>
-            <input type='text' class='form-control' name = 'name'
+            <input type='text' maxlength='255' class='form-control' name = 'name'
                    th:value="${event.name}" aria-label='name' aria-describedby='name'>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='venue'>Venue ID</span>
-            <input type='text' class='form-control' name = 'venue_id'
-                   th:value="${event.venue.id}" aria-label='venue' aria-describedby='venue'>
+            <select class="form-select" name="venue_id" aria-label="venue">
+                <option value="99">Choose...</option>
+                <option th:each="venue : ${venues}" th:value="${venue.id}" th:text="${venue.name}"
+                        th:selected="${event.venue.id == venue.id}"></option>
+            </select>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='date'>Date</span>
@@ -32,7 +35,7 @@
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='description'>Description</span>
-            <input type='text' class='form-control' name = 'description'
+            <input type='text' maxlength='499' class='form-control' name = 'description'
                    th:value="${event.description}" aria-label='description' aria-describedby='description'>
         </div>
 
@@ -43,7 +46,8 @@
         <button type="submit" class="btn btn-danger btn-sm">
             <i class="fas fa-check"></i> Confirm 
         </button>
-        <input style="margin-top: 50px" type="text" class="form-control" name="error" th:value="${error}" disabled>
+        <input style="color: red; margin-top: 50px; background: none; border: none; outline: none;"
+               type="text" class="form-control" name="error" th:value="${error}" disabled>
     </form>
   </div>
 </body>

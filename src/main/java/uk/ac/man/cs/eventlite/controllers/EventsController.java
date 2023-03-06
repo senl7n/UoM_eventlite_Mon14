@@ -52,19 +52,8 @@ public class EventsController {
 
 	@GetMapping
 	public String getAllEvents(Model model) {
-		ArrayList<Event> events = (ArrayList<Event>) eventService.findAll();
-		ArrayList<Event> previousEvents = new ArrayList<Event>();
-		ArrayList<Event> upcomingEvents = new ArrayList<Event>();
-		
-		LocalDate today = LocalDate.now();
-		
-		for (Event e: events) {
-			if(e.getDate().isBefore(today)) {
-				previousEvents.add(e);
-			} else {
-				upcomingEvents.add(e);
-			}
-		}
+		Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+		Iterable<Event> previousEvents = eventService.findPreviousEvents();
 		
 		model.addAttribute("upcomingEvents", upcomingEvents);
 		model.addAttribute("previousEvents", previousEvents);

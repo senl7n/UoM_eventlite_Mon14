@@ -46,27 +46,14 @@
             </tr>
           </th:block>
           <tr th:each="e : ${upcomingEvents}">
-            <td th:text="${e.name}">My Event</td>
+            <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
             <td th:text="${e.venue.name}">Event venue</td>
             <td th:text="${{e.date}}">Event date</td>
-            <td th:text="${{e.time}}">Event time</td>
+            <td style="text-align: center" th:text="${{e.time}}">Event time</td>
             <td sec:authorize="isAuthenticated()">
-              <a
-                th:href="@{/events/edit/{id}(id=${e.id})}"
-                class="btn btn-primary btn-sm"
-              >
+              <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
                 <i class="fas fa-edit"></i> Edit
               </a>
-              <form
-                th:action="@{/events/{id}(id=${e.id})}"
-                th:method="delete"
-                style="margin: 0px; display: inline"
-              >
-                <button type="submit" class="btn btn-danger btn-sm">
-                  <i class="fas fa-trash"></i> Delete
-                </button>
-              </form>
-
             </td>
           </tr>
           <th:block th:if="${previousEvents.iterator().hasNext()}">
@@ -75,30 +62,16 @@
             </tr>
           </th:block>
           <tr th:each="e : ${previousEvents}">
-            <td th:text="${e.name}">My Event</td>
+            <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
             <td th:text="${e.venue.name}">Event venue</td>
             <td th:text="${{e.date}}">Event date</td>
-            <td th:text="${{e.time}}">Event time</td>
+            <td style="text-align: center" th:text="${{e.time}}">Event time</td>
             <td sec:authorize="isAuthenticated()">
-              <a
-                th:href="@{/events/edit/{id}(id=${e.id})}"
-                class="btn btn-primary btn-sm"
-              >
+              <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
                 <i class="fas fa-edit"></i> Edit
               </a>
-              <form
-                th:action="@{/events/{id}(id=${e.id})}"
-                th:method="delete"
-                style="margin: 0px; display: inline"
-              >
-                <button type="submit" class="btn btn-danger btn-sm">
-                  <i class="fas fa-trash"></i> Delete
-                </button>
-              </form>
-
             </td>
-          </tr>
-
+            </tr>
         </tbody>
       </table>
 

@@ -19,6 +19,8 @@ public interface VenueService  {
     public boolean update(long id, String name, int capacity, String address, String postcode);
 
     public boolean add(String name, int capacity, String address, String postcode);
+    
+    public Iterable<Venue> findByNameContainingIgnoreCase(String name);
 
 }
  

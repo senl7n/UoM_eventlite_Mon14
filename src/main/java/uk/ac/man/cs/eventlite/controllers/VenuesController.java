@@ -8,9 +8,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -164,5 +170,26 @@ public class VenuesController {
           venueService.add(name, capacity, address, postcode);
           return "redirect:/venues";
      }
+    
+    //search venue
+    @GetMapping("/search")
+    public String search(@RequestParam(name = "q") String query, Model model) {
+    	if (query == null || query.trim().isEmpty()) {
+			model.addAttribute("found", false);
+			model.addAttribute("venues", venueService.findAll());
+		}
+		else {
+			Iterable<Venue> venues = venueService.findByNameContainingIgnoreCase(query);
+		        if (venues.iterator().hasNext()) {
+		        	model.addAttribute("venues", venues);
+					model.addAttribute("found", true);
+		        }
+		        else {
+		        	model.addAttribute("found", false);
+		        	model.addAttribute("venues",venueService.findAll());
+		        }    
+		}
+		return "/venues/searchResult";
+    }
 
 }

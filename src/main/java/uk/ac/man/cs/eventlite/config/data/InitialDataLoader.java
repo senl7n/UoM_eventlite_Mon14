@@ -41,18 +41,24 @@ public class InitialDataLoader {
                 Venue venue = new Venue();
                 venue.setId(1);
                 venue.setName("Kilburn Building");
+                venue.setAddress("Oxford Road");
+                venue.setPostcode("M13 9PL");
                 venue.setCapacity(250);
                 venueService.save(venue);
 
                 Venue venue2 = new Venue();
                 venue2.setId(2);
                 venue2.setName("Engineering Building");
+                venue2.setAddress("Oxford Road");
+                venue2.setPostcode("M13 9PL");
                 venue2.setCapacity(250);
                 venueService.save(venue2);
 
                 Venue venue3 = new Venue();
                 venue3.setId(3);
                 venue3.setName("Stopford Building");
+                venue3.setAddress("Oxford Road");
+                venue3.setPostcode("M13 9PL");
                 venue3.setCapacity(250);
                 venueService.save(venue3);
 

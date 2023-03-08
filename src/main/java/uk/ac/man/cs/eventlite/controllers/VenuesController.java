@@ -70,11 +70,17 @@ public class VenuesController {
             else if(error.equals("5")) {
                 model.addAttribute("error", "Please enter a positive capacity.");
             }
+            else if(error.equals("6")) {
+                model.addAttribute("error", "Please include a road name.");
+            }
             else {
                 model.addAttribute("error", "Unknown error.");
             }
+            model.addAttribute("error_id", error);
+
             return "venues/edit";
         }
+
         return "redirect:/venues";
     }
 
@@ -104,6 +110,9 @@ public class VenuesController {
         if (capacity <= 0) {
             return "redirect:/venues/edit/" + id + "?error=5";
         }
+        if (!address.toLowerCase().contains("road") && !address.toLowerCase().contains("rd")) {
+            return "redirect:/venues/edit/" + id + "?error=6";
+        }
         venueService.update(id, name, capacity, address, postcode);
         return "redirect:/venues";
     }
@@ -130,9 +139,13 @@ public class VenuesController {
         else if(error.equals("5")) {
             model.addAttribute("error", "Please enter a positive capacity.");
         }
+        else if(error.equals("6")) {
+            model.addAttribute("error", "Please include a road name.");
+        }
         else {
             model.addAttribute("error", "Unknown error.");
         }
+        model.addAttribute("error_id", error);
 
         return "venues/add";
     }
@@ -161,6 +174,9 @@ public class VenuesController {
           }
           if (capacity <= 0) {
                 return "redirect:/venues/add?error=5";
+          }
+          if (!address.toLowerCase().contains("road") && !address.toLowerCase().contains("rd")) {
+                return "redirect:/venues/add?error=6";
           }
           venueService.add(name, capacity, address, postcode);
           return "redirect:/venues";

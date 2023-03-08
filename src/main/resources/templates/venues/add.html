@@ -14,18 +14,30 @@
         <div class='input-group mb-3'>
             <span class='input-group-text' id='name'>Venue</span>
             <input th:value="${#strings.isEmpty(name) ? '' : name}" type='text' maxlength='255' class='form-control' name = 'name' aria-label='name' aria-describedby='name'>
+            <th:block th:if="${error_id == '2'}">
+                <i class="fas fa-exclamation-triangle" style="color: red; margin-left: 10px;"></i>
+            </th:block>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='address'>Address</span>
             <input th:value="${#strings.isEmpty(address) ? '' : address}" type='text' maxlength='299' class='form-control' name = 'address' aria-label='address' aria-describedby='address'>
+            <th:block th:if="${error_id == '3' || error_id == '6'}">
+                <i class="fas fa-exclamation-triangle" style="color: red; margin-left: 10px;"></i>
+            </th:block>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='postcode'>Postcode</span>
             <input th:value="${#strings.isEmpty(postcode) ? '' : date}" type='text' class='form-control' name = 'postcode' aria-label='postcode' aria-describedby='postcode'>
+            <th:block th:if="${error_id == '4'}">
+                <i class="fas fa-exclamation-triangle" style="color: red; margin-left: 10px;"></i>
+            </th:block>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='capacity'>Capacity</span>
             <input th:value="${#strings.isEmpty(capacity) ? '' : capacity}" type='text' class='form-control' name = 'capacity' aria-label='capacity' aria-describedby='capacity'>
+            <th:block th:if="${error_id == '5'}">
+                <i class="fas fa-exclamation-triangle" style="color: red; margin-left: 10px;"></i>
+            </th:block>
         </div>
 
         <a href="/venues" class="btn btn-primary btn-sm">

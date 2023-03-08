@@ -119,6 +119,10 @@ public class VenuesController {
     //add venue
     @GetMapping("/add")
     public String addPage(@RequestParam(value = "error", required = false) String error,
+                          @RequestParam(value = "name", required = false) String name,
+                            @RequestParam(value = "address", required = false) String address,
+                            @RequestParam(value = "postcode", required = false) String postcode,
+                            @RequestParam(value = "capacity", required = false) String capacity_str,
                           Model model) {
         if (error == null) {
             model.addAttribute("error", "");
@@ -145,7 +149,10 @@ public class VenuesController {
             model.addAttribute("error", "Unknown error.");
         }
         model.addAttribute("error_id", error);
-
+        model.addAttribute("name", name);
+        model.addAttribute("address", address);
+        model.addAttribute("postcode", postcode);
+        model.addAttribute("capacity", capacity_str);
         return "venues/add";
     }
 
@@ -160,22 +167,22 @@ public class VenuesController {
                 capacity = Integer.parseInt(capacity_str);
           }
           catch (NumberFormatException e) {
-                return "redirect:/venues/add?error=1";
+                return "redirect:/venues/add?error=1&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
           }
           if (name.equals("")) {
-                return "redirect:/venues/add?error=2";
+                return "redirect:/venues/add?error=2&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
           }
           if (address.equals("")) {
-                return "redirect:/venues/add?error=3";
+                return "redirect:/venues/add?error=3&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
           }
           if (postcode.equals("")) {
-                return "redirect:/venues/add?error=4";
+                return "redirect:/venues/add?error=4&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
           }
           if (capacity <= 0) {
-                return "redirect:/venues/add?error=5";
+                return "redirect:/venues/add?error=5&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
           }
           if (!address.toLowerCase().contains(" road") && !address.toLowerCase().contains(" rd")) {
-                return "redirect:/venues/add?error=6";
+                return "redirect:/venues/add?error=6&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
           }
           venueService.add(name, capacity, address, postcode);
           return "redirect:/venues";

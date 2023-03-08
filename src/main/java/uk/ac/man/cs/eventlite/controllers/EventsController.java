@@ -93,6 +93,8 @@ public class EventsController {
         else {
             model.addAttribute("error", "Unknown error.");
         }
+        model.addAttribute("error_id", error);
+
         return "events/edit";
     }
 
@@ -162,6 +164,7 @@ public class EventsController {
         else {
             model.addAttribute("error", "Unknown error.");
         }
+        model.addAttribute("error_id", error);
         model.addAttribute("name", name);
         model.addAttribute("date", date);
         model.addAttribute("time", time);

@@ -58,16 +58,10 @@ public class EventsController {
 
 	@GetMapping("/description")
 	public String getEventInfomation(@RequestParam(name="id") long id, Model model) {
-		ArrayList<Event> events = (ArrayList<Event>) eventService.findAll();
-		Event event = null;
-		for(Event e: events) {
-			if(e.getId()==id) {
-				event = e;
-			}
-		}
+		Event event = eventService.findById(id);
 
 		model.addAttribute("event", event);
-		return "/events/description/description";
+		return "/events/description";
 	}
 
     //delete event

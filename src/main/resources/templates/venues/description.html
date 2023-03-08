@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/default}">
+<head>
+  <title>venue information</title>
+</head>
+<body>
+	<h1>Venue information</h1>
+  <div layout:fragment="content">
+  <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+            <th><i class="fas fa-bars" style="width: 30px"></i> </th>
+            <th><i class="fas fa-bolt"></i> Venue info</th>
+  		</tr>
+      </thead>
+     <tbody> 
+        <tr>
+          <td style="width: 30px"><b>Venue:</b></td>
+          <td th:text="${{venue.name}}">My Venue</td>
+        </tr>
+         <tr>
+          <td style="width: 30px"><b>Capacity:</b></td>
+          <td th:text="${{venue.capacity}}">Venue Capacity</td>
+        </tr>
+        <tr>
+          <td style="width: 30px"><b>Adress:</b></td>
+          <td th:text="${{venue.address}}">Venue Address</td>
+        </tr>
+        <tr>
+          <td style="width: 30px"><b>Postcode:</b></td>
+          <td th:text="${{venue.postcode}}">Postcode</td>
+        </tr> 
+      </tbody>
+      
+    </table>
+  </div>
+</body>
+</html>

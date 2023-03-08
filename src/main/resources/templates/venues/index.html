@@ -41,7 +41,7 @@
 
         <tbody>
         <tr th:each="v : ${venues}">
-            <td th:text="${v.name}">Venue name</td>
+            <td><a th:href=@{/venues/description(id=${v.id})} th:text="${v.name}">Venue name</a></td>
             <td th:text="${v.address}">Venue address</td>
             <td th:text="${v.postcode}">Venue postcode</td>
             <td th:text="${v.capacity}">Venue capacity</td>

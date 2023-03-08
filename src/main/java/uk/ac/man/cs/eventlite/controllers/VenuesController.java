@@ -11,6 +11,7 @@ import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Controller
@@ -164,5 +165,13 @@ public class VenuesController {
           venueService.add(name, capacity, address, postcode);
           return "redirect:/venues";
      }
-
+    
+    @GetMapping("description")
+    public String getVenueInformation(@RequestParam("id") long id, Model model) {
+    	Optional<Venue> venue = venueService.findById(id);
+    	
+    	model.addAttribute("venue", venue);
+    	return "venues/description";
+    	
+    }
 }

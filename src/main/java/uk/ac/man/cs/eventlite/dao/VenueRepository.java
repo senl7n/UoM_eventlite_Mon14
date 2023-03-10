@@ -9,5 +9,8 @@ public interface VenueRepository extends CrudRepository<Venue, Long>
 	public long count();
 
 	public Iterable<Venue> findAll(Sort sort);
+	
 	public Venue save(Venue venue);
+	
+	public Iterable<Venue> findByNameContainingIgnoreCase(String name);
 }

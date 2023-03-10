@@ -55,6 +55,16 @@ public class EventsControllerApi {
 		return eventAssembler.toCollectionModel(eventService.findAll())
 				.add(linkTo(methodOn(EventsControllerApi.class).getAllEvents()).withSelfRel());
 	}
+	
+//	//home
+//	@GetMapping("/home")
+//	//CollectionModel<EntityModel<Event>>
+//	public String getNextThreeEvents() {
+////		return eventAssembler.toCollectionModel(eventService.findUpcoming3Events())
+////				.add(linkTo(methodOn(EventsControllerApi.class).getNextThreeEvents()).withSelfRel());
+//		
+//		return "/events/home";
+//	}
 
     @GetMapping("/description")
     public String getEventInfomation(@RequestParam(name="id") long id, Model model) {

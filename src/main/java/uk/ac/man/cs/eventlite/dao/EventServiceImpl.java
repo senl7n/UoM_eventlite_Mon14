@@ -43,6 +43,20 @@ public class EventServiceImpl implements EventService {
         upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
         return upcomingEvents;
     }
+    
+    //home
+    @Override
+	public Iterable<Event> findUpcoming3Events() {
+		LocalDate currentDate = LocalDate.now();
+	    LocalTime currentTime = LocalTime.now();
+	    List<Event> upcomingEvents = (List<Event>) eventRepository.findByDateAfterOrDateEqualsAndTimeAfterOrderByDateAscTimeAsc(currentDate, currentDate, currentTime);
+	    List<Event> nullTimeEvents = (List<Event>) eventRepository.findByDateEqualsAndTimeIsNull(currentDate);
+	    upcomingEvents.addAll(nullTimeEvents);
+	    upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+	    
+	    List<Event> upcoming3Events = (List<Event>) upcomingEvents.subList(0,3);
+	    return upcoming3Events;
+	}
 
 
     @Override
@@ -110,5 +124,6 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
         return true;
     }
+
 
 }

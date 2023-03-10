@@ -55,6 +55,16 @@ public class EventsController {
 
 		return "events/index";
 	}
+	//home
+	//("/home")
+	@GetMapping
+	public String getNextThreeEvents(Model model) {
+		Iterable<Event> upcoming3Events = eventService.findUpcoming3Events();
+		
+		model.addAttribute("upcoming3Events", upcoming3Events);
+
+		return "events/home";
+	}
 
 	@GetMapping("/description")
 	public String getEventInfomation(@RequestParam(name="id") long id, Model model) {

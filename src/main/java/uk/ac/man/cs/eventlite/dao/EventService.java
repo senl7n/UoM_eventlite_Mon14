@@ -27,4 +27,7 @@ public interface EventService {
 
     public Iterable<Event> findPreviousEvents();
 
+    //home
+	public Iterable<Event> findUpcoming3Events();
+
 }

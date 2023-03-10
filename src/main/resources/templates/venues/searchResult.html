@@ -32,7 +32,8 @@
             <th><i class="fas fa-map"></i> Address</th>
             <th><i class="fas fa-envelope"></i> Postcode</th>
             <th><i class="fas fa-warehouse"></i> Capacity</th>
-            <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
+            <th><i class="fas fa-sticky-note"></i> Information</th>
+            <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Edit</th>
         </tr>
           
         </thead>
@@ -43,6 +44,9 @@
             <td th:text="${v.address}">Venue address</td>
             <td th:text="${v.postcode}">Venue postcode</td>
             <td th:text="${v.capacity}">Venue capacity</td>
+            <td>
+              <a th:href="@{/venues/description(id=${e.id})}">See more</ a>
+            </td>
             <td sec:authorize="isAuthenticated()">
                 <a th:href="@{/venues/edit/{id}(id=${v.id})}" class="btn btn-primary btn-sm">
                     <i class="fas fa-edit"></i> Edit

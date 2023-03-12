@@ -65,6 +65,10 @@ public class VenuesControllerApi {
     }
 
     //delete venue
+    @DeleteMapping("/{id}")
+    public void deleteVenue(@PathVariable("id") long id) {
+        venueService.deleteById(id);
+        }
 
 
     //edit venue

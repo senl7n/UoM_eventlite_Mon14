@@ -48,6 +48,11 @@ public class VenuesController {
     }
 
     //delete venue
+    @DeleteMapping("/{id}")
+    public String deleteVenue(@PathVariable("id") long id) {
+        venueService.deleteById(id);
+        return "redirect:/venues";
+    }
 
 
     //edit venue

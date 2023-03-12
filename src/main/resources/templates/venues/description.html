@@ -3,48 +3,73 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layouts/default}">
 <head>
-  <title>venue information</title>
+    <title>All venues</title>
 </head>
 <body>
-	<h1>Venue information
+<div layout:fragment="content">
+    <h1>All venues
 		<td sec:authorize="isAuthenticated()">
-            <button class="btn btn-danger btn-sm">
-              <i class="fas fa-trash">Delete</i>
+          <form th:action="@{/venues/{id}(id=${venue.id})}" th:method="delete" style="margin:0px;display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">
+              <i class="fas fa-trash"></i> Delete
             </button>
-     	</td>
-	</h1>
-  <div layout:fragment="content">
-  <table class="table table-striped table-hover">
-      <thead>
+            </form>
+        </td>
+            
+    </h1>
+
+    <table class="table table-striped table-hover">
+        <thead>
         <tr>
-            <th><i class="fas fa-bars" style="width: 30px"></i> </th>
-            <th><i class="fas fa-bolt"></i> Venue info</th>
-  		</tr>
-      </thead>
-     <tbody> 
+            <th><i class="fas fa-bolt"></i> Venue</th>
+            <th><i class="fas fa-map-marker-alt"></i> info</th>
+            <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          <tbody> 
         <tr>
           <td style="width: 30px"><b>Venue:</b></td>
           <td th:text="${{venue.name}}">My Venue</td>
+          <td sec:authorize="isAuthenticated()">
+                <a th:href="@{/venues/edit/{id}(id=${venues.id})}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+            </td>
         </tr>
          <tr>
           <td style="width: 30px"><b>Capacity:</b></td>
           <td th:text="${{venue.capacity}}">Venue Capacity</td>
+          <td sec:authorize="isAuthenticated()">
+                <a th:href="@{/venues/edit/{id}(id=${venues.id})}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+            </td>
         </tr>
         <tr>
           <td style="width: 30px"><b>Adress:</b></td>
           <td th:text="${{venue.address}}">Venue Address</td>
+          <td sec:authorize="isAuthenticated()">
+                <a th:href="@{/venues/edit/{id}(id=${venues.id})}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+            </td>
         </tr>
         <tr>
           <td style="width: 30px"><b>Postcode:</b></td>
           <td th:text="${{venue.postcode}}">Postcode</td>
+          <td sec:authorize="isAuthenticated()">
+                <a th:href="@{/venues/edit/{id}(id=${venues.id})}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+            </td>
         </tr> 
       </tbody>
+           
     </table>
-    <div sec:authorize="isAuthenticated()">
-    	<a class="btn btn-primary btn-md">
-            <i class="fas fa-edit"></i> Edit
-        </a>
-    </div>
-  </div>
+
+</div>
+
 </body>
 </html>

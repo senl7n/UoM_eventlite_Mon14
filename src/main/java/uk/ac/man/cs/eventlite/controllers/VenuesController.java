@@ -200,12 +200,12 @@ public class VenuesController {
           return "redirect:/venues";
      }
 
-    @GetMapping("description")
+    @GetMapping("/description")
     public String getVenueInformation(@RequestParam("id") long id, Model model) {
-    	Optional<Venue> venue = venueService.findById(id);
+        Optional<Venue> venue = venueService.findById(id);
 
-    	model.addAttribute("venue", venue);
-    	return "venues/description";
+    	model.addAttribute("venue", venue.get());
+    	return "/venues/description";
 
     }
 

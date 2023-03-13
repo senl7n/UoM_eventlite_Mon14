@@ -53,17 +53,13 @@
 		          </tr>
 		        </thead>
 		        <tbody>
-	              <th:block th:if="${upcoming3Events.iterator().hasNext()}">
-	              	<tr>
-	              	  <td colspan="6" style="text-align: center; font-weight: bold;">Upcoming Events</td>
-	            	</tr>
-	          	  </th:block>
-	          	  <tr th:each="e : ${upcoming3Events}">
-		            <td><a th:href=@{/venues/description(id=${v.id})} th:text="${v.name}">Venue</a></td>
-		            <td th:text="${{v.date}}">Number of Events</td> 
-	            	</td>
-	          	  </tr>
-	        	</tbody>
+	              <tr>
+	              	<td colspan="6" style="text-align: center; font-weight: bold;">Venues With Most Events</td>
+	              </tr>
+	          	  <td><a th:href=@{/venues/description(id=1)}>Kilburn Building</a></td>
+		          <td>3 Events</td> 
+	          	  <!-- </tr> -->
+	        	</tbody> 
       		</table>
 		</div>
 	</div>

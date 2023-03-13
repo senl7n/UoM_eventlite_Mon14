@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.time.LocalDate;
@@ -56,15 +57,17 @@ public class EventsController {
 		return "events/index";
 	}
 	//home
-	//("/home")
-	@GetMapping
+	@GetMapping("/home")
 	public String getNextThreeEvents(Model model) {
 		Iterable<Event> upcoming3Events = eventService.findUpcoming3Events();
+		//Iterable<Venue> top3Venues = eventService.findTop3Venues();
 		
 		model.addAttribute("upcoming3Events", upcoming3Events);
+		//model.addAttribute("top3Venues", top3Venues);
 
 		return "events/home";
 	}
+	
 
 	@GetMapping("/description")
 	public String getEventInfomation(@RequestParam(name="id") long id, Model model) {

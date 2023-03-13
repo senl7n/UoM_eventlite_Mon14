@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.dao;
 
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,5 +30,7 @@ public interface EventService {
 
     //home
 	public Iterable<Event> findUpcoming3Events();
+
+	//public Iterable<Venue> findTop3Venues();
 
 }

@@ -22,5 +22,6 @@ public interface VenueService  {
     
     public Iterable<Venue> findByNameContainingIgnoreCase(String name);
 
+    public boolean checkVenueOccupied(long venueId);
 }
  

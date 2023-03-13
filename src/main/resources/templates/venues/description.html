@@ -42,6 +42,9 @@
             </tr>
             </tbody>
         </table>
+        <div th:if="${!#strings.isEmpty(error)}" class="alert alert-danger">
+            <p th:text="${error}"></p>
+        </div>
     </div>
 </body>
 </html>

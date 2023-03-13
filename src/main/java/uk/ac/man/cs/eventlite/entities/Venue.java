@@ -1,12 +1,10 @@
 package uk.ac.man.cs.eventlite.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
+import java.util.List;
 
 @Entity
 @Table(name ="venues")
@@ -28,6 +26,9 @@ public class Venue {
 
     public Venue() {
     }
+
+    @OneToMany(mappedBy = "venue")
+    private List<Event> events;
 
     public long getId() {
         return id;
@@ -67,5 +68,10 @@ public class Venue {
 
     public void setPostcode(String postcode) {
         this.postcode = postcode;
+    }
+
+    // get all events at this venue
+    public Iterable<Event> getEventsByVenue() {
+    	return events;
     }
 }

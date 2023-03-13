@@ -8,16 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import uk.ac.man.cs.eventlite.dao.VenueService;
-import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
-import java.util.ArrayList;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -50,6 +43,9 @@ public class VenuesController {
     //delete venue
     @DeleteMapping("/{id}")
     public String deleteVenue(@PathVariable("id") long id) {
+        if (!venueService.checkVenueOccupied(id)) {
+            return "redirect:/venues/description?id=" + id + "&error=1";
+        }
         venueService.deleteById(id);
         return "redirect:/venues";
     }
@@ -201,9 +197,19 @@ public class VenuesController {
      }
 
     @GetMapping("/description")
-    public String getVenueInformation(@RequestParam("id") long id, Model model) {
+    public String getVenueInformation(@RequestParam("id") long id,
+                                      @RequestParam(value = "error", required = false) String error,
+                                      Model model) {
         Optional<Venue> venue = venueService.findById(id);
-
+        if (error == null) {
+            model.addAttribute("error", "");
+        }
+        else if (error.equals("1")) {
+            model.addAttribute("error", "The venue cannot be deleted as it is currently being used by one or more events.");
+        }
+        else {
+            model.addAttribute("error", "Unknown error.");
+        }
     	model.addAttribute("venue", venue.get());
     	return "/venues/description";
 

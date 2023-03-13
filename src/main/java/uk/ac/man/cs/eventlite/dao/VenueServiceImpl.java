@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
 import java.util.Optional;
@@ -18,6 +19,10 @@ public class VenueServiceImpl implements VenueService {
 
 	@Autowired
     private VenueRepository VenueRepository;
+
+    @Autowired
+    private EventService EventService;
+
     public long count() {
         return VenueRepository.count();
 	}
@@ -72,4 +77,17 @@ public class VenueServiceImpl implements VenueService {
     public Iterable<Venue> findByNameContainingIgnoreCase(String name){
     	return VenueRepository.findByNameContainingIgnoreCase(name);
     }
+
+    @Override
+    public boolean checkVenueOccupied(long venueId) {
+        Iterable<Event> events = EventService.findAll();
+        for (Event e : events) {
+            if (e.getVenue().getId() == venueId) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }

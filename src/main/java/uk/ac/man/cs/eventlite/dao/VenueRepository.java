@@ -4,6 +4,8 @@ import org.springframework.data.domain.Sort;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.ArrayList;
+
 public interface VenueRepository extends CrudRepository<Venue, Long>
 {
 	public long count();

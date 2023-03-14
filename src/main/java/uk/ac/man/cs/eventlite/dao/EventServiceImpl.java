@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort;
 
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -44,7 +46,6 @@ public class EventServiceImpl implements EventService {
         return upcomingEvents;
     }
 
-
     @Override
     public Iterable<Event> findPreviousEvents() {
         LocalDate currentDate = LocalDate.now();
@@ -53,6 +54,20 @@ public class EventServiceImpl implements EventService {
         previousEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
         return previousEvents;
         
+    }
+
+    //home
+    @Override
+    public Iterable<Event> findUpcoming3Events() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        List<Event> upcomingEvents = (List<Event>) eventRepository.findByDateAfterOrDateEqualsAndTimeAfterOrderByDateAscTimeAsc(currentDate, currentDate, currentTime);
+        List<Event> nullTimeEvents = (List<Event>) eventRepository.findByDateEqualsAndTimeIsNull(currentDate);
+        upcomingEvents.addAll(nullTimeEvents);
+        upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+
+        List<Event> upcoming3Events = (List<Event>) upcomingEvents.subList(0,3);
+        return upcoming3Events;
     }
 
     @Override
@@ -110,5 +125,6 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
         return true;
     }
+
 
 }

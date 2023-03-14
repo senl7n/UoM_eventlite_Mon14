@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -18,6 +20,10 @@ public class VenueServiceImpl implements VenueService {
 
 	@Autowired
     private VenueRepository VenueRepository;
+
+    @Autowired
+    private EventRepository EventRepository;
+
     public long count() {
         return VenueRepository.count();
 	}
@@ -67,5 +73,36 @@ public class VenueServiceImpl implements VenueService {
         VenueRepository.save(venue);
         return true;
     }
+
+    @Override
+    public Iterable<Venue> findPopular3Venues() {
+        ArrayList<Venue> popular3Venues = new ArrayList<>();
+        ArrayList<Integer> numOfEvents = new ArrayList<>();
+        ArrayList<Venue> venues = (ArrayList<Venue>) VenueRepository.findAll();
+        long max_id = venues.get(venues.size() - 1).getId();
+        for (long i = 0; i < max_id; i++) {
+            numOfEvents.add(0);
+        }
+        for (Event event : EventRepository.findAll()) {
+            if (event.getVenue() != null) {
+                int index = (int) event.getVenue().getId() - 1;
+                numOfEvents.set(index, numOfEvents.get(index) + 1);
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            int max = 0;
+            int maxIndex = 0;
+            for (int j = 0; j < numOfEvents.size(); j++) {
+                if (numOfEvents.get(j) > max) {
+                    max = numOfEvents.get(j);
+                    maxIndex = j;
+                }
+            }
+            popular3Venues.add(VenueRepository.findById((long) maxIndex + 1).get());
+            numOfEvents.set(maxIndex, 0);
+        }
+        return (Iterable<Venue>) popular3Venues;
+    }
+
 
 }

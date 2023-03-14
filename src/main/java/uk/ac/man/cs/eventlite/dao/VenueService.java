@@ -1,7 +1,9 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public interface VenueService  {
@@ -20,5 +22,6 @@ public interface VenueService  {
 
     public boolean add(String name, int capacity, String address, String postcode);
 
+    public Iterable<Venue> findPopular3Venues();
 }
  

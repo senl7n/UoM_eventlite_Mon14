@@ -13,13 +13,8 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -50,21 +45,6 @@ public class EventServiceImpl implements EventService {
         upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
         return upcomingEvents;
     }
-    
-    //home
-    @Override
-	public Iterable<Event> findUpcoming3Events() {
-		LocalDate currentDate = LocalDate.now();
-	    LocalTime currentTime = LocalTime.now();
-	    List<Event> upcomingEvents = (List<Event>) eventRepository.findByDateAfterOrDateEqualsAndTimeAfterOrderByDateAscTimeAsc(currentDate, currentDate, currentTime);
-	    List<Event> nullTimeEvents = (List<Event>) eventRepository.findByDateEqualsAndTimeIsNull(currentDate);
-	    upcomingEvents.addAll(nullTimeEvents);
-	    upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
-	    
-	    List<Event> upcoming3Events = (List<Event>) upcomingEvents.subList(0,3);
-	    return upcoming3Events;
-	}
-
 
     @Override
     public Iterable<Event> findPreviousEvents() {
@@ -74,6 +54,20 @@ public class EventServiceImpl implements EventService {
         previousEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
         return previousEvents;
         
+    }
+
+    //home
+    @Override
+    public Iterable<Event> findUpcoming3Events() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+        List<Event> upcomingEvents = (List<Event>) eventRepository.findByDateAfterOrDateEqualsAndTimeAfterOrderByDateAscTimeAsc(currentDate, currentDate, currentTime);
+        List<Event> nullTimeEvents = (List<Event>) eventRepository.findByDateEqualsAndTimeIsNull(currentDate);
+        upcomingEvents.addAll(nullTimeEvents);
+        upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+
+        List<Event> upcoming3Events = (List<Event>) upcomingEvents.subList(0,3);
+        return upcoming3Events;
     }
 
     @Override
@@ -131,36 +125,6 @@ public class EventServiceImpl implements EventService {
         eventRepository.save(event);
         return true;
     }
-
-//	@Override
-//	public Iterable<Venue> findTop3Venues() {
-//		int numVenues = 3;
-//		
-//		// getting all instances of each venue
-//		Iterable<Event> events = eventRepository.findAll();
-//		
-//		// map each venue to its frequency
-//		Map<Venue, Integer> mapOfVenues = new HashMap<>();
-//		for(Event event: events) {
-//			mapOfVenues.put(event.getVenue(), mapOfVenues.getOrDefault(event.getVenue(),0)+1);
-//		}
-//		
-//		// keep track of x most significant entries
-//		PriorityQueue<Map.Entry<Venue, Integer>> maxHeap =
-//				new PriorityQueue<>((v,i)->(i.getValue()-v.getValue()));
-//		for(Map.Entry<Venue, Integer> entry: mapOfVenues.entrySet()) {
-//			maxHeap.add(entry);
-//		}
-//		
-//		// get the top 3 venues
-//		List<Venue> venues = new ArrayList<>();
-//		while(venues.size() < numVenues) {
-//			Map.Entry<Venue, Integer> entry = maxHeap.poll();
-//			venues.add(entry.getKey());
-//		}
-//		
-//		return venues;
-//	}
 
 
 }

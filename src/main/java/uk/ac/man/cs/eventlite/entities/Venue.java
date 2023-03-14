@@ -23,6 +23,8 @@ public class Venue {
     @Max(299)
     private String address;
     private String postcode;
+    private double longitude;
+    private double latitude;
 
     public Venue() {
     }
@@ -73,5 +75,21 @@ public class Venue {
     // get all events at this venue
     public Iterable<Event> getEventsByVenue() {
     	return events;
+    }
+
+    public void Longitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public void Latitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 }

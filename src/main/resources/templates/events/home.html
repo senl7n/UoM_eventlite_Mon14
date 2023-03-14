@@ -12,8 +12,6 @@
 <body>
 <div class="container">
     <h1>EventLite</h1>
-
-    <p>This is EventLite.</p>
     
     <div class="row">
     	<div class="col-sm">
@@ -53,13 +51,17 @@
 		          </tr>
 		        </thead>
 		        <tbody>
-	              <tr>
-	              	<td colspan="6" style="text-align: center; font-weight: bold;">Venues With Most Events</td>
-	              </tr>
-	          	  <td><a th:href=@{/venues/description(id=1)}>Kilburn Building</a></td>
-		          <td>3 Events</td> 
-	          	  <!-- </tr> -->
-	        	</tbody> 
+	              <th:block th:if="${popular3Venues.iterator().hasNext()}">
+	              	<tr>
+	              	  <td colspan="6" style="text-align: center; font-weight: bold;">Popular Venues</td>
+	            	</tr>
+	          	  </th:block>
+	          	  <tr th:each="v : ${popular3Venues}">
+		            <td><a th:href="@{/venues/description(id=${v.id})}" th:text="${v.name}">Venue</a></td>
+		            <td th:text="${{v.capacity}}"></td>
+	            	</td>
+	          	  </tr>
+	        	</tbody>
       		</table>
 		</div>
 	</div>

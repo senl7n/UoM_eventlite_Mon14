@@ -84,54 +84,33 @@ body { margin: 0; padding: 0; }
         </tbody>
       </table>
        <div id="map"></div>
- 
-	<script>
-		// TO MAKE THE MAP APPEAR YOU MUST
-		// ADD YOUR ACCESS TOKEN FROM
-		// https://account.mapbox.com
-// Set your access token and geocoding API endpoint
-mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
-const geocodingEndpoint = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
+       fruits.forEach(myFunction);
+       
 
-// Define your postcode
-const postcode = 'M13 9PL';
-
-// Construct the geocoding API URL
-const geocodingUrl = `${geocodingEndpoint}${postcode}.json?access_token=${mapboxgl.accessToken}`;
-
-// Make a GET request to the geocoding API
-fetch(geocodingUrl)
-  .then(response => response.json())
-  .then(data => {
-    // Extract the latitude and longitude from the response
-    const [longitude, latitude] = data.features[0].center;
-
-    // Create a marker and add it to the map
-    const marker = new mapboxgl.Marker()
-      .setLngLat([longitude, latitude])
-      .addTo(map);
-
-    // Center the map on the marker
-    map.setCenter([longitude, latitude]);
-  });
-	const map = new mapboxgl.Map({
-	container: 'map',
-	// Choose from Mapbox's core styles, or make your own style with Mapbox Studio
-	style: 'mapbox://styles/mapbox/streets-v12',
-	center: [12.550343, 55.665957],
-	zoom: 8
-	});
-	 
-	// Create a default Marker and add it to the map.
-	const marker1 = new mapboxgl.Marker()
-	.setLngLat([12.554729, 55.70651])
-	.addTo(map);
-	 
-	// Create a default Marker, colored black, rotated 45 degrees.
-	const marker2 = new mapboxgl.Marker({ color: 'black', rotation: 45 })
-	.setLngLat([12.65147, 55.608166])
-	.addTo(map);
-	</script>
+		<script>
+		  mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
+		
+		    const locations = ['kilburn building, manchester', 'Engineering Building B, manchester'];
+		
+		  const map = new mapboxgl.Map({
+		    container: 'map',
+		    style: 'mapbox://styles/mapbox/streets-v12',
+		    center: [-2, 54],
+		    zoom: 7
+		  });
+		
+		 locations.forEach(location => {
+		        fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`)
+		            .then(response => response.json())
+		            .then(data => {
+		                const longitude = data.features[0].center[0];
+		                const latitude = data.features[0].center[1];
+		                const marker = new mapboxgl.Marker()
+		                    .setLngLat([longitude, latitude])
+		                    .addTo(map);
+		            });
+		    });
+		</script>
 
   </div>
  

@@ -7,10 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Controller
@@ -19,6 +22,9 @@ public class VenuesController {
 
     @Autowired
     private VenueService venueService;
+    
+    @Autowired
+    private EventService eventService;
 
     @ExceptionHandler(VenueNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -198,20 +204,29 @@ public class VenuesController {
 
     @GetMapping("/description")
     public String getVenueInformation(@RequestParam("id") long id,
-                                      @RequestParam(value = "error", required = false) String error,
-                                      Model model) {
-        Optional<Venue> venue = venueService.findById(id);
-        if (error == null) {
-            model.addAttribute("error", "");
-        }
-        else if (error.equals("1")) {
-            model.addAttribute("error", "The venue cannot be deleted as it is currently being used by one or more events.");
-        }
-        else {
-            model.addAttribute("error", "Unknown error.");
-        }
-    	model.addAttribute("venue", venue.get());
-    	return "/venues/description";
+            @RequestParam(value = "error", required = false) String error,
+            Model model) {
+    	Optional<Venue> venue = venueService.findById(id);
+    	Iterable<Event> allEvents = eventService.findUpcomingEvents();
+    	ArrayList<Event> eventsAtVenue = new ArrayList<Event>();
+    	for(Event e: allEvents) {
+    		if(e.getVenue() == venue.get()) {
+    			eventsAtVenue.add(e);
+    		}
+    	}
+
+    	if (error == null) {
+    		model.addAttribute("error", "");
+    	}
+    	else if (error.equals("1")) {
+    		model.addAttribute("error", "The venue cannot be deleted as it is currently being used by one or more events.");
+	}
+    	else {
+    		model.addAttribute("error", "Unknown error.");
+		}
+	model.addAttribute("venue", venue.get());
+	model.addAttribute("events", eventsAtVenue);
+	return "/venues/description";
 
     }
 

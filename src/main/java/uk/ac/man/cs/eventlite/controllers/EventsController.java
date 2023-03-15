@@ -1,17 +1,11 @@
 package uk.ac.man.cs.eventlite.controllers;
 
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -20,6 +14,10 @@ import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -49,7 +47,8 @@ public class EventsController {
 	public String getAllEvents(Model model) {
 		Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
 		Iterable<Event> previousEvents = eventService.findPreviousEvents();
-		
+
+        model.addAttribute("events", eventService.findAll());
 		model.addAttribute("upcomingEvents", upcomingEvents);
 		model.addAttribute("previousEvents", previousEvents);
 

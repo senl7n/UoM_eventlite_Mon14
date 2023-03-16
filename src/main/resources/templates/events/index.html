@@ -10,7 +10,7 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
 <style>
 body { margin: 0; padding: 0; }
-#map { position: absolute; top: 0; bottom: 0; width: 100%; height: 400px; }
+#map { position: absolute; top: 2; bottom: 200; width: 74%; height: 300px; }
 </style>
 
 </head>
@@ -54,9 +54,9 @@ body { margin: 0; padding: 0; }
               <td colspan="6" style="text-align: center; font-weight: bold;">Upcoming Events</td>
             </tr>
           </th:block>
-          <tr th:each="e : ${upcomingEvents}">
+          <tr class="location-row" th:each="e : ${upcomingEvents}">
             <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
-            <td th:text="${e.venue.name}">Event venue</td>
+            <td class="location-cell" th:text="${e.venue.name}">Event venue</td>
             <td th:text="${{e.date}}">Event date</td>
             <td style="text-align: center" th:text="${{e.time}}">Event time</td>
             <td sec:authorize="isAuthenticated()">
@@ -84,33 +84,39 @@ body { margin: 0; padding: 0; }
         </tbody>
       </table>
        <div id="map"></div>
-       fruits.forEach(myFunction);
-       
 
-		<script>
-		  mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
-		
-		    const locations = ['kilburn building, manchester', 'Engineering Building B, manchester'];
-		
-		  const map = new mapboxgl.Map({
-		    container: 'map',
-		    style: 'mapbox://styles/mapbox/streets-v12',
-		    center: [-2, 54],
-		    zoom: 7
-		  });
-		
-		 locations.forEach(location => {
-		        fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`)
-		            .then(response => response.json())
-		            .then(data => {
-		                const longitude = data.features[0].center[0];
-		                const latitude = data.features[0].center[1];
-		                const marker = new mapboxgl.Marker()
-		                    .setLngLat([longitude, latitude])
-		                    .addTo(map);
-		            });
-		    });
-		</script>
+
+
+<script>
+  const locations = [];
+const locationElements = document.querySelectorAll('.location-row .location-cell'); 
+locationElements.forEach(element => locations.push(element.textContent));
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
+
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/streets-v12',
+  center: [-2, 53.5],
+  zoom: 7
+});
+
+locations.forEach(location => {
+  fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`)
+    .then(response => response.json())
+    .then(data => {
+      const feature = data.features[0];
+      if (feature) {
+        const marker = new mapboxgl.Marker()
+          .setLngLat(feature.center)
+          .addTo(map);
+      }
+    });
+});
+
+</script>
+
+
 
   </div>
  

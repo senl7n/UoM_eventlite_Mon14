@@ -95,6 +95,7 @@
               center: [-2.2427, 53.35],
               zoom: 16
             });
+            
 
             locations.forEach(location => {
               fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`)
@@ -106,10 +107,19 @@
                     const marker = new mapboxgl.Marker()
                       .setLngLat(feature.center)
                       .addTo(map);
+                  
+                  const popup = new mapboxgl.Popup()
+                  	.setHTML(`<h4>${location}</h4>`);
+                  	
+          		  marker.setPopup(popup);
+               
+
+			      
                   }
                 });
             });
         </script>
+
   </div>
 </body>
 </html>

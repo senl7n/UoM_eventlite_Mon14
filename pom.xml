@@ -12,6 +12,13 @@
     <version>2.5.8</version>
   </parent>
 
+  <repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
   <properties>
     <java.version>11</java.version>
   </properties>
@@ -153,6 +160,12 @@
       <artifactId>mapbox-sdk-services</artifactId>
       <version>5.0.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.sys1yagi</groupId>
+      <artifactId>mastodon4j</artifactId>
+      <version>1.7.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>

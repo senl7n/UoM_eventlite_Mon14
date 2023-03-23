@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -18,6 +19,13 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
+import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.MastodonClient;
+import okhttp3.OkHttpClient;
+import com.google.gson.Gson;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -65,10 +73,14 @@ public class EventsController {
 	}
 
 	@GetMapping("/description")
-	public String getEventInfomation(@RequestParam(name="id") long id, Model model) {
+	public String getEventInfomation(@RequestParam(name="id") long id,
+                                     @RequestParam(name="error", required=false) String error,
+                                     @RequestParam(name="comment", required=false) String comment,
+                                     Model model) {
 		Event event = eventService.findById(id);
-
+        model.addAttribute("error", error);
 		model.addAttribute("event", event);
+        model.addAttribute("comment", comment);
 		return "/events/description";
 	}
 
@@ -268,4 +280,21 @@ public class EventsController {
 		return "/events/searchResult";
     }
 
+    @PostMapping("/postComment/{id}")
+    public String postComment(@PathVariable("id") long id, @RequestParam("comment") String comment, Model model, RedirectAttributes redirectAttributes) throws Mastodon4jRequestException {
+        String accessToken = "8LyNfRECPSaRI2g4ucFCeVujVBnunxgzX0PqABz6xjg";
+        MastodonClient mastodonClient = new MastodonClient.Builder("mastodon.social", new OkHttpClient.Builder(), new Gson())
+                .accessToken(accessToken)
+                .useStreamingApi()
+                .build();
+
+        Statuses statuses = new Statuses(mastodonClient);
+        try {
+            statuses.postStatus(comment, null, null, false, null, Status.Visibility.Public).execute();
+        }
+        catch (Exception e) {
+            return "redirect:/events/description?id=" + id + "&error=1";
+        }
+        return "redirect:/events/description?id=" + id + "&error=0" + "&comment=" + comment;
+    }
 }

@@ -82,6 +82,20 @@
         </tr>
       </tbody>
     </table>
+
+      <th:block th:if="${error == '1'}">
+        <div class="alert alert-danger" role="alert">
+            There's something wrong when posting status to Mastodon! </div>
+      </th:block>
+      <th:block th:if="${error == '0'}">
+          <div class="alert alert-success" role="alert">
+              Your post: <b>[[${comment}]]</b> was posted successfully! </div>
+      </th:block>
+    <form th:action = "@{/events/postComment/{id}(id=${event.id})}" th:method="post">
+        <h3 style="margin-top: 30px">Share the event!</h3>
+      <input th:placeholder="${event.name}" style="margin-bottom: 10px" type='text' class='form-control' name ='comment' aria-label='comment' aria-describedby='comment'>
+        <button type="submit" class="btn btn-dark" style="margin-bottom: 30px">Submit Post</button>
+        </form>
     <div id="map"></div>
         <script>
             const locations = [];

@@ -22,10 +22,14 @@ import java.util.List;
 
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.method.Timelines;
 import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.MastodonClient;
 import okhttp3.OkHttpClient;
 import com.google.gson.Gson;
+import com.sys1yagi.mastodon4j.api.Pageable;
+import com.sys1yagi.mastodon4j.api.Range;
+
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -297,4 +301,34 @@ public class EventsController {
         }
         return "redirect:/events/description?id=" + id + "&error=0" + "&comment=" + comment;
     }
+    
+    @GetMapping("/home")
+    public String getHomePageMessage(Model model) {
+        // Mastodon timeline
+        List<Status> timeline = new ArrayList<>();
+        MastodonClient client = new MastodonClient.Builder("mastodon.social", new OkHttpClient.Builder(), new Gson())
+                .accessToken("8LyNfRECPSaRI2g4ucFCeVujVBnunxgzX0PqABz6xjg")
+                .build();
+
+        try {
+            // Retrieve the home timeline for the authenticated user
+            Timelines homeTimeline = new Timelines(client);
+            Pageable<Status> pageableStatuses = homeTimeline.getHome(new Range()).execute();
+            timeline = pageableStatuses.getPart();
+        } catch (Mastodon4jRequestException e) {
+            e.printStackTrace();
+        }
+
+        // Get the latest three messages from the timeline
+        List<Status> latest3Messages = timeline.subList(Math.max(timeline.size() - 3, 0), timeline.size());
+
+        // Add the latest three messages to the model
+        model.addAttribute("latest3Messages", latest3Messages);
+
+        return "events/home";
+    }
+
+
+
+
 }

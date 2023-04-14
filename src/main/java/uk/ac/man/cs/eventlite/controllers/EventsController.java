@@ -25,15 +25,21 @@ import com.sys1yagi.mastodon4j.api.method.Statuses;
 import com.sys1yagi.mastodon4j.api.method.Timelines;
 import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.MastodonRequest;
+
 import okhttp3.OkHttpClient;
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.api.Pageable;
 import com.sys1yagi.mastodon4j.api.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
 public class EventsController {
+
+	private static final Logger logger = LoggerFactory.getLogger(EventsController.class);
 
 	@Autowired
 	private EventService eventService;
@@ -302,12 +308,14 @@ public class EventsController {
         return "redirect:/events/description?id=" + id + "&error=0" + "&comment=" + comment;
     }
     
-    @GetMapping("/home")
+    @GetMapping("/index")
     public String getHomePageMessage(Model model) {
         // Mastodon timeline
+
         List<Status> timeline = new ArrayList<>();
         MastodonClient client = new MastodonClient.Builder("mastodon.social", new OkHttpClient.Builder(), new Gson())
                 .accessToken("8LyNfRECPSaRI2g4ucFCeVujVBnunxgzX0PqABz6xjg")
+                .useStreamingApi()
                 .build();
 
         try {
@@ -322,11 +330,26 @@ public class EventsController {
         // Get the latest three messages from the timeline
         List<Status> latest3Messages = timeline.subList(Math.max(timeline.size() - 3, 0), timeline.size());
 
-        // Add the latest three messages to the model
-        model.addAttribute("latest3Messages", latest3Messages);
+        // Create a list of message contents
+        List<String> messageContents = new ArrayList<>();
+        for (Status message : latest3Messages) {
+            messageContents.add(message.getContent());
+        }
+//        logger.debug("Message contents");
+        for (String messageContent : messageContents) {
+            System.out.println(messageContent);
+        }
 
-        return "events/home";
+        // Add the message contents to the model
+        model.addAttribute("messageContents", messageContents);
+
+        return "events/index";
     }
+    
+//    
+
+
+    
 
 
 

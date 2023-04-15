@@ -118,11 +118,16 @@
                       .addTo(map);
 
                   const popup = new mapboxgl.Popup()
-                  	.setHTML(`<p>${name}</p> <p>Time: ${time}</p>`)
-                  	.setMaxWidth("600px");
+                  	.setHTML(`<p style='text-align:center;'><strong>${name}</strong></p> <p style='text-align:center;'>Time: ${time}</p>`)
+                  	.setMaxWidth("250");
                   	
-             
+            
           		  marker.setPopup(popup);
+          		  
+          		  
+          		  const popupContent = popup._content; 
+					popupContent.style.width = "250px"; 
+					popupContent.style.height = "100px"; 
 
 			      
                   }

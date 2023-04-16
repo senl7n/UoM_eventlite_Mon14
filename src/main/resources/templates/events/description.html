@@ -10,7 +10,7 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
     <style>
     body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 2; bottom: 200; width: 74%; height: 300px; }
+    #map { position: absolute; top: 2; bottom: 200; width: 58.5%; height: 300px; display: flex; justify-content: center;}
     </style>
 </head>
 <body>
@@ -35,9 +35,9 @@
       </thead>
       
       <tbody>
-        <tr>
+        <tr class="event-name_row">
           <td style="width: 30px"><b>Event:</b></td>
-          <td th:text="${event.name}">My Event</td>
+          <td class="event-name_cell" th:text="${event.name}">My Event</td>
           <td sec:authorize="isAuthenticated()">
           <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-primary btn-sm">
             <i class="fas fa-edit"></i> Edit
@@ -62,9 +62,9 @@
           </a>
           </td>
         </tr>
-        <tr>
+        <tr class="event-time_row">
           <td style="width: 30px"><b>Time:</b></td>
-          <td th:text="${{event.time}}">Event time</td>
+          <td class="event-time_cell" th:text="${{event.time}}">Event time</td>
           <td sec:authorize="isAuthenticated()">
           <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-primary btn-sm">
             <i class="fas fa-edit"></i> Edit
@@ -98,9 +98,18 @@
         </form>
     <div id="map"></div>
         <script>
+            const name = [];
+            const nameElements = document.querySelectorAll('.event-name_row .event-name_cell');
+			nameElements.forEach(element => name.push(element.textContent));
+			
+            const time = [];
+            const timeElements = document.querySelectorAll('.event-time_row .event-time_cell');
+			timeElements.forEach(element => time.push(element.textContent));
+			
             const locations = [];
             const locationElements = document.querySelectorAll('.location-row .location-cell');
             locationElements.forEach(element => locations.push(element.textContent));
+            
             mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
 
             const map = new mapboxgl.Map({
@@ -109,6 +118,7 @@
               center: [-2.2427, 53.35],
               zoom: 16
             });
+            
 
             locations.forEach(location => {
               fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`)
@@ -120,10 +130,27 @@
                     const marker = new mapboxgl.Marker()
                       .setLngLat(feature.center)
                       .addTo(map);
+
+                  const popup = new mapboxgl.Popup()
+                  	.setHTML(`<p style='text-align:center;'><strong>${name}</strong></p> <p style='text-align:center;'>Time: ${time}</p>`)
+                  	.setMaxWidth("250");
+                  	
+            
+          		  marker.setPopup(popup);
+          		  
+          		  
+          		  const popupContent = popup._content; 
+					popupContent.style.width = "250px"; 
+					popupContent.style.height = "100px"; 
+
+			      
                   }
                 });
             });
+            
+        
         </script>
+
   </div>
 </body>
 </html>

@@ -45,7 +45,7 @@
             <td th:text="${v.postcode}">Venue postcode</td>
             <td th:text="${v.capacity}">Venue capacity</td>
             <td>
-              <a th:href="@{/venues/description(id=${e.id})}">See more</ a>
+              <a th:href="@{/venues/description(id=${v.id})}">See more</ a>
             </td>
             <td sec:authorize="isAuthenticated()">
                 <a th:href="@{/venues/edit/{id}(id=${v.id})}" class="btn btn-primary btn-sm">

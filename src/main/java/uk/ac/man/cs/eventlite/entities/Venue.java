@@ -1,5 +1,7 @@
 package uk.ac.man.cs.eventlite.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
@@ -8,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name ="venues")
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Venue {
     @Id
     @GeneratedValue

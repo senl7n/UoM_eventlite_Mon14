@@ -33,9 +33,6 @@ public class EventsControllerApi {
 	@Autowired
 	private EventService eventService;
 
-    @Autowired
-    private VenueService venueService;
-
 	@Autowired
 	private EventModelAssembler eventAssembler;
 
@@ -47,7 +44,10 @@ public class EventsControllerApi {
 
 	@GetMapping("/{id}")
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
-		throw new EventNotFoundException(id);
+        if (eventService.findById(id) == null) {
+            throw new EventNotFoundException(id);
+        }
+		return eventAssembler.toModel(eventService.findById(id));
 	}
 
 	@GetMapping

@@ -31,6 +31,4 @@ public interface EventService {
     //home
 	public Iterable<Event> findUpcoming3Events();
 
-	//public Iterable<Venue> findTop3Venues();
-
 }

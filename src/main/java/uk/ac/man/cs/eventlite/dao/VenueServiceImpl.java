@@ -27,48 +27,48 @@ public class VenueServiceImpl implements VenueService {
 	private final static String DATA = "data/venues.json";
 
 	@Autowired
-    private VenueRepository VenueRepository;
+    private VenueRepository venueRepository;
 
     @Autowired
-    private EventRepository EventRepository;
+    private EventRepository eventRepository;
 
     @Autowired
     private EventService EventService;
 
     public long count() {
-        return VenueRepository.count();
+        return venueRepository.count();
 	}
 
 
     @Override
    	public Iterable<Venue> findAll() {
-   		return VenueRepository.findAll((Sort.by("name")));
+   		return venueRepository.findAll((Sort.by("name")));
    	}
 
 
     @Override
     public Venue save(Venue venue) {
-        return VenueRepository.save(venue);
+        return venueRepository.save(venue);
     }
 
     @Override
     public Optional<Venue> findById(long id) {
-        return VenueRepository.findById(id);
+        return venueRepository.findById(id);
     }
 
     public void deleteById(long id) {
-        VenueRepository.deleteById(id);
+        venueRepository.deleteById(id);
     }
 
     @Override
     public boolean update(long id, String name, int capacity, String address, String postcode) {
-        Optional<Venue> venue = VenueRepository.findById(id);
+        Optional<Venue> venue = venueRepository.findById(id);
         if (venue.isPresent()) {
             venue.get().setName(name);
             venue.get().setCapacity(capacity);
             venue.get().setAddress(address);
             venue.get().setPostcode(postcode);
-            VenueRepository.save(venue.get());
+            venueRepository.save(venue.get());
             return true;
         }
         return false;
@@ -81,13 +81,13 @@ public class VenueServiceImpl implements VenueService {
         venue.setCapacity(capacity);
         venue.setAddress(address);
         venue.setPostcode(postcode);
-        VenueRepository.save(venue);
+        venueRepository.save(venue);
         return true;
     }
 
     @Override
     public Iterable<Venue> findByNameContainingIgnoreCase(String name){
-    	return VenueRepository.findByNameContainingIgnoreCase(name);
+    	return venueRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Override
@@ -106,12 +106,12 @@ public class VenueServiceImpl implements VenueService {
     public Iterable<Venue> findPopular3Venues() {
         ArrayList<Venue> popular3Venues = new ArrayList<>();
         ArrayList<Integer> numOfEvents = new ArrayList<>();
-        ArrayList<Venue> venues = (ArrayList<Venue>) VenueRepository.findAll();
+        ArrayList<Venue> venues = (ArrayList<Venue>) venueRepository.findAll();
         long max_id = venues.get(venues.size() - 1).getId();
         for (long i = 0; i < max_id; i++) {
             numOfEvents.add(0);
         }
-        for (Event event : EventRepository.findAll()) {
+        for (Event event : eventRepository.findAll()) {
             if (event.getVenue() != null) {
                 int index = (int) event.getVenue().getId() - 1;
                 numOfEvents.set(index, numOfEvents.get(index) + 1);
@@ -126,7 +126,7 @@ public class VenueServiceImpl implements VenueService {
                     maxIndex = j;
                 }
             }
-            popular3Venues.add(VenueRepository.findById((long) maxIndex + 1).get());
+            popular3Venues.add(venueRepository.findById((long) maxIndex + 1).get());
             numOfEvents.set(maxIndex, 0);
         }
         return (Iterable<Venue>) popular3Venues;

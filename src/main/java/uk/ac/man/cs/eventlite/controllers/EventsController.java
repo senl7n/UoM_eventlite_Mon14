@@ -342,13 +342,11 @@ public class EventsController {
             messageTimes.add(message.getCreatedAt().substring(11, 16));
         }
         
-        // Add the message contents to the model
+        // Add the message attributes to the model
         model.addAttribute("messageContents", messageContents);
         model.addAttribute("messageTimes", messageTimes);
         model.addAttribute("messageDates", messageDates);
         model.addAttribute("messageURLs", messageURLs);
-        
-        model.addAttribute("messages", latest3Messages);
         
         Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
         Iterable<Event> previousEvents = eventService.findPreviousEvents();

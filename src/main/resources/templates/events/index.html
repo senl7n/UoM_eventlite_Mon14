@@ -91,20 +91,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td th:text="${messageTimes.get(0)}">Message Time</td>
-                    <td th:text="${messageDates.get(0)}">Message Date</td>
-                    <td><a th:href="${messageURLs.get(0)}" th:text="${messageContents.get(0)}">Comment</a></td>
-                </tr>
-                <tr>
-                    <td th:text="${messageTimes.get(1)}">Message Time</td>
-                    <td th:text="${messageDates.get(1)}">Message Date</td>
-                    <td><a th:href="${messageURLs.get(1)}" th:text="${messageContents.get(0)}">Comment</a></td>
-                </tr>
-                <tr>
-                    <td th:text="${messageTimes.get(2)}">Message Time</td>
-                    <td th:text="${messageDates.get(2)}">Message Date</td>
-                    <td><a th:href="${messageURLs.get(2)}" th:text="${messageContents.get(0)}">Comment</a></td>
+                <tr th:each="i : ${#numbers.sequence(0,2)}">
+                    <td th:text="${messageTimes.get(i)}">Message Time </td>
+                    <td th:text="${messageDates.get(i)}">Message Date</td>
+                    <td><a th:href="${messageURLs.get(i)}" th:text="${messageContents.get(i)}">Comment</a></td>
                 </tr>
             </tbody>
           </table>

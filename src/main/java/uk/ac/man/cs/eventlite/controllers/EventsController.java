@@ -61,17 +61,17 @@ public class EventsController {
 		throw new EventNotFoundException(id);
 	}
 
-	@GetMapping
-	public String getAllEvents(Model model) {
-		Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
-		Iterable<Event> previousEvents = eventService.findPreviousEvents();
-
-        model.addAttribute("events", eventService.findAll());
-		model.addAttribute("upcomingEvents", upcomingEvents);
-		model.addAttribute("previousEvents", previousEvents);
-
-		return "events/index";
-	}
+//	@GetMapping
+//	public String getAllEvents(Model model) {
+//		Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+//		Iterable<Event> previousEvents = eventService.findPreviousEvents();
+//
+//        model.addAttribute("events", eventService.findAll());
+//		model.addAttribute("upcomingEvents", upcomingEvents);
+//		model.addAttribute("previousEvents", previousEvents);
+//
+//		return "events/index";
+//	}
 	//home
 	@GetMapping("/home")
 	public String getHomepage(Model model) {
@@ -308,7 +308,7 @@ public class EventsController {
         return "redirect:/events/description?id=" + id + "&error=0" + "&comment=" + comment;
     }
     
-    @GetMapping("/index")
+    @GetMapping
     public String getHomePageMessage(Model model) {
         // Mastodon timeline
 
@@ -332,16 +332,28 @@ public class EventsController {
 
         // Create a list of message contents
         List<String> messageContents = new ArrayList<>();
+        List<String> messageURLs = new ArrayList<>();
+        List<String> messageDates = new ArrayList<>();
+        List<String> messageTimes = new ArrayList<>();
         for (Status message : latest3Messages) {
             messageContents.add(message.getContent());
+            messageURLs.add(message.getUrl());
+            messageDates.add(message.getCreatedAt().substring(0, 10));
+            messageTimes.add(message.getCreatedAt().substring(11, 16));
         }
-//        logger.debug("Message contents");
-        for (String messageContent : messageContents) {
-            System.out.println(messageContent);
-        }
-
+        
         // Add the message contents to the model
         model.addAttribute("messageContents", messageContents);
+        model.addAttribute("messageTimes", messageTimes);
+        model.addAttribute("messageDates", messageDates);
+        model.addAttribute("messageURLs", messageURLs);
+        
+        model.addAttribute("messages", latest3Messages);
+        
+        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+        Iterable<Event> previousEvents = eventService.findPreviousEvents();
+        model.addAttribute("upcomingEvents", upcomingEvents);
+        model.addAttribute("previousEvents", previousEvents);
 
         return "events/index";
     }

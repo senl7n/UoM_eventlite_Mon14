@@ -80,7 +80,32 @@
                 </tr>
             </tbody>
           </table>
-
+          <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-clock"></i> Time</th>
+                    <th><i class="fas fa-calendar"></i> Date</th>
+                    <th><i class="fas fa-comment"></i> Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td th:text="${messageTimes.get(0)}">Message Time</td>
+                    <td th:text="${messageDates.get(0)}">Message Date</td>
+                    <td><a th:href="${messageURLs.get(0)}" th:text="${messageContents.get(0)}">Comment</a></td>
+                </tr>
+                <tr>
+                    <td th:text="${messageTimes.get(1)}">Message Time</td>
+                    <td th:text="${messageDates.get(1)}">Message Date</td>
+                    <td><a th:href="${messageURLs.get(1)}" th:text="${messageContents.get(0)}">Comment</a></td>
+                </tr>
+                <tr>
+                    <td th:text="${messageTimes.get(2)}">Message Time</td>
+                    <td th:text="${messageDates.get(2)}">Message Date</td>
+                    <td><a th:href="${messageURLs.get(2)}" th:text="${messageContents.get(0)}">Comment</a></td>
+                </tr>
+            </tbody>
+          </table>
         <div id="map"></div>
         <script>
             const locations = [];
@@ -108,6 +133,7 @@
                 });
             });
         </script>
+
     </div>
 </body>
 </html>

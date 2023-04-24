@@ -29,9 +29,9 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private VenueRepository venueRepository;
-    
-    private Event event;
-    public long count() {
+
+    @Override
+    public long getNumberOfEvent() {
         return eventRepository.count();
 	}
     

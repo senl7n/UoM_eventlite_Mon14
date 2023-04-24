@@ -34,7 +34,7 @@ public class InitialDataLoader {
 	CommandLineRunner initDatabase() {
 		return args -> {
 
-			if (eventService.count() > 0) {
+			if (eventService.getNumberOfEvent() > 0) {
 				log.info("Database already populated with events. Skipping event initialization.");
 			} else {
 				// Build and save initial events here.

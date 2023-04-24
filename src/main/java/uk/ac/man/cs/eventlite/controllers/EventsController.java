@@ -273,7 +273,7 @@ public class EventsController {
 
     @PostMapping("/postComment/{id}")
     public String postComment(@PathVariable("id") long id, @RequestParam("comment") String comment, Model model, RedirectAttributes redirectAttributes) throws Mastodon4jRequestException {
-        String accessToken = "8LyNfRECPSaRI2g4ucFCeVujVBnunxgzX0PqABz6xjg";
+        String accessToken = "LdEzyxYey4tCzNvk4sxzAWqOFrCwg21iMmlie8YkFtA";
         MastodonClient mastodonClient = new MastodonClient.Builder("mastodon.social", new OkHttpClient.Builder(), new Gson())
                 .accessToken(accessToken)
                 .useStreamingApi()

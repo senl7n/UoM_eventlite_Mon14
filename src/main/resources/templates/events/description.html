@@ -10,27 +10,18 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
     <style>
     body { margin: 0; padding: 0; }
-    #map { position: absolute; top: 2; bottom: 200; width: 58.5%; height: 300px; display: flex; justify-content: center;}
+    #map { position: relative; height: 300px; display: flex; justify-content: center;}
     </style>
 </head>
 <body>
   <div layout:fragment="content">
-    <h1>Event information
-        <td sec:authorize="isAuthenticated()">
-          <form th:action="@{/events/{id}(id=${event.id})}" th:method="delete" style="margin:0px;display:inline;">
-            <button type="submit" class="btn btn-danger btn-sm">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-            </form>
-        </td>
-    </h1>
+    <h1>Event information</h1>
 
     <table class="table table-striped table-hover">
       <thead>
         <tr>
             <th><i class="fas fa-bars" style="width: 30px"></i> </th>
             <th><i class="fas fa-bolt"></i> Event info</th>
-          <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
         </tr>
       </thead>
       
@@ -38,50 +29,48 @@
         <tr class="event-name_row">
           <td style="width: 30px"><b>Event:</b></td>
           <td class="event-name_cell" th:text="${event.name}">My Event</td>
-          <td sec:authorize="isAuthenticated()">
-          <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-primary btn-sm">
-            <i class="fas fa-edit"></i> Edit
-          </a>
-          </td>
         </tr>
+
         <tr class="location-row">
           <td style="width: 30px"><b>Venue:</b></td>
           <td><a th:href="@{/venues/description(id=${event.venue.id})}" class="location-cell" th:text="${event.venue.name}">Event Venue</a></td>
-          <td sec:authorize="isAuthenticated()">
-          <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-primary btn-sm">
-            <i class="fas fa-edit"></i> Edit
-          </a>
-          </td>
         </tr>
+
         <tr>
           <td style="width: 30px"><b>Date:</b></td>
           <td th:text="${{event.date}}">Event date</td>
-          <td sec:authorize="isAuthenticated()">
-          <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-primary btn-sm">
-            <i class="fas fa-edit"></i> Edit
-          </a>
-          </td>
         </tr>
+
         <tr class="event-time_row">
           <td style="width: 30px"><b>Time:</b></td>
           <td class="event-time_cell" th:text="${{event.time}}">Event time</td>
-          <td sec:authorize="isAuthenticated()">
-          <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-primary btn-sm">
-            <i class="fas fa-edit"></i> Edit
-          </a>
-          </td>
         </tr>
+
         <tr>
           <td style="width: 30px"><b>Description:</b></td>
           <td th:text="${{event.description}}"></td>
-          <td sec:authorize="isAuthenticated()">
-          <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-primary btn-sm">
-            <i class="fas fa-edit"></i> Edit
-          </a>
-          </td>
         </tr>
       </tbody>
     </table>
+
+    <span style="float: left;">
+      <a th:href="@{/events}" class="btn btn-primary btn-sm">
+        <i class="fas fa-chevron-circle-left"></i> Back
+      </a>
+    </span>
+
+    <span sec:authorize="isAuthenticated()" style="justify-content: space-between; float: right;">
+      <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-warning btn-sm">
+        <i class="fas fa-edit"></i> Edit
+      </a>
+
+      <form th:action="@{/events/{id}(id=${event.id})}" th:method="delete" style="margin:0px; display:inline;">
+        <button type="submit" class="btn btn-danger btn-sm">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+      </form>
+    </span>
+    <br>
 
       <th:block th:if="${error == '1'}">
         <div class="alert alert-danger" role="alert">

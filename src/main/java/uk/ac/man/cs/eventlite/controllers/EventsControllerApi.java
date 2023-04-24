@@ -10,19 +10,13 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.dao.EventService;
-import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping(value = "/api/events", produces = { MediaType.APPLICATION_JSON_VALUE, MediaTypes.HAL_JSON_VALUE })
@@ -32,9 +26,6 @@ public class EventsControllerApi {
 
 	@Autowired
 	private EventService eventService;
-
-    @Autowired
-    private VenueService venueService;
 
 	@Autowired
 	private EventModelAssembler eventAssembler;
@@ -47,7 +38,10 @@ public class EventsControllerApi {
 
 	@GetMapping("/{id}")
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
-		throw new EventNotFoundException(id);
+        if (eventService.findById(id) == null) {
+            throw new EventNotFoundException(id);
+        }
+		return eventAssembler.toModel(eventService.findById(id));
 	}
 
 	@GetMapping
@@ -55,5 +49,14 @@ public class EventsControllerApi {
 		return eventAssembler.toCollectionModel(eventService.findAll())
 				.add(linkTo(methodOn(EventsControllerApi.class).getAllEvents()).withSelfRel());
 	}
+
+    @GetMapping("/api/events/{id}/venue")
+    public ResponseEntity<EntityModel<Venue>> getEventVenue(@PathVariable Long id) {
+        Event event = eventService.findById(id);
+        Venue venue = event.getVenue();
+        EntityModel<Venue> venueModel = EntityModel.of(venue, linkTo(methodOn(VenuesControllerApi.class).getVenue(venue.getId())).withSelfRel());
+        return ResponseEntity.ok(venueModel);
+    }
+
 
 }

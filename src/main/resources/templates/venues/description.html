@@ -55,7 +55,7 @@
                 <th:block th:each="event : ${events}">
                     <tr>
                         <td style="width: 30px"><b>Name:</b></td>
-                        <td th:text="${{event.name}}">Event Name</td>
+                        <td><a th:href="@{/events/description(id=${event.id})}" th:text="${{event.name}}">Event Name</a></td>
                     </tr>
                     <tr>
                         <td style="width: 30px"><b>Date:</b></td>

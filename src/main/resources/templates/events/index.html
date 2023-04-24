@@ -53,7 +53,7 @@
                 </th:block>
                 <tr class="location-row" th:each="e : ${upcomingEvents}">
                     <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
-                    <td class="location-cell" th:text="${e.venue.name}">Event venue</td>
+                    <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}">Event Venue</a></td>
                     <td th:text="${{e.date}}">Event date</td>
                     <td style="text-align: center" th:text="${{e.time}}">Event time</td>
                     <td sec:authorize="isAuthenticated()">
@@ -69,7 +69,7 @@
                 </th:block>
                 <tr th:each="e : ${previousEvents}">
                     <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
-                    <td th:text="${e.venue.name}">Event venue</td>
+                    <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}">Event Venue</a></td>
                     <td th:text="${{e.date}}">Event date</td>
                     <td style="text-align: center" th:text="${{e.time}}">Event time</td>
                     <td sec:authorize="isAuthenticated()">

@@ -46,7 +46,7 @@
         </tr>
         <tr class="location-row">
           <td style="width: 30px"><b>Venue:</b></td>
-          <td class="location-cell" th:text="${event.venue.name}">Event venue</td>
+          <td><a th:href="@{/venues/description(id=${event.venue.id})}" class="location-cell" th:text="${event.venue.name}">Event Venue</a></td>
           <td sec:authorize="isAuthenticated()">
           <a th:href="@{/events/edit/{id}(id=${event.id})}" class="btn btn-primary btn-sm">
             <i class="fas fa-edit"></i> Edit

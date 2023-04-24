@@ -6,12 +6,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -57,14 +59,11 @@ public class VenuesControllerApi {
 
     @GetMapping
     public CollectionModel<EntityModel<Venue>> getAllVenues() {
+        String profileLinkHref = linkTo(VenuesControllerApi.class).toUriComponentsBuilder().replacePath("/api/profile/venues").build().toUriString();
+
         return venueAssembler.toCollectionModel(venueService.findAll())
                 .add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withSelfRel())
-                .add(linkTo(methodOn(VenuesControllerApi.class).getProfile()).withRel("profile"));
-    }
-
-    @GetMapping("/profile/venues")
-    public ResponseEntity<?> getProfile() {
-        return null;
+                .add(Link.of(profileLinkHref, "profile"));
     }
 
 

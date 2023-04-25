@@ -123,7 +123,7 @@ public class VenuesController {
         if (capacity <= 0) {
             return "redirect:/venues/edit/" + id + "?error=5";
         }
-        if (!address.toLowerCase().contains(" road") && !address.toLowerCase().contains(" rd")) {
+        if (!address.toLowerCase().contains(" road") && !address.toLowerCase().contains(" rd") && !address.toLowerCase().contains(" street") && !address.toLowerCase().contains(" st") && !address.toLowerCase().contains(" avenue") && !address.toLowerCase().contains(" ave")) {
             return "redirect:/venues/edit/" + id + "?error=6";
         }
         venueService.update(id, name, capacity, address, postcode);
@@ -195,7 +195,7 @@ public class VenuesController {
           if (capacity <= 0) {
                 return "redirect:/venues/add?error=5&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
           }
-          if (!address.toLowerCase().contains(" road") && !address.toLowerCase().contains(" rd")) {
+          if (!address.toLowerCase().contains(" road") && !address.toLowerCase().contains(" rd") && !address.toLowerCase().contains(" street") && !address.toLowerCase().contains(" st") && !address.toLowerCase().contains(" avenue") && !address.toLowerCase().contains(" ave")) {
                 return "redirect:/venues/add?error=6&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
           }
           venueService.add(name, capacity, address, postcode);

@@ -90,11 +90,6 @@
         const upcomingEventElements = document.querySelectorAll('.location-row .upcoming_events');
         upcomingEventElements.forEach(element => upcomingEventNames.push(element.textContent));
 
-        const previousEventNames = [];
-        const previousEventElements = document.querySelectorAll('.location-row .previous_event');
-        previousEventElements.forEach(element => previousEventNames.push(element.textContent));
-
-
         const locations = {};
         const locationElements = document.querySelectorAll('.location-row .location-cell');
         const venues = {};

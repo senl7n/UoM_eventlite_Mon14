@@ -34,7 +34,9 @@
         <tr class="location-row">
           <td style="width: 30px"><b>Venue:</b></td>
           <td><a th:href="@{/venues/description(id=${event.venue.id})}" class="location-cell" th:text="${event.venue.name}">Event Venue</a></td>
+          <td style="display:none" class="postcode-cell" th:text="${event.venue.postcode}">Venue Postcode</td>
         </tr>
+
 
         <tr>
           <td style="width: 30px"><b>Date:</b></td>
@@ -87,56 +89,61 @@
         </form>
     <div id="map"></div>
         <script>
-            const name = [];
-            const nameElements = document.querySelectorAll('.event-name_row .event-name_cell');
-			nameElements.forEach(element => name.push(element.textContent));
-			
-            const time = [];
-            const timeElements = document.querySelectorAll('.event-time_row .event-time_cell');
-			timeElements.forEach(element => time.push(element.textContent));
-			
-            const locations = [];
-            const locationElements = document.querySelectorAll('.location-row .location-cell');
-            locationElements.forEach(element => locations.push(element.textContent));
-            
-            mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
+          const name = [];
+          const nameElements = document.querySelectorAll('.event-name_row .event-name_cell');
+          nameElements.forEach(element => name.push(element.textContent));
 
-            const map = new mapboxgl.Map({
-              container: 'map',
-              style: 'mapbox://styles/mapbox/streets-v12',
-              center: [-2.2427, 53.35],
-              zoom: 16
-            });
-            
+          const time = [];
+          const timeElements = document.querySelectorAll('.event-time_row .event-time_cell');
+          timeElements.forEach(element => time.push(element.textContent));
 
-            locations.forEach(location => {
-              fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`)
-                .then(response => response.json())
-                .then(data => {
-                  const feature = data.features[0];
-                  if (feature) {
-                  map.setCenter(feature.center);
-                    const marker = new mapboxgl.Marker()
-                      .setLngLat(feature.center)
-                      .addTo(map);
+          const locations = [];
+          const locationElements = document.querySelectorAll('.location-row .location-cell');
+          locationElements.forEach(element => locations.push(element.textContent));
 
-                  const popup = new mapboxgl.Popup()
-                  	.setHTML(`<p style='text-align:center;'><strong>${name}</strong></p> <p style='text-align:center;'>Time: ${time}</p>`)
-                  	.setMaxWidth("250");
-                  	
-            
-          		  marker.setPopup(popup);
-          		  
-          		  
-          		  const popupContent = popup._content; 
-					popupContent.style.width = "250px"; 
-					popupContent.style.height = "100px"; 
+          const postcodes = [];
+          const postcodeElements = document.querySelectorAll('.location-row .postcode-cell');
+          postcodeElements.forEach(element => postcodes.push(element.textContent));
 
-			      
-                  }
-                });
-            });
-            
+          mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
+
+          const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [-2.2427, 53.35],
+            zoom: 16
+          });
+          const bounds = new mapboxgl.LngLatBounds();
+
+          locations.forEach((location, index) => {
+            const postcode = postcodes[index];
+            fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location + ', ' + postcode)}.json?access_token=${mapboxgl.accessToken}`)
+                    .then(response => response.json())
+                    .then(data => {
+                      const feature = data.features[0];
+                      if (feature) {
+                        bounds.extend(feature.center);
+                        const marker = new mapboxgl.Marker()
+                                .setLngLat(feature.center)
+                                .addTo(map);
+
+                        const popup = new mapboxgl.Popup()
+                                .setHTML(`<p style='text-align:center;'><strong>${name}</strong></p> <p style='text-align:center;'>Time: ${time}</p>`)
+                                .setMaxWidth("250");
+
+                        marker.setPopup(popup);
+
+                        const popupContent = popup._content;
+                        popupContent.style.width = "250px";
+                        popupContent.style.height = "100px";
+                      }
+                    });
+          });
+
+          map.on('load', () => {
+            map.fitBounds(bounds, { padding: 30, maxZoom: 16 });
+          });
+
         
         </script>
 

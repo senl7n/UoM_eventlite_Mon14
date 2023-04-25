@@ -53,27 +53,33 @@
         </br>
         </br>
 
-        <h3>Events coming up...</h3>
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th><i class="fas fa-bars" style="width: 30px"></i> </th>
-                    <th><i class="fas fa-bolt"></i> Event info</th>
-                </tr>
-            </thead>
-            <tbody>
-                <th:block th:each="event : ${events}">
-                    <tr>
-                        <td style="width: 30px"><b>Name:</b></td>
-                        <td><a th:href="@{/events/description(id=${event.id})}" th:text="${{event.name}}">Event Name</a></td>
-                    </tr>
-                    <tr>
-                        <td style="width: 30px"><b>Date:</b></td>
-                        <td th:text="${{event.date}}">Event Date</td>
-                    </tr>
-                </th:block>
-            </tbody>
-        </table>
+        <div th:if="${events.size() > 0}">
+            <h3>Events coming up...</h3>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-bars" style="width: 30px"></i> </th>
+                            <th><i class="fas fa-bolt"></i> Event info</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <th:block th:each="event : ${events}">
+                            <tr>
+                                <td style="width: 30px"><b>Name:</b></td>
+                                <td><a th:href="@{/events/description(id=${event.id})}" th:text="${{event.name}}">Event Name</a></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 30px"><b>Date:</b></td>
+                                <td th:text="${{event.date}}">Event Date</td>
+                            </tr>
+                        </th:block>
+                    </tbody>
+                </table>
+        </div>
+        <div th:if="${events.size() == 0}">
+            <p>No upcoming events.</p>
+        </div>
+
         <div th:if="${!#strings.isEmpty(error)}" class="alert alert-danger">
             <p th:text="${error}"></p>
         </div>

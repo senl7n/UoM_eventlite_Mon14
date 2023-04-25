@@ -43,12 +43,16 @@
         </span>
 
         <span sec:authorize="isAuthenticated()" style="float: right;">
+            <a th:href="@{/venues/edit/{id}(id=${venue.id})}" class="btn btn-warning btn-sm">
+                <i class="fas fa-edit"></i> Edit
+            </a>
             <form th:action="@{/venues/{id}(id=${venue.id})}" th:method="delete" style="margin:0px;display:inline;">
                 <button type="submit" class="btn btn-danger btn-sm">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </form>
         </span>
+
 
         </br>
         </br>

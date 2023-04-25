@@ -44,7 +44,7 @@ public class EventsControllerApi {
 		return eventAssembler.toModel(eventService.findById(id));
 	}
 
-	@GetMapping
+	@GetMapping("/api/events/{id}")
 	public CollectionModel<EntityModel<Event>> getAllEvents() {
 		return eventAssembler.toCollectionModel(eventService.findAll())
 				.add(linkTo(methodOn(EventsControllerApi.class).getAllEvents()).withSelfRel());

@@ -86,22 +86,46 @@
 
         <div id="map"></div>
         <script>
-            const upevent = [];
-            const upeventElements = document.querySelectorAll('.location-row .upcoming_events');
-            upeventElements.forEach(element => upevent.push(element.textContent));
+            const upcomingEventNames = [];
+            const upcomingEventElements = document.querySelectorAll('.location-row .upcoming_events');
+            upcomingEventElements.forEach(element => upcomingEventNames.push(element.textContent));
+
+            const previousEventNames = [];
+            const previousEventElements = document.querySelectorAll('.location-row .previous_event');
+            previousEventElements.forEach(element => previousEventNames.push(element.textContent));
+
 
             const locations = {};
             const locationElements = document.querySelectorAll('.location-row .location-cell');
+            const venues = {};
+
             locationElements.forEach((element, index) => {
                 const location = element.textContent;
+                const venueId = element.href.split('id=')[1]; // Get the venue ID from the href
+
+                if (!venues[venueId]) {
+                    venues[venueId] = {
+                        id: venueId,
+                        name: location
+                    };
+                }
+
                 if (!locations[location]) {
                     locations[location] = {
                         name: location,
-                        events: []
+                        events: [],
+                        hasUpcomingEvents: false
                     };
                 }
-                locations[location].events.push(upevent[index]);
+
+                if (index < upcomingEventNames.length) {
+                    locations[location].events.push(upcomingEventNames[index]);
+                    locations[location].hasUpcomingEvents = true;
+                }
             });
+
+
+            console.log(locations);
 
             mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
 
@@ -112,8 +136,9 @@
                 zoom: 7
             });
 
-            Object.values(locations).forEach(location => {
-                fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location.name)}.json?access_token=${mapboxgl.accessToken}`)
+            Object.values(venues).forEach(venue => {
+                const location = locations[venue.name];
+                fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(venue.name)}.json?access_token=${mapboxgl.accessToken}`)
                     .then(response => response.json())
                     .then(data => {
                         const feature = data.features[0];
@@ -122,20 +147,24 @@
                                 .setLngLat(feature.center)
                                 .addTo(map);
 
-                            const eventList = location.events.map(event => `<p style='text-align:center;'>${event}</p>`).join('');
+                            const eventList = location && location.events.map(event => `<p style='text-align:center;'>${event}</p>`).join('');
+                            const noUpcomingEventsMessage = `<p style='text-align:center;'><em>No Upcoming Events</em></p>`;
+                            const popupContent = (location && location.hasUpcomingEvents) ? eventList : noUpcomingEventsMessage;
+
                             const popup = new mapboxgl.Popup()
-                                .setHTML(`<p style='text-align:center;'><strong>${location.name}</strong></p>${eventList}`)
+                                .setHTML(`<p style='text-align:center;'><strong>${venue.name}</strong></p>${popupContent}`)
                                 .setMaxWidth("250");
 
                             marker.setPopup(popup);
 
-                            const popupContent = popup._content;
-                            popupContent.style.width = "250px";
-                            popupContent.style.height = "100px";
-                            popupContent.style.overflowY = "auto";
+                            const popupContentElement = popup._content;
+                            popupContentElement.style.width = "250px";
+                            popupContentElement.style.height = "100px";
+                            popupContentElement.style.overflowY = "auto";
                         }
                     });
             });
+
         </script>
 
     </div>

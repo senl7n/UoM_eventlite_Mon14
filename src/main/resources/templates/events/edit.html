@@ -19,7 +19,7 @@
             </th:block>
         </div>
         <div class='input-group mb-3'>
-            <span class='input-group-text' id='venue'>Venue ID</span>
+            <span class='input-group-text' id='venue'>Venue</span>
             <select class="form-select" name="venue_id" aria-label="venue">
                 <option value="99">Choose...</option>
                 <option th:each="venue : ${venues}" th:value="${venue.id}" th:text="${venue.name}"

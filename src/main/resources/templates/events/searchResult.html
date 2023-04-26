@@ -8,6 +8,12 @@
     <title>Search Result</title>
     <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/webjars/font-awesome/css/all.min.css" />
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
+    <style>
+      body { margin: 0; padding: 0; }
+      #map { position: relative; height: 400px; margin-bottom: 2px;}
+    </style>
   </head>
   <body>
     <div layout:fragment="content">
@@ -49,8 +55,8 @@
           <tr><td colspan="6" style="text-align: center; font-weight: bold;">Upcoming Events</td></tr>
         </th:block>
         <tr class="location-row" th:each="e : ${upcomingEvents}">
-          <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
-          <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}">Event Venue</a></td>
+          <td><a th:href="@{/events/description(id=${e.id})}" class="upcoming_events" th:text="${e.name}">Event Name</a></td>
+          <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}" th:data-postcode="${e.venue.postcode}">Event Venue</a></td>
           <td th:text="${{e.date}}">Event date</td>
           <td style="text-align: center" th:text="${{e.time}}">Event time</td>
           <td sec:authorize="isAuthenticated()">
@@ -64,9 +70,9 @@
             <td colspan="6" style="text-align: center; font-weight: bold;">Previous Events</td>
           </tr>
         </th:block>
-        <tr th:each="e : ${previousEvents}">
-          <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
-          <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}">Event Venue</a></td>
+        <tr class="location-row" th:each="e : ${previousEvents}">
+          <td><a th:href="@{/events/description(id=${e.id})}" class="previous_event" th:text="${e.name}">Event Name</a></td>
+          <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}" th:data-postcode="${e.venue.postcode}">Event Venue</a></td>
           <td th:text="${{e.date}}">Event date</td>
           <td style="text-align: center" th:text="${{e.time}}">Event time</td>
           <td sec:authorize="isAuthenticated()">
@@ -78,6 +84,98 @@
         </tbody>
       </table>
 
+      <div id="map"></div>
+      <script>
+        const upcomingEventNames = [];
+        const upcomingEventElements = document.querySelectorAll('.location-row .upcoming_events');
+        upcomingEventElements.forEach(element => upcomingEventNames.push(element.textContent));
+
+        const locations = {};
+        const locationElements = document.querySelectorAll('.location-row .location-cell');
+        const venues = {};
+
+        locationElements.forEach((element, index) => {
+          const location = element.textContent;
+          const venueId = element.href.split('id=')[1]; // Get the venue ID from the href
+          const venuePostcode = element.getAttribute('data-postcode'); // Get the venue postcode from the data-postcode attribute
+
+          if (!venues[venueId]) {
+            venues[venueId] = {
+              id: venueId,
+              name: location,
+              postcode: venuePostcode
+            };
+          }
+
+          if (!locations[location]) {
+            locations[location] = {
+              name: location,
+              postcode: venuePostcode,
+              events: [],
+              hasUpcomingEvents: false
+            };
+          }
+
+          if (index < upcomingEventNames.length) {
+            locations[location].events.push(upcomingEventNames[index]);
+            locations[location].hasUpcomingEvents = true;
+          }
+        });
+
+
+        console.log(locations);
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
+
+        const map = new mapboxgl.Map({
+          container: 'map',
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: [-2, 53.5],
+          zoom: 16
+        });
+
+        const bounds = new mapboxgl.LngLatBounds();
+
+        Object.values(venues).forEach(venue => {
+          const location = locations[venue.name];
+          fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent( venue.postcode + ', ' +  venue.name)}.json?access_token=${mapboxgl.accessToken}`)
+                  .then(response => response.json())
+                  .then(data => {
+                    const feature = data.features[0];
+                    if (feature) {
+                      bounds.extend(feature.center);
+                      const marker = new mapboxgl.Marker()
+                              .setLngLat(feature.center)
+                              .addTo(map);
+
+                      const eventList = location && location.events.map(event => `<p style='text-align:center;'>${event}</p>`).join('');
+                      const noUpcomingEventsMessage = `<p style='text-align:center;'><em>No Upcoming Events</em></p>`;
+                      const popupContent = (location && location.hasUpcomingEvents) ? eventList : noUpcomingEventsMessage;
+
+                      const popup = new mapboxgl.Popup()
+                              .setHTML(`<p style='text-align:center;'><strong>${venue.name}</strong></p>${popupContent}`)
+                              .setMaxWidth("250");
+
+                      marker.setPopup(popup);
+
+                      const popupContentElement = popup._content;
+                      popupContentElement.style.width = "250px";
+                      popupContentElement.style.height = "100px";
+                      popupContentElement.style.overflowY = "auto";
+                    }
+                  });
+        });
+
+        map.on('load', () => {
+          if (Object.keys(locations).length === 1) {
+            map.fitBounds(bounds, { padding: 30, maxZoom: 16 });
+          } else {
+            map.fitBounds(bounds, { padding: 30 });
+          }
+        });
+
+      </script>
     </div>
+
   </body>
 </html>

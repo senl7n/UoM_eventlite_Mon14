@@ -80,16 +80,16 @@ public class Venue {
     	return events;
     }
 
-    public void Longitude(double longitude) {
-        this.longitude = longitude;
+    public double getLongitude() {
+        return longitude;
     }
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public void Latitude(double latitude) {
-        this.latitude = latitude;
+    public double getLatitude() {
+        return latitude;
     }
 
     public void setLatitude(double latitude) {

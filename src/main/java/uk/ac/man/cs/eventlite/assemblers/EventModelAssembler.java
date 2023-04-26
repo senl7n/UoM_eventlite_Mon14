@@ -17,7 +17,7 @@ public class EventModelAssembler implements RepresentationModelAssembler<Event, 
     @Override
     public EntityModel<Event> toModel(Event event) {
         Link selfLink = linkTo(methodOn(EventsControllerApi.class).getEvent(event.getId())).withSelfRel();
-        Link eventsLink = linkTo(methodOn(EventsControllerApi.class).getAllEvents()).withRel("events");
+        Link eventsLink = linkTo(methodOn(EventsControllerApi.class).getEvent(event.getId())).withRel("event");
         Link venueLink = linkTo(methodOn(EventsControllerApi.class).getEventVenue(event.getId())).withRel("venue");
         return EntityModel.of(event, selfLink, eventsLink, venueLink);
     }

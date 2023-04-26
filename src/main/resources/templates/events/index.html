@@ -3,113 +3,177 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layouts/default}">
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
     <title>All events</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.13.0/mapbox-gl.js"></script>
     <style>
-    body { margin: 0; padding: 0; }
-    #map { position: relative; height: 300px; margin-bottom: 2px;}
+        body { margin: 0; padding: 0; }
+        #map { position: relative; height: 400px; margin-bottom: 2px;}
     </style>
 </head>
 <body>
-    <div layout:fragment="content">
-        <h1>All Events</h1>
+<div layout:fragment="content">
+    <h1>All Events</h1>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-            <form action="events/search" style="margin-top: -20px; margin-bottom: 8px; width: 80%" method="get">
-                <label for="search-input"></label>
-                <div class="input-group">
-                    <input
-                            type="text"
-                            id="search-input"
-                            name="q"
-                            class="form-control col-md-5"
-                            placeholder="Enter your words"
-                    />
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary">Search</button>
-                    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+        <form action="events/search" style="margin-top: -20px; margin-bottom: 8px; width: 80%" method="get">
+            <label for="search-input"></label>
+            <div class="input-group">
+                <input
+                        type="text"
+                        id="search-input"
+                        name="q"
+                        class="form-control col-md-5"
+                        placeholder="Enter your words"
+                />
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Search</button>
                 </div>
-            </form>
+            </div>
+        </form>
 
-            <span sec:authorize="isAuthenticated()" style="float: right">
+        <span sec:authorize="isAuthenticated()" style="float: right">
                 <a href="/events/add" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> New Event</a>
             </span>
-        </div>
+    </div>
 
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                <th><i class="fas fa-bolt"></i> Event</th>
-                <th><i class="fas fa-map-marker-alt"></i> Venue</th>
-                <th><i class="fas fa-calendar"></i> Date</th>
-                <th style="text-align: center"><i class="fas fa-clock"></i> Time</th>
-                <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
-                </tr>
-            </thead>
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th><i class="fas fa-bolt"></i> Event</th>
+            <th><i class="fas fa-map-marker-alt"></i> Venue</th>
+            <th><i class="fas fa-calendar"></i> Date</th>
+            <th style="text-align: center"><i class="fas fa-clock"></i> Time</th>
+            <th sec:authorize="isAuthenticated()"><i class="fas fa-edit"></i> Manage</th>
+        </tr>
+        </thead>
 
-            <tbody>
-                <th:block th:if="${upcomingEvents.iterator().hasNext()}">
-                    <tr><td colspan="6" style="text-align: center; font-weight: bold;">Upcoming Events</td></tr>
-                </th:block>
-                <tr class="location-row" th:each="e : ${upcomingEvents}">
-                    <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
-                    <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}">Event Venue</a></td>
-                    <td th:text="${{e.date}}">Event date</td>
-                    <td style="text-align: center" th:text="${{e.time}}">Event time</td>
-                    <td sec:authorize="isAuthenticated()">
-                    <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
+        <tbody>
+        <th:block th:if="${upcomingEvents.iterator().hasNext()}">
+            <tr><td colspan="6" style="text-align: center; font-weight: bold;">Upcoming Events</td></tr>
+        </th:block>
+        <tr class="location-row" th:each="e : ${upcomingEvents}">
+            <td><a th:href="@{/events/description(id=${e.id})}" class="upcoming_events" th:text="${e.name}">Event Name</a></td>
+            <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}" th:data-postcode="${e.venue.postcode}">Event Venue</a></td>
+            <td th:text="${{e.date}}">Event date</td>
+            <td style="text-align: center" th:text="${{e.time}}">Event time</td>
+            <td sec:authorize="isAuthenticated()">
+                <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
                     <i class="fas fa-edit"></i> Edit
-                    </a>
-                    </td>
-                </tr>
-                <th:block th:if="${previousEvents.iterator().hasNext()}">
-                  <tr>
-                      <td colspan="6" style="text-align: center; font-weight: bold;">Previous Events</td>
-                  </tr>
-                </th:block>
-                <tr th:each="e : ${previousEvents}">
-                    <td><a th:href="@{/events/description(id=${e.id})}" th:text="${e.name}">See more</a></td>
-                    <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}">Event Venue</a></td>
-                    <td th:text="${{e.date}}">Event date</td>
-                    <td style="text-align: center" th:text="${{e.time}}">Event time</td>
-                    <td sec:authorize="isAuthenticated()">
-                      <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-edit"></i> Edit
-                      </a>
-                    </td>
-                </tr>
-            </tbody>
-          </table>
+                </a>
+            </td>
+        </tr>
+        <th:block th:if="${previousEvents.iterator().hasNext()}">
+            <tr>
+                <td colspan="6" style="text-align: center; font-weight: bold;">Previous Events</td>
+            </tr>
+        </th:block>
+        <tr class="location-row" th:each="e : ${previousEvents}">
+            <td><a th:href="@{/events/description(id=${e.id})}" class="previous_event" th:text="${e.name}">Event Name</a></td>
+            <td><a th:href="@{/venues/description(id=${e.venue.id})}" class="location-cell" th:text="${e.venue.name}" th:data-postcode="${e.venue.postcode}">Event Venue</a></td>
+            <td th:text="${{e.date}}">Event date</td>
+            <td style="text-align: center" th:text="${{e.time}}">Event time</td>
+            <td sec:authorize="isAuthenticated()">
+                <a th:href="@{/events/edit/{id}(id=${e.id})}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-        <div id="map"></div>
+    <div id="map"></div>
         <script>
-            const locations = [];
+            const upcomingEventNames = [];
+            const upcomingEventElements = document.querySelectorAll('.location-row .upcoming_events');
+            upcomingEventElements.forEach(element => upcomingEventNames.push(element.textContent));
+
+            const locations = {};
             const locationElements = document.querySelectorAll('.location-row .location-cell');
-            locationElements.forEach(element => locations.push(element.textContent));
+            const venues = {};
+
+            locationElements.forEach((element, index) => {
+                const location = element.textContent;
+                const venueId = element.href.split('id=')[1]; // Get the venue ID from the href
+                const venuePostcode = element.getAttribute('data-postcode'); // Get the venue postcode from the data-postcode attribute
+
+                if (!venues[venueId]) {
+                    venues[venueId] = {
+                        id: venueId,
+                        name: location,
+                        postcode: venuePostcode
+                    };
+                }
+
+                if (!locations[location]) {
+                    locations[location] = {
+                        name: location,
+                        postcode: venuePostcode,
+                        events: [],
+                        hasUpcomingEvents: false
+                    };
+                }
+
+                if (index < upcomingEventNames.length) {
+                    locations[location].events.push(upcomingEventNames[index]);
+                    locations[location].hasUpcomingEvents = true;
+                }
+            });
+
+
+            console.log(locations);
+
             mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
 
             const map = new mapboxgl.Map({
-              container: 'map',
-              style: 'mapbox://styles/mapbox/streets-v12',
-              center: [-2, 53.5],
-              zoom: 7
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v12',
+                center: [-2, 53.5],
+                zoom: 16
             });
 
-            locations.forEach(location => {
-              fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${mapboxgl.accessToken}`)
-                .then(response => response.json())
-                .then(data => {
-                  const feature = data.features[0];
-                  if (feature) {
-                    const marker = new mapboxgl.Marker()
-                      .setLngLat(feature.center)
-                      .addTo(map);
-                  }
-                });
+            const bounds = new mapboxgl.LngLatBounds();
+
+            Object.values(venues).forEach(venue => {
+                const location = locations[venue.name];
+                fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent( venue.postcode + ', ' +  venue.name)}.json?access_token=${mapboxgl.accessToken}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const feature = data.features[0];
+                        if (feature) {
+                            bounds.extend(feature.center);
+                            const marker = new mapboxgl.Marker()
+                                .setLngLat(feature.center)
+                                .addTo(map);
+
+                            const eventList = location && location.events.map(event => `<p style='text-align:center;'>${event}</p>`).join('');
+                            const noUpcomingEventsMessage = `<p style='text-align:center;'><em>No Upcoming Events</em></p>`;
+                            const popupContent = (location && location.hasUpcomingEvents) ? eventList : noUpcomingEventsMessage;
+
+                            const popup = new mapboxgl.Popup()
+                                .setHTML(`<p style='text-align:center;'><strong>${venue.name}</strong></p>${popupContent}`)
+                                .setMaxWidth("250");
+
+                            marker.setPopup(popup);
+
+                            const popupContentElement = popup._content;
+                            popupContentElement.style.width = "250px";
+                            popupContentElement.style.height = "100px";
+                            popupContentElement.style.overflowY = "auto";
+                        }
+                    });
             });
+
+            map.on('load', () => {
+                if (Object.keys(locations).length === 1) {
+                    map.fitBounds(bounds, { padding: 30, maxZoom: 16 });
+                } else {
+                    map.fitBounds(bounds, { padding: 30 });
+                }
+            });
+
         </script>
     </div>
 </body>

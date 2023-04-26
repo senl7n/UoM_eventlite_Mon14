@@ -290,7 +290,7 @@ public class EventsController {
 
         Statuses statuses = new Statuses(mastodonClient);
         try {
-            statuses.postStatus(comment, null, null, false, null, Status.Visibility.Public).execute();
+            statuses.postStatus(comment, null, null, false, null, Status.Visibility.Private).execute();
         }
         catch (Exception e) {
             return "redirect:/events/description?id=" + id + "&error=1";

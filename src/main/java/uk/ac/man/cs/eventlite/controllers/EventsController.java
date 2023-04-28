@@ -336,8 +336,8 @@ public class EventsController {
         List<String> messageDates = new ArrayList<>();
         List<String> messageTimes = new ArrayList<>();
         for (Status message : latest3Messages) {
-            messageContents.add(message.getContent());
-            messageURLs.add(message.getUrl());
+        	messageContents.add(message.getContent().substring(3, message.getContent().length() - 4));
+            messageURLs.add(message.getUrl().substring(3, message.getUrl().length() - 4));
             messageDates.add(message.getCreatedAt().substring(0, 10));
             messageTimes.add(message.getCreatedAt().substring(11, 16));
         }

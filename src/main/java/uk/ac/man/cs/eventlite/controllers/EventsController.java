@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
@@ -313,7 +314,6 @@ public class EventsController {
     @GetMapping
     public String getHomePageMessage(Model model) {
         // Mastodon timeline
-
         List<Status> timeline = new ArrayList<>();
         MastodonClient client = new MastodonClient.Builder("mastodon.online", new OkHttpClient.Builder(), new Gson())
                 .accessToken("AQHbd7AEwgaFHDARmaYPSPjkIvFrIMu-ZWhnpU2AIN0")
@@ -337,19 +337,19 @@ public class EventsController {
         List<String> messageURLs = new ArrayList<>();
         List<String> messageDates = new ArrayList<>();
         List<String> messageTimes = new ArrayList<>();
+        Pattern pattern = Pattern.compile("<.*?>");
         for (Status message : latest3Messages) {
-            messageContents.add(message.getContent());
-            messageURLs.add(message.getUrl());
+            messageContents.add(pattern.matcher(message.getContent()).replaceAll(" "));
+            messageURLs.add(pattern.matcher(message.getUrl()).replaceAll(""));
             messageDates.add(message.getCreatedAt().substring(0, 10));
             messageTimes.add(message.getCreatedAt().substring(11, 16));
         }
-        
         // Add the message attributes to the model
         model.addAttribute("messageContents", messageContents);
         model.addAttribute("messageTimes", messageTimes);
         model.addAttribute("messageDates", messageDates);
         model.addAttribute("messageURLs", messageURLs);
-        
+
         Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
         Iterable<Event> previousEvents = eventService.findPreviousEvents();
         model.addAttribute("upcomingEvents", upcomingEvents);
@@ -357,7 +357,15 @@ public class EventsController {
 
         return "events/index";
     }
-    
+
+    private static String unescapeHtml(String input) {
+        return input.replaceAll("&lt;", "<")
+                .replaceAll("&gt;", ">")
+                .replaceAll("&amp;", "&")
+                .replaceAll("&quot;", "\"")
+                .replaceAll("&#39;", "'");
+    }
+
 //    
 
 

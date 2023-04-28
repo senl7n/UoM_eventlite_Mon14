@@ -66,7 +66,7 @@ public class InitialDataLoader {
                     Event event = new Event();
                     event.setName("COMP23412 Showcase 0" + i);
                     event.setVenue(venue);
-                    event.setDate(LocalDate.parse("2023-05-0" + i));
+                    event.setDate(LocalDate.parse("2024-06-0" + i));
                     event.setTime(LocalTime.parse("12:00"));
                     eventService.save(event);
                 }

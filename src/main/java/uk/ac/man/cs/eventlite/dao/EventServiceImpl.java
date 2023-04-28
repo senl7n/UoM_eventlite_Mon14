@@ -65,9 +65,11 @@ public class EventServiceImpl implements EventService {
         List<Event> nullTimeEvents = (List<Event>) eventRepository.findByDateEqualsAndTimeIsNull(currentDate);
         upcomingEvents.addAll(nullTimeEvents);
         upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
-
-        List<Event> upcoming3Events = (List<Event>) upcomingEvents.subList(0,3);
-        return upcoming3Events;
+        if (upcomingEvents.size() < 3) {
+            return upcomingEvents;
+        }else{
+            return (List<Event>) upcomingEvents.subList(0,3);
+        }
     }
 
     @Override

@@ -328,7 +328,7 @@ public class EventsController {
         }
 
         // Get the latest three messages from the timeline
-        List<Status> latest3Messages = timeline.subList(Math.max(timeline.size() - 3, 0), timeline.size());
+        List<Status> latest3Messages = timeline.subList(0, Math.min(3, timeline.size()));
 
         // Create a list of message contents
         List<String> messageContents = new ArrayList<>();

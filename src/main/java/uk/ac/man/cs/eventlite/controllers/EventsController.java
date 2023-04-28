@@ -22,14 +22,24 @@ import java.util.List;
 
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.method.Timelines;
 import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.MastodonRequest;
+
 import okhttp3.OkHttpClient;
 import com.google.gson.Gson;
+import com.sys1yagi.mastodon4j.api.Pageable;
+import com.sys1yagi.mastodon4j.api.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
 public class EventsController {
+
+	private static final Logger logger = LoggerFactory.getLogger(EventsController.class);
 
 	@Autowired
 	private EventService eventService;
@@ -51,16 +61,26 @@ public class EventsController {
 		throw new EventNotFoundException(id);
 	}
 
-	@GetMapping
-	public String getAllEvents(Model model) {
-		Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
-		Iterable<Event> previousEvents = eventService.findPreviousEvents();
 
-        model.addAttribute("events", eventService.findAll());
-		model.addAttribute("upcomingEvents", upcomingEvents);
-		model.addAttribute("previousEvents", previousEvents);
+//	@GetMapping
+//	public String getAllEvents(Model model) {
+//		Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+//		Iterable<Event> previousEvents = eventService.findPreviousEvents();
+//
+//        model.addAttribute("events", eventService.findAll());
+//		model.addAttribute("upcomingEvents", upcomingEvents);
+//		model.addAttribute("previousEvents", previousEvents);
+//
+//		return "events/index";
+//	}
 
-		return "events/index";
+	@GetMapping("/home")
+	public String getHomepage(Model model) {
+		Iterable<Event> upcoming3Events = eventService.findUpcoming3Events();
+		model.addAttribute("upcoming3Events", upcoming3Events);
+        model.addAttribute("popular3Venues", venueService.findPopular3Venues());
+
+		return "events/home";
 	}
 
 	@GetMapping("/description")
@@ -274,7 +294,8 @@ public class EventsController {
     @PostMapping("/postComment/{id}")
     public String postComment(@PathVariable("id") long id, @RequestParam("comment") String comment, Model model, RedirectAttributes redirectAttributes) throws Mastodon4jRequestException {
         String accessToken = "AQHbd7AEwgaFHDARmaYPSPjkIvFrIMu-ZWhnpU2AIN0";
-        MastodonClient mastodonClient = new MastodonClient.Builder("mastodon.social", new OkHttpClient.Builder(), new Gson())
+
+        MastodonClient mastodonClient = new MastodonClient.Builder("mastodon.online", new OkHttpClient.Builder(), new Gson())
                 .accessToken(accessToken)
                 .useStreamingApi()
                 .build();
@@ -288,4 +309,61 @@ public class EventsController {
         }
         return "redirect:/events/description?id=" + id + "&error=0" + "&comment=" + comment;
     }
+    
+    @GetMapping
+    public String getHomePageMessage(Model model) {
+        // Mastodon timeline
+
+        List<Status> timeline = new ArrayList<>();
+        MastodonClient client = new MastodonClient.Builder("mastodon.online", new OkHttpClient.Builder(), new Gson())
+                .accessToken("AQHbd7AEwgaFHDARmaYPSPjkIvFrIMu-ZWhnpU2AIN0")
+                .useStreamingApi()
+                .build();
+
+        try {
+            // Retrieve the home timeline for the authenticated user
+            Timelines homeTimeline = new Timelines(client);
+            Pageable<Status> pageableStatuses = homeTimeline.getHome(new Range()).execute();
+            timeline = pageableStatuses.getPart();
+        } catch (Mastodon4jRequestException e) {
+            e.printStackTrace();
+        }
+
+        // Get the latest three messages from the timeline
+        List<Status> latest3Messages = timeline.subList(0, Math.min(3, timeline.size()));
+
+        // Create a list of message contents
+        List<String> messageContents = new ArrayList<>();
+        List<String> messageURLs = new ArrayList<>();
+        List<String> messageDates = new ArrayList<>();
+        List<String> messageTimes = new ArrayList<>();
+        for (Status message : latest3Messages) {
+            messageContents.add(message.getContent());
+            messageURLs.add(message.getUrl());
+            messageDates.add(message.getCreatedAt().substring(0, 10));
+            messageTimes.add(message.getCreatedAt().substring(11, 16));
+        }
+        
+        // Add the message attributes to the model
+        model.addAttribute("messageContents", messageContents);
+        model.addAttribute("messageTimes", messageTimes);
+        model.addAttribute("messageDates", messageDates);
+        model.addAttribute("messageURLs", messageURLs);
+        
+        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+        Iterable<Event> previousEvents = eventService.findPreviousEvents();
+        model.addAttribute("upcomingEvents", upcomingEvents);
+        model.addAttribute("previousEvents", previousEvents);
+
+        return "events/index";
+    }
+    
+//    
+
+
+    
+
+
+
+
 }

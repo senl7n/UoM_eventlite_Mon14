@@ -126,10 +126,17 @@ public class VenueServiceImpl implements VenueService {
                     maxIndex = j;
                 }
             }
+            if (max == 0) {
+                return (Iterable<Venue>) venueRepository.findAll();
+            }
             popular3Venues.add(venueRepository.findById((long) maxIndex + 1).get());
             numOfEvents.set(maxIndex, 0);
         }
-        return (Iterable<Venue>) popular3Venues;
+        if (popular3Venues.size() < 3) {
+            return (Iterable<Venue>) venueRepository.findAll();
+        }else{
+            return (Iterable<Venue>) popular3Venues;
+        }
     }
 
     //get the geolocation of the venue

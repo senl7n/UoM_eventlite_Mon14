@@ -27,7 +27,8 @@ public class Security extends WebSecurityConfigurerAdapter {
 			new AntPathRequestMatcher("/events", "GET"), new AntPathRequestMatcher("/venues", "GET"),
 			new AntPathRequestMatcher("/api/**", "GET"), new AntPathRequestMatcher("/h2-console/**"),
 			new AntPathRequestMatcher("/events/description", "GET"), new AntPathRequestMatcher("/venues/description", "GET"),
-			new AntPathRequestMatcher("/events/search", "GET"), new AntPathRequestMatcher("/venues/search", "GET")};
+			new AntPathRequestMatcher("/events/search", "GET"), new AntPathRequestMatcher("/venues/search", "GET"),
+			new AntPathRequestMatcher("/events/{\\d+}", "GET"), new AntPathRequestMatcher("/venues/{\\d+}", "GET")};
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {

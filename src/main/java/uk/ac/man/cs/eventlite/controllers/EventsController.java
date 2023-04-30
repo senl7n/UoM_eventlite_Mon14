@@ -40,49 +40,37 @@ import org.slf4j.LoggerFactory;
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
 public class EventsController {
 
-	private static final Logger logger = LoggerFactory.getLogger(EventsController.class);
+    private static final Logger logger = LoggerFactory.getLogger(EventsController.class);
 
-	@Autowired
-	private EventService eventService;
+    @Autowired
+    private EventService eventService;
 
-	@Autowired
-	private VenueService venueService;
-	
-
-	@ExceptionHandler(EventNotFoundException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public String eventNotFoundHandler(EventNotFoundException ex, Model model) {
-		model.addAttribute("not_found_id", ex.getId());
-
-		return "events/not_found";
-	}
-
-	@GetMapping("/{id}")
-	public String getEvent(@PathVariable("id") long id, Model model) {
-		throw new EventNotFoundException(id);
-	}
+    @Autowired
+    private VenueService venueService;
 
 
-//	@GetMapping
-//	public String getAllEvents(Model model) {
-//		Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
-//		Iterable<Event> previousEvents = eventService.findPreviousEvents();
-//
-//        model.addAttribute("events", eventService.findAll());
-//		model.addAttribute("upcomingEvents", upcomingEvents);
-//		model.addAttribute("previousEvents", previousEvents);
-//
-//		return "events/index";
-//	}
+    @ExceptionHandler(EventNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String eventNotFoundHandler(EventNotFoundException ex, Model model) {
+        model.addAttribute("not_found_id", ex.getId());
 
-	@GetMapping("/home")
-	public String getHomepage(Model model) {
-		Iterable<Event> upcoming3Events = eventService.findUpcoming3Events();
-		model.addAttribute("upcoming3Events", upcoming3Events);
+        return "events/not_found";
+    }
+
+    @GetMapping("/{id}")
+    public String getEvent(@PathVariable("id") long id, Model model) {
+        throw new EventNotFoundException(id);
+    }
+
+
+    @GetMapping("/home")
+    public String getHomepage(Model model) {
+        Iterable<Event> upcoming3Events = eventService.findUpcoming3Events();
+        model.addAttribute("upcoming3Events", upcoming3Events);
         model.addAttribute("popular3Venues", venueService.findPopular3Venues());
 
-		return "events/home";
-	}
+        return "events/home";
+    }
 
     @GetMapping("/description")
     public String getEventInfomation(@RequestParam(name="id") long id,
@@ -100,6 +88,7 @@ public class EventsController {
         model.addAttribute("comment", comment);
         return "/events/description";
     }
+
 
 
     //delete event
@@ -260,49 +249,49 @@ public class EventsController {
     //search event    
     @GetMapping("/search")
     public String search(@RequestParam(name="q") String query, Model model) {
-		if (query == null || query.trim().isEmpty()) {
-			model.addAttribute("found", false);
-	        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
-	        Iterable<Event> previousEvents = eventService.findPreviousEvents();
-	        model.addAttribute("upcomingEvents", upcomingEvents);
-	        model.addAttribute("previousEvents", previousEvents);
-		}
-		else {
-		       Iterable<Event> events = eventService.findByNameContainingIgnoreCase(query);
-		        if (events.iterator().hasNext()) {
-		            List<Event> upcomingEvents = new ArrayList<>();
-		            List<Event> previousEvents = new ArrayList<>();
+        if (query == null || query.trim().isEmpty()) {
+            model.addAttribute("found", false);
+            Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+            Iterable<Event> previousEvents = eventService.findPreviousEvents();
+            model.addAttribute("upcomingEvents", upcomingEvents);
+            model.addAttribute("previousEvents", previousEvents);
+        }
+        else {
+            Iterable<Event> events = eventService.findByNameContainingIgnoreCase(query);
+            if (events.iterator().hasNext()) {
+                List<Event> upcomingEvents = new ArrayList<>();
+                List<Event> previousEvents = new ArrayList<>();
 
-		            for (Event event : events) {
-		                if (event.getTime() != null) {
-		                    if (event.getDateTime().isAfter(LocalDateTime.now())) {
-		                        upcomingEvents.add(event);
-		                    } else {
-		                        previousEvents.add(event);
-		                    }
-		                } else { 
-		                    if (event.getDate().isBefore(LocalDate.now())) {
-		                    	previousEvents.add(event);
-		                    } else {
-		                    	upcomingEvents.add(event);
-		                    }
-		                }
-		            }
-		            upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
-		            previousEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
-		            model.addAttribute("upcomingEvents", upcomingEvents);
-		            model.addAttribute("previousEvents", previousEvents);
-		            model.addAttribute("found", true);
-			} else {
-				model.addAttribute("found", false);
-		        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
-		        Iterable<Event> previousEvents = eventService.findPreviousEvents();
-		        model.addAttribute("upcomingEvents", upcomingEvents);
-		        model.addAttribute("previousEvents", previousEvents);
-				
-			}
-		}
-		return "/events/searchResult";
+                for (Event event : events) {
+                    if (event.getTime() != null) {
+                        if (event.getDateTime().isAfter(LocalDateTime.now())) {
+                            upcomingEvents.add(event);
+                        } else {
+                            previousEvents.add(event);
+                        }
+                    } else {
+                        if (event.getDate().isBefore(LocalDate.now())) {
+                            previousEvents.add(event);
+                        } else {
+                            upcomingEvents.add(event);
+                        }
+                    }
+                }
+                upcomingEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+                previousEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
+                model.addAttribute("upcomingEvents", upcomingEvents);
+                model.addAttribute("previousEvents", previousEvents);
+                model.addAttribute("found", true);
+            } else {
+                model.addAttribute("found", false);
+                Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+                Iterable<Event> previousEvents = eventService.findPreviousEvents();
+                model.addAttribute("upcomingEvents", upcomingEvents);
+                model.addAttribute("previousEvents", previousEvents);
+
+            }
+        }
+        return "/events/searchResult";
     }
 
     @PostMapping("/postComment/{id}")
@@ -323,7 +312,7 @@ public class EventsController {
         }
         return "redirect:/events/description?id=" + id + "&error=0" + "&comment=" + comment;
     }
-    
+
     @GetMapping
     public String getHomePageMessage(Model model) {
         // Mastodon timeline
@@ -378,13 +367,5 @@ public class EventsController {
                 .replaceAll("&quot;", "\"")
                 .replaceAll("&#39;", "'");
     }
-
-//    
-
-
-    
-
-
-
 
 }

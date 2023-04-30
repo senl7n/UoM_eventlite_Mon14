@@ -23,7 +23,7 @@ public class VenuesController {
 
     @Autowired
     private VenueService venueService;
-    
+
     @Autowired
     private EventService eventService;
 
@@ -129,9 +129,9 @@ public class VenuesController {
     @GetMapping("/add")
     public String addPage(@RequestParam(value = "error", required = false) String error,
                           @RequestParam(value = "name", required = false) String name,
-                            @RequestParam(value = "address", required = false) String address,
-                            @RequestParam(value = "postcode", required = false) String postcode,
-                            @RequestParam(value = "capacity", required = false) String capacity_str,
+                          @RequestParam(value = "address", required = false) String address,
+                          @RequestParam(value = "postcode", required = false) String postcode,
+                          @RequestParam(value = "capacity", required = false) String capacity_str,
                           Model model) {
         if (error == null) {
             model.addAttribute("error", "");
@@ -167,35 +167,35 @@ public class VenuesController {
 
     @PostMapping("/add")
     public String addEvent(@RequestParam("name") String name,
-                            @RequestParam("address") String address,
-                            @RequestParam("postcode") String postcode,
-                            @RequestParam("capacity") String capacity_str,
-                            Model model) {
-          int capacity = 0;
-          try {
-                capacity = Integer.parseInt(capacity_str);
-          }
-          catch (NumberFormatException e) {
-                return "redirect:/venues/add?error=1&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
-          }
-          if (name.equals("")) {
-                return "redirect:/venues/add?error=2&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
-          }
-          if (address.equals("")) {
-                return "redirect:/venues/add?error=3&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
-          }
-          if (postcode.equals("")) {
-                return "redirect:/venues/add?error=4&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
-          }
-          if (capacity <= 0) {
-                return "redirect:/venues/add?error=5&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
-          }
-          if (!address.toLowerCase().contains(" road") && !address.toLowerCase().contains(" rd") && !address.toLowerCase().contains(" street") && !address.toLowerCase().contains(" st") && !address.toLowerCase().contains(" avenue") && !address.toLowerCase().contains(" ave")) {
-                return "redirect:/venues/add?error=6&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
-          }
-          venueService.add(name, capacity, address, postcode);
-          return "redirect:/venues";
-     }
+                           @RequestParam("address") String address,
+                           @RequestParam("postcode") String postcode,
+                           @RequestParam("capacity") String capacity_str,
+                           Model model) {
+        int capacity = 0;
+        try {
+            capacity = Integer.parseInt(capacity_str);
+        }
+        catch (NumberFormatException e) {
+            return "redirect:/venues/add?error=1&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
+        }
+        if (name.equals("")) {
+            return "redirect:/venues/add?error=2&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
+        }
+        if (address.equals("")) {
+            return "redirect:/venues/add?error=3&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
+        }
+        if (postcode.equals("")) {
+            return "redirect:/venues/add?error=4&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
+        }
+        if (capacity <= 0) {
+            return "redirect:/venues/add?error=5&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
+        }
+        if (!address.toLowerCase().contains(" road") && !address.toLowerCase().contains(" rd") && !address.toLowerCase().contains(" street") && !address.toLowerCase().contains(" st") && !address.toLowerCase().contains(" avenue") && !address.toLowerCase().contains(" ave")) {
+            return "redirect:/venues/add?error=6&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str;
+        }
+        venueService.add(name, capacity, address, postcode);
+        return "redirect:/venues";
+    }
 
     @GetMapping("/description")
     public String getVenueInformation(@RequestParam("id") long id,
@@ -231,22 +231,22 @@ public class VenuesController {
     //search venue
     @GetMapping("/search")
     public String search(@RequestParam(name = "q") String query, Model model) {
-    	if (query == null || query.trim().isEmpty()) {
-			model.addAttribute("found", false);
-			model.addAttribute("venues", venueService.findAll());
-		}
-		else {
-			Iterable<Venue> venues = venueService.findByNameContainingIgnoreCase(query);
-		        if (venues.iterator().hasNext()) {
-		        	model.addAttribute("venues", venues);
-					model.addAttribute("found", true);
-		        }
-		        else {
-		        	model.addAttribute("found", false);
-		        	model.addAttribute("venues",venueService.findAll());
-		        }
-		}
-		return "/venues/searchResult";
+        if (query == null || query.trim().isEmpty()) {
+            model.addAttribute("found", false);
+            model.addAttribute("venues", venueService.findAll());
+        }
+        else {
+            Iterable<Venue> venues = venueService.findByNameContainingIgnoreCase(query);
+            if (venues.iterator().hasNext()) {
+                model.addAttribute("venues", venues);
+                model.addAttribute("found", true);
+            }
+            else {
+                model.addAttribute("found", false);
+                model.addAttribute("venues",venueService.findAll());
+            }
+        }
+        return "/venues/searchResult";
     }
 
 }

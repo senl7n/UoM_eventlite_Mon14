@@ -11,6 +11,7 @@ import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
+import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 import java.util.ArrayList;
@@ -61,40 +62,34 @@ public class VenuesController {
     @GetMapping("/edit/{id}")
     public String editPage(@PathVariable("id") long id,
                            @RequestParam(value = "error", required = false) String error,
-                           Model model) {
+                           Model model) throws VenueNotFoundException {
         Optional<Venue> venue = venueService.findById(id);
-        if (venue.isPresent()) {
-            model.addAttribute("venue", venue.get());
-            if (error == null) {
-                model.addAttribute("error", "");
-            }
-            else if(error.equals("1")) {
-                model.addAttribute("error", "Invalid capacity.");
-            }
-            else if(error.equals("2")) {
-                model.addAttribute("error", "Please enter a valid name.");
-            }
-            else if(error.equals("3")) {
-                model.addAttribute("error", "Please enter a valid address.");
-            }
-            else if(error.equals("4")) {
-                model.addAttribute("error", "Please enter a valid postcode.");
-            }
-            else if(error.equals("5")) {
-                model.addAttribute("error", "Please enter a positive capacity.");
-            }
-            else if(error.equals("6")) {
-                model.addAttribute("error", "Please include a road name.");
-            }
-            else {
-                model.addAttribute("error", "Unknown error.");
-            }
-            model.addAttribute("error_id", error);
 
-            return "venues/edit";
+        if (!venue.isPresent()) {
+            throw new VenueNotFoundException(id);
         }
 
-        return "redirect:/venues";
+        model.addAttribute("venue", venue.get());
+        if (error == null) {
+            model.addAttribute("error", "");
+        } else if (error.equals("1")) {
+            model.addAttribute("error", "Invalid capacity.");
+        } else if (error.equals("2")) {
+            model.addAttribute("error", "Please enter a valid name.");
+        } else if (error.equals("3")) {
+            model.addAttribute("error", "Please enter a valid address.");
+        } else if (error.equals("4")) {
+            model.addAttribute("error", "Please enter a valid postcode.");
+        } else if (error.equals("5")) {
+            model.addAttribute("error", "Please enter a positive capacity.");
+        } else if (error.equals("6")) {
+            model.addAttribute("error", "Please include a road name.");
+        } else {
+            model.addAttribute("error", "Unknown error.");
+        }
+        model.addAttribute("error_id", error);
+
+        return "venues/edit";
     }
 
     @PostMapping("/edit/{id}")
@@ -204,31 +199,34 @@ public class VenuesController {
 
     @GetMapping("/description")
     public String getVenueInformation(@RequestParam("id") long id,
-            @RequestParam(value = "error", required = false) String error,
-            Model model) {
-    	Optional<Venue> venue = venueService.findById(id);
-    	Iterable<Event> allEvents = eventService.findUpcomingEvents();
-    	ArrayList<Event> eventsAtVenue = new ArrayList<Event>();
-    	for(Event e: allEvents) {
-    		if(e.getVenue() == venue.get()) {
-    			eventsAtVenue.add(e);
-    		}
-    	}
+                                      @RequestParam(value = "error", required = false) String error,
+                                      Model model) throws VenueNotFoundException {
+        Optional<Venue> venue = venueService.findById(id);
 
-    	if (error == null) {
-    		model.addAttribute("error", "");
-    	}
-    	else if (error.equals("1")) {
-    		model.addAttribute("error", "The venue cannot be deleted as it is currently being used by one or more events.");
-	}
-    	else {
-    		model.addAttribute("error", "Unknown error.");
-		}
-	model.addAttribute("venue", venue.get());
-	model.addAttribute("events", eventsAtVenue);
-	return "/venues/description";
+        if (!venue.isPresent()) {
+            throw new VenueNotFoundException(id);
+        }
 
+        Iterable<Event> allEvents = eventService.findUpcomingEvents();
+        ArrayList<Event> eventsAtVenue = new ArrayList<Event>();
+        for (Event e : allEvents) {
+            if (e.getVenue().equals(venue.get())) {
+                eventsAtVenue.add(e);
+            }
+        }
+
+        if (error == null) {
+            model.addAttribute("error", "");
+        } else if (error.equals("1")) {
+            model.addAttribute("error", "The venue cannot be deleted as it is currently being used by one or more events.");
+        } else {
+            model.addAttribute("error", "Unknown error.");
+        }
+        model.addAttribute("venue", venue.get());
+        model.addAttribute("events", eventsAtVenue);
+        return "/venues/description";
     }
+
 
     //search venue
     @GetMapping("/search")

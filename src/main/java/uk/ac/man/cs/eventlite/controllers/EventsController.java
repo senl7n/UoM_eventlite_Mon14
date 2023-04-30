@@ -84,17 +84,23 @@ public class EventsController {
 		return "events/home";
 	}
 
-	@GetMapping("/description")
-	public String getEventInfomation(@RequestParam(name="id") long id,
+    @GetMapping("/description")
+    public String getEventInfomation(@RequestParam(name="id") long id,
                                      @RequestParam(name="error", required=false) String error,
                                      @RequestParam(name="comment", required=false) String comment,
-                                     Model model) {
-		Event event = eventService.findById(id);
+                                     Model model) throws EventNotFoundException {
+        Event event = eventService.findById(id);
+
+        if (event == null) {
+            throw new EventNotFoundException(id);
+        }
+
         model.addAttribute("error", error);
-		model.addAttribute("event", event);
+        model.addAttribute("event", event);
         model.addAttribute("comment", comment);
-		return "/events/description";
-	}
+        return "/events/description";
+    }
+
 
     //delete event
     @DeleteMapping("/{id}")
@@ -107,7 +113,14 @@ public class EventsController {
     @GetMapping("/edit/{id}")
     public String editPage(@PathVariable("id") long id,
                            @RequestParam(value = "error", required = false) String error,
-                           Model model) {
+                           Model model) throws EventNotFoundException {
+
+        Event event = eventService.findById(id);
+
+        if (event == null) {
+            throw new EventNotFoundException(id);
+        }
+
         model.addAttribute("event", eventService.findById(id));
         model.addAttribute("venues", venueService.findAll());
         if (error == null) {

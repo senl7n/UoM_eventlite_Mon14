@@ -14,7 +14,7 @@ import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 
 @Controller
-@RequestMapping(value = "/homepage", produces = {MediaType.TEXT_HTML_VALUE})
+@RequestMapping(value = "/", produces = {MediaType.TEXT_HTML_VALUE})
 public class HomepageController {
 
     @Autowired

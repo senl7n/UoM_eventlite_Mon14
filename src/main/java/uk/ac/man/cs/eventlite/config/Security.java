@@ -22,12 +22,12 @@ public class Security extends WebSecurityConfigurerAdapter {
 
 	// List the mappings/methods for which no authorisation is required.
 	// By default we allow all GETs and full access to the H2 console.
-	private static final RequestMatcher[] NO_AUTH = { new AntPathRequestMatcher("/webjars/**", "GET"),
-			new AntPathRequestMatcher("/homepage", "GET"), new AntPathRequestMatcher("/events", "GET"),
-			new AntPathRequestMatcher("/venues", "GET"), new AntPathRequestMatcher("/api/**", "GET"),
-			new AntPathRequestMatcher("/h2-console/**"), new AntPathRequestMatcher("/events/description", "GET"),
-			new AntPathRequestMatcher("/venues/description", "GET"), new AntPathRequestMatcher("/events/search", "GET"),
-			new AntPathRequestMatcher("/venues/search", "GET")};
+	private static final RequestMatcher[] NO_AUTH = {
+			new AntPathRequestMatcher("/webjars/**", "GET"), new AntPathRequestMatcher("/", "GET"),
+			new AntPathRequestMatcher("/events", "GET"), new AntPathRequestMatcher("/venues", "GET"),
+			new AntPathRequestMatcher("/api/**", "GET"), new AntPathRequestMatcher("/h2-console/**"),
+			new AntPathRequestMatcher("/events/description", "GET"), new AntPathRequestMatcher("/venues/description", "GET"),
+			new AntPathRequestMatcher("/events/search", "GET"), new AntPathRequestMatcher("/venues/search", "GET")};
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {

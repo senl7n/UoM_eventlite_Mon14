@@ -35,7 +35,7 @@
   <div class="container" style="margin-top:10px;">
     <div sec:authorize="!isAuthenticated()">
       <i class="fas fa-user-slash" aria-hidden="true"></i> Not signed in
-      <a class="btn btn-primary" role="button" th:href="@{/sign-in}">
+      <a class="btn btn-primary" role="button" th:href="@{/sign-in}" style="color: azure">
         <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Sign in
       </a>
     </div>

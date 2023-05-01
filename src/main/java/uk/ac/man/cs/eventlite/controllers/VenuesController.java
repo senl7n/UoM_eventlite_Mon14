@@ -224,7 +224,7 @@ public class VenuesController {
         }
         model.addAttribute("venue", venue.get());
         model.addAttribute("events", eventsAtVenue);
-        return "/venues/description";
+        return "venues/description";
     }
 
 
@@ -240,13 +240,15 @@ public class VenuesController {
             if (venues.iterator().hasNext()) {
                 model.addAttribute("venues", venues);
                 model.addAttribute("found", true);
+                model.addAttribute("searchMessage", "VENUE CONTAINING '" + query + "' FOUND");
             }
             else {
                 model.addAttribute("found", false);
                 model.addAttribute("venues",venueService.findAll());
+                model.addAttribute("searchMessage", "VENUE CONTAINING '"+ query + "' NOT FOUND, HERE IS ALL THE VENUES WE HAVE");
             }
         }
-        return "/venues/searchResult";
+        return "venues/searchResult";
     }
 
 }

@@ -250,6 +250,7 @@ public class EventsController {
     //search event    
     @GetMapping("/search")
     public String search(@RequestParam(name="q") String query, Model model) {
+        prepareModelAttributes(model);
         if (query == null || query.trim().isEmpty()) {
             model.addAttribute("found", false);
             Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
@@ -283,16 +284,18 @@ public class EventsController {
                 model.addAttribute("upcomingEvents", upcomingEvents);
                 model.addAttribute("previousEvents", previousEvents);
                 model.addAttribute("found", true);
+                model.addAttribute("searchMessage", "EVENT CONTAINING '" + query + "' FOUND");
             } else {
                 model.addAttribute("found", false);
                 Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
                 Iterable<Event> previousEvents = eventService.findPreviousEvents();
                 model.addAttribute("upcomingEvents", upcomingEvents);
                 model.addAttribute("previousEvents", previousEvents);
+                model.addAttribute("searchMessage", "EVENT CONTAINING '"+ query + "' NOT FOUND, HERE IS ALL THE EVENTS WE HAVE");
 
             }
         }
-        return "/events/searchResult";
+        return "events/searchResult";
     }
 
     @PostMapping("/postComment/{id}")
@@ -314,8 +317,8 @@ public class EventsController {
         return "redirect:/events/description?id=" + id + "&error=0" + "&comment=" + comment;
     }
 
-    @GetMapping
-    public String getHomePageMessage(Model model) {
+
+    public void prepareModelAttributes(Model model) {
         // Mastodon timeline
         List<Status> timeline = new ArrayList<>();
         MastodonClient client = new MastodonClient.Builder("mastodon.online", new OkHttpClient.Builder(), new Gson())
@@ -357,8 +360,18 @@ public class EventsController {
         Iterable<Event> previousEvents = eventService.findPreviousEvents();
         model.addAttribute("upcomingEvents", upcomingEvents);
         model.addAttribute("previousEvents", previousEvents);
+    }
 
+    @GetMapping
+    public String getHomePageMessage(Model model) {
+        prepareModelAttributes(model);
         return "events/index";
+    }
+
+    @GetMapping("/searchResult")
+    public String getSearchResultPageMessage(Model model) {
+        prepareModelAttributes(model);
+        return "events/searchResult";
     }
 
     private static String unescapeHtml(String input) {

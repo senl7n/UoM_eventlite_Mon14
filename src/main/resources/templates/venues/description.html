@@ -80,8 +80,8 @@
                     </tbody>
                 </table>
         </div>
-        <div th:if="${events.size() == 0}">
-            <p>No upcoming events.</p>
+        <div th:if="${events.size() == 0}" style="margin-top: 8px;">
+            <p>No Upcoming Events</p>
         </div>
 
         <div th:if="${!#strings.isEmpty(error)}" class="alert alert-danger">

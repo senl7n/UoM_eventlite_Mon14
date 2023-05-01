@@ -19,26 +19,44 @@
     <div layout:fragment="content">
       <h1>Search Result</h1>
 
+      <form action="/events/search" style="margin-top: -20px; margin-bottom: 8px; width: 80%" method="get">
+        <label for="search-input"></label>
+        <div class="input-group">
+          <input
+                  type="text"
+                  id="search-input"
+                  name="q"
+                  class="form-control col-md-5"
+                  placeholder="Enter your words"
+          />
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+        </div>
+      </form>
+
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span th:if="${found}">
-            <p style="font-weight: bold; font-size: 16px; color: #8b8f94">
-                EVENT FOUND
-            </p>
-        </span>
+      <div th:if="${found}">
+            <p style="font-weight: bold; font-size: 16px; color: #8b8f94" th:text="${searchMessage}"></p>
+        </div>
 
-      <span th:if="${not found}">
-            <p style="font-weight: bold; font-size: 16px; color: #e13554">
-                EVENT NOT FOUND, HERE IS ALL THE EVENTS WE HAVE
-            </p>
-        </span>
+      <div th:if="${not found}">
+            <p style="font-weight: bold; font-size: 16px; color: #e13554" th:text="${searchMessage}"></p>
+        </div>
 
-      <span>
-            <a th:href="@{/events}" class="btn btn-primary btn-sm">
-                <i class="fas fa-chevron-circle-left"></i> Back
-            </a>
-      </span>
     </div>
 
+    <div style="margin-bottom: 10px;">
+          <a th:href="@{/events}" class="btn btn-primary btn-sm">
+              <i class="fas fa-chevron-circle-left"></i> Back
+          </a>
+          <span sec:authorize="isAuthenticated()" style="float: right">
+                    <a href="/events/add" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> New Event</a>
+          </span>
+    </div>
+
+
+    <div>
       <table class="table table-striped table-hover">
         <thead>
         <tr>
@@ -83,6 +101,28 @@
         </tr>
         </tbody>
       </table>
+    </div>
+
+      <br>
+      <div th:if="${not #lists.isEmpty(messageContents)}">
+        <h1>Social Feed</h1>
+        <table class="table table-striped table-hover">
+          <thead>
+          <tr>
+            <th><i class="fas fa-clock"></i> Time</th>
+            <th><i class="fas fa-calendar"></i> Date</th>
+            <th><i class="fas fa-comment"></i> Comment</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="i : ${#numbers.sequence(0,2)}">
+            <td th:text="${messageTimes.get(i)}">Message Time </td>
+            <td th:text="${messageDates.get(i)}">Message Date</td>
+            <td><a th:href="${messageURLs.get(i)}" th:text="${messageContents.get(i)}">Comment</a></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
 
       <div id="map"></div>
       <script>

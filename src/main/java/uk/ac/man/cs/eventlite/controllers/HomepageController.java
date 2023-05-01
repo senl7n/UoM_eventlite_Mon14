@@ -23,6 +23,10 @@ public class HomepageController {
     @Autowired
     private VenueService venueService;
 
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void getJsonRoot() {
+    }
 
     @ExceptionHandler(EventNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

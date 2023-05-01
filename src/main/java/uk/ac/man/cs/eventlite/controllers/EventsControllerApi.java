@@ -44,13 +44,13 @@ public class EventsControllerApi {
 		return eventAssembler.toModel(eventService.findById(id));
 	}
 
-	@GetMapping("/api/events/{id}")
+	@GetMapping
 	public CollectionModel<EntityModel<Event>> getAllEvents() {
 		return eventAssembler.toCollectionModel(eventService.findAll())
 				.add(linkTo(methodOn(EventsControllerApi.class).getAllEvents()).withSelfRel());
 	}
 
-    @GetMapping("/api/events/{id}/venue")
+    @GetMapping("{id}/venue")
     public ResponseEntity<EntityModel<Venue>> getEventVenue(@PathVariable Long id) {
         Event event = eventService.findById(id);
         Venue venue = event.getVenue();

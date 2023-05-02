@@ -1,6 +1,5 @@
 package uk.ac.man.cs.eventlite.dao;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,9 +20,9 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @ExtendWith(SpringExtension.class)
@@ -68,7 +67,6 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		for (Event event : upcomingEvents) {
 			assertTrue(event.getDate().isAfter(currentDate) || (event.getDate().isEqual(currentDate) && event.getTime().isAfter(currentTime)));
 		}
-
 	}
 
 	@Test
@@ -81,7 +79,6 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		for (Event event : previousEvents) {
 			assertTrue(event.getDate().isBefore(currentDate) || (event.getDate().isEqual(currentDate) && event.getTime().isBefore(currentTime)));
 		}
-
 	}
 
 	@Test
@@ -94,6 +91,67 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		}
 	}
 
+	@Test
+	public void testUpdate() {
+		Iterator<Event> events = EventServiceImpl.findByNameContainingIgnoreCase("COMP23412 Showcase 01").iterator();
+		Event event = events.next();
+		assertEquals("COMP23412 Showcase 01", event.getName());
+
+		LocalDate oldDate = event.getDate();
+
+		Event newEvent = new Event();
+		newEvent.setId(event.getId());
+		newEvent.setName("Test Update Name");
+		newEvent.setDate(LocalDate.parse("2077-01-01"));
+		newEvent.setTime(LocalTime.parse("12:00"));
+		newEvent.setVenue(event.getVenue());
+		newEvent.setDescription("Test Update Description");
+		EventServiceImpl.save(newEvent);
+
+		Event AlteredEvent = EventServiceImpl.findById(event.getId());
+
+		assertEquals("Test Update Name", AlteredEvent.getName());
+		assertEquals(event.getId(), AlteredEvent.getId());
+		assertNotEquals(oldDate, AlteredEvent.getDate());
+		assertEquals("Test Update Description", AlteredEvent.getDescription());
+	}
+
+	@Test
+	public void testAdd() {
+		Event event = new Event();
+		event.setName("Test Add Name");
+		event.setDate(LocalDate.parse("2077-01-01"));
+		event.setTime(LocalTime.parse("12:00"));
+		event.setVenue(new Venue());
+		event.setDescription("Test Add Description");
+		EventServiceImpl.save(event);
+
+		Event newEvent = EventServiceImpl.findById(event.getId());
+
+		assertEquals("Test Add Name", newEvent.getName());
+		assertEquals(LocalDate.parse("2077-01-01"), newEvent.getDate());
+		assertEquals(LocalTime.parse("12:00"), newEvent.getTime());
+		assertEquals("Test Add Description", newEvent.getDescription());
+	}
+
+	@Test
+	public void testDelete() {
+		// create a new event and check the events amount before and after deleting
+		long eventsAmountBefore;
+		long eventsAmountAfter;
+		Venue venue = VenueServiceImpl.findAll().iterator().next();
+		Event event = new Event();
+		event.setName("Test Delete Name");
+		event.setDate(LocalDate.parse("2077-01-01"));
+		event.setTime(LocalTime.parse("12:00"));
+		event.setVenue(venue);
+		event.setDescription("Test Delete Description");
+		EventServiceImpl.save(event);
+		eventsAmountBefore = EventServiceImpl.getNumberOfEvent();
+		EventServiceImpl.deleteById(event.getId());
+		eventsAmountAfter = EventServiceImpl.getNumberOfEvent();
+		assertEquals(eventsAmountBefore - 1, eventsAmountAfter);
+	}
 
 
 }

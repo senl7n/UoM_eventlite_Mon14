@@ -8,7 +8,7 @@ import java.time.LocalTime;
 
 public interface EventService {
 
-    public long count();
+    public long getNumberOfEvent();
 
     public Iterable<Event> findAll();
 

@@ -56,8 +56,8 @@ public class EventsControllerTest {
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getHomePageMessage"));
 
-//		verify(eventService).findAll();
-//		verify(venueService).findAll();
+		verify(eventService).findUpcomingEvents();
+		verify(eventService).findPreviousEvents();
 		verifyNoInteractions(event);
 		verifyNoInteractions(venue);
 	}
@@ -73,8 +73,8 @@ public class EventsControllerTest {
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getHomePageMessage"));
 
-//		verify(eventService).findAll();
-//		verify(venueService).findAll();
+		verify(eventService).findUpcomingEvents();
+		verify(eventService).findPreviousEvents();
 	}
 
 	@Test

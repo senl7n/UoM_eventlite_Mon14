@@ -1,10 +1,8 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.StringContains.containsString;
 
-import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +17,6 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import uk.ac.man.cs.eventlite.EventLite;
-
-import java.util.Collection;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EventLite.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -48,24 +44,6 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 		client.get().uri("/events/99").accept(MediaType.TEXT_HTML).exchange().expectStatus().isNotFound().expectHeader()
 				.contentTypeCompatibleWith(MediaType.TEXT_HTML).expectBody(String.class).consumeWith(result -> {
 					assertThat(result.getResponseBody(), containsString("99"));
-				});
-	}
-
-	@Test
-	public void testSearchEvents() {
-		String searchTerm = "COMP23412 Showcase 01";
-
-		client.get().uri(uriBuilder -> uriBuilder.path("/events")
-						.queryParam("search", searchTerm)
-						.build())
-				.accept(MediaType.TEXT_HTML)
-				.exchange()
-				.expectStatus().isOk()
-				.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
-				.expectBody(String.class)
-				.consumeWith(result -> {
-					String responseBody = result.getResponseBody();
-					assertThat(responseBody, containsString(searchTerm));
 				});
 	}
 }

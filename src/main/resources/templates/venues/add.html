@@ -27,14 +27,14 @@
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='postcode'>Postcode</span>
-            <input th:value="${#strings.isEmpty(postcode) ? '' : postcode}" type='text' class='form-control' name = 'postcode' aria-label='postcode' aria-describedby='postcode' placeholder="Format: 'City PostCode' e.g 'Manchester M13 9TX'">
+            <input th:value="${#strings.isEmpty(postcode) ? '' : postcode}" type='text' class='form-control' name = 'postcode' aria-label='postcode' aria-describedby='postcode'>
             <th:block th:if="${error_id == '4'}">
                 <i class="fas fa-exclamation-triangle" style="color: red; margin-left: 10px;"></i>
             </th:block>
         </div>
         <div class='input-group mb-3'>
             <span class='input-group-text' id='capacity'>Capacity</span>
-            <input th:value="${#strings.isEmpty(capacity) ? '' : capacity}" type='number' class='form-control' name = 'capacity' aria-label='capacity' aria-describedby='capacity'>
+            <input th:value="${#strings.isEmpty(capacity) ? '' : capacity}" type='text' class='form-control' name = 'capacity' aria-label='capacity' aria-describedby='capacity'>
             <th:block th:if="${error_id == '5'}">
                 <i class="fas fa-exclamation-triangle" style="color: red; margin-left: 10px;"></i>
             </th:block>

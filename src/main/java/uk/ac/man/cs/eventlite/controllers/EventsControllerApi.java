@@ -50,7 +50,7 @@ public class EventsControllerApi {
 				.add(linkTo(methodOn(EventsControllerApi.class).getAllEvents()).withSelfRel());
 	}
 
-    @GetMapping("/api/events/{id}/venue")
+    @GetMapping("/{id}/venue")
     public ResponseEntity<EntityModel<Venue>> getEventVenue(@PathVariable Long id) {
         Event event = eventService.findById(id);
         Venue venue = event.getVenue();

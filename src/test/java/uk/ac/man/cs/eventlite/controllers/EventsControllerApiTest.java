@@ -84,4 +84,34 @@ public class EventsControllerApiTest {
                 .andExpect(jsonPath("$.error", containsString("event 99"))).andExpect(jsonPath("$.id", equalTo(99)))
                 .andExpect(handler().methodName("getEvent"));
     }
+
+    @Test
+    public void getEventVenueFound() throws Exception {
+        Venue v = new Venue();
+        v.setId(99);
+        v.setName("Venue");
+        v.setCapacity(200);
+        v.setAddress("Address");
+        v.setPostcode("Postcode");
+        venueService.save(v);
+        Event e = new Event();
+        e.setId(99);
+        e.setName("Event");
+        e.setDate(LocalDate.now());
+        e.setTime(LocalTime.now());
+        e.setVenue(v);
+        eventService.save(e);
+        when(eventService.findById(99)).thenReturn(e);
+        when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(e));
+
+        mvc.perform(get("/api/events/99/venue").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(handler().methodName("getEventVenue"))
+                .andExpect(jsonPath("$.name", equalTo("Venue")))
+                .andExpect(jsonPath("$.capacity", equalTo(200)))
+                .andExpect(jsonPath("$.address", equalTo("Address")))
+                .andExpect(jsonPath("$.postcode", equalTo("Postcode")));
+
+        verify(eventService).findById(99);
+    }
+
 }

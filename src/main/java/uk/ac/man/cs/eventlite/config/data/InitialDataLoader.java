@@ -42,24 +42,24 @@ public class InitialDataLoader {
                 venue.setId(1);
                 venue.setName("Kilburn Building");
                 venue.setAddress("Oxford Road");
-                venue.setPostcode("M13 9PL");
-                venue.setCapacity(250);
+                venue.setPostcode("Manchester M13 9PL");
+                venue.setCapacity(350);
                 venueService.save(venue);
 
                 Venue venue2 = new Venue();
                 venue2.setId(2);
-                venue2.setName("Engineering Building");
-                venue2.setAddress("Oxford Road");
-                venue2.setPostcode("M13 9PL");
+                venue2.setName("Red Chilli");
+                venue2.setAddress("403 Oxford Road");
+                venue2.setPostcode("Manchester M13 9WG");
                 venue2.setCapacity(250);
                 venueService.save(venue2);
 
                 Venue venue3 = new Venue();
                 venue3.setId(3);
-                venue3.setName("Stopford Building");
-                venue3.setAddress("Oxford Road");
-                venue3.setPostcode("M13 9PL");
-                venue3.setCapacity(250);
+                venue3.setName("Manchester Art Gallery");
+                venue3.setAddress("Mosley Street");
+                venue3.setPostcode("Manchester M2 3JL");
+                venue3.setCapacity(500);
                 venueService.save(venue3);
 
                 for (int i = 1; i < 4; i++) {
@@ -76,7 +76,7 @@ public class InitialDataLoader {
                     event.setName("COMP23412 Showcase 4" + i);
                     event.setVenue(venue);
                     event.setDate(LocalDate.parse("2023-01-0" + i));
-                    event.setTime(LocalTime.parse("12:00"));
+                    event.setTime(LocalTime.parse("13:00"));
                     eventService.save(event);
                 }
 

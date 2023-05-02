@@ -18,6 +18,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import uk.ac.man.cs.eventlite.EventLite;
 
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EventLite.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -44,6 +45,24 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 		client.get().uri("/events/99").accept(MediaType.TEXT_HTML).exchange().expectStatus().isNotFound().expectHeader()
 				.contentTypeCompatibleWith(MediaType.TEXT_HTML).expectBody(String.class).consumeWith(result -> {
 					assertThat(result.getResponseBody(), containsString("99"));
+				});
+	}
+
+	@Test
+	public void testSearchEvents() {
+		String searchTerm = "COMP23412 Showcase 01";
+
+		client.get().uri(uriBuilder -> uriBuilder.path("/events")
+						.queryParam("search", searchTerm)
+						.build())
+				.accept(MediaType.TEXT_HTML)
+				.exchange()
+				.expectStatus().isOk()
+				.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML)
+				.expectBody(String.class)
+				.consumeWith(result -> {
+					String responseBody = result.getResponseBody();
+					assertThat(responseBody, containsString(searchTerm));
 				});
 	}
 }

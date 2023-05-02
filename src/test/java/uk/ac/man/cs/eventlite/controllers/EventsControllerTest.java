@@ -4,11 +4,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,4 +82,63 @@ public class EventsControllerTest {
 		mvc.perform(get("/events/99").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound())
 				.andExpect(view().name("events/not_found")).andExpect(handler().methodName("getEvent"));
 	}
+
+	@Test
+	public void searchForExistingEvent() throws Exception {
+		Venue venue = new Venue();
+		venue.setName("Example Venue");
+		venue.setCapacity(100);
+		venue.setAddress("123 Example Street");
+		venue.setPostcode("EX1 2PL");
+
+		Event testEvent = new Event();
+		testEvent.setName("Eating");
+
+		// Set a date for the mock event
+		LocalDate eventDate = LocalDate.of(2024, 6, 01);
+		testEvent.setDate(eventDate);
+		testEvent.setVenue(venue);
+
+		List<Event> events = Collections.singletonList(testEvent);
+
+		when(eventService.findByNameContainingIgnoreCase("eat")).thenReturn(events);
+
+		mvc.perform(get("/events/search?q=eat").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk())
+				.andExpect(view().name("events/searchResult"))
+				.andExpect(handler().methodName("search"))
+				.andExpect(model().attribute("found", true))
+				.andExpect(model().attribute("searchMessage", "EVENT CONTAINING 'eat' FOUND"))
+				.andExpect(model().attribute("upcomingEvents", events));
+	}
+
+	@Test
+	public void searchForUnrealEvent() throws Exception {
+		Venue venue = new Venue();
+		venue.setName("Example Venue");
+		venue.setCapacity(100);
+		venue.setAddress("123 Example Street");
+		venue.setPostcode("EX1 2PL");
+
+		Event testEvent = new Event();
+		testEvent.setName("Football");
+
+		// Set a date for the mock event
+		LocalDate eventDate = LocalDate.of(2024, 6, 01);
+		testEvent.setDate(eventDate);
+		testEvent.setVenue(venue);
+
+		List<Event> events = Collections.singletonList(testEvent);
+
+		when(eventService.findByNameContainingIgnoreCase("basketball")).thenReturn(Collections.emptyList());
+
+		mvc.perform(get("/events/search?q=basketball").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk())
+				.andExpect(view().name("events/searchResult"))
+				.andExpect(handler().methodName("search"))
+				.andExpect(model().attribute("found", false))
+				.andExpect(model().attribute("searchMessage", "EVENT CONTAINING 'basketball' NOT FOUND, HERE IS ALL THE EVENTS WE HAVE"));
+	}
+
+
 }

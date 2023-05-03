@@ -345,7 +345,8 @@ public class EventsController {
         List<String> messageTimes = new ArrayList<>();
         Pattern pattern = Pattern.compile("<.*?>");
         for (Status message : latest3Messages) {
-            messageContents.add(pattern.matcher(message.getContent()).replaceAll(" "));
+            String messageContent = unescapeHtml(message.getContent());
+            messageContents.add(pattern.matcher(messageContent).replaceAll(""));
             messageURLs.add(pattern.matcher(message.getUrl()).replaceAll(""));
             messageDates.add(message.getCreatedAt().substring(0, 10));
             messageTimes.add(message.getCreatedAt().substring(11, 16));

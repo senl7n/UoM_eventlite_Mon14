@@ -56,8 +56,8 @@ public class EventsControllerTest {
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getHomePageMessage"));
 
-//		verify(eventService).findAll();
-//		verify(venueService).findAll();
+		verify(eventService).findUpcomingEvents();
+		verify(eventService).findPreviousEvents();
 		verifyNoInteractions(event);
 		verifyNoInteractions(venue);
 	}
@@ -73,8 +73,8 @@ public class EventsControllerTest {
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getHomePageMessage"));
 
-//		verify(eventService).findAll();
-//		verify(venueService).findAll();
+		verify(eventService).findUpcomingEvents();
+		verify(eventService).findPreviousEvents();
 	}
 
 	@Test
@@ -110,6 +110,7 @@ public class EventsControllerTest {
 				.andExpect(model().attribute("found", true))
 				.andExpect(model().attribute("searchMessage", "EVENT CONTAINING 'eat' FOUND"))
 				.andExpect(model().attribute("upcomingEvents", events));
+		verify(eventService).findByNameContainingIgnoreCase("eat");
 	}
 
 	@Test
@@ -138,6 +139,7 @@ public class EventsControllerTest {
 				.andExpect(handler().methodName("search"))
 				.andExpect(model().attribute("found", false))
 				.andExpect(model().attribute("searchMessage", "EVENT CONTAINING 'basketball' NOT FOUND, HERE IS ALL THE EVENTS WE HAVE"));
+		verify(eventService).findByNameContainingIgnoreCase("basketball");
 	}
 
 

@@ -36,28 +36,46 @@ public class TestDataLoader {
     CommandLineRunner initDatabase() {
         return args -> {
             // Build and save test events and venues here.
-        	Venue venue = new Venue();
-			venue.setId(1);
-			venue.setName("Kilburn Building");
-			venue.setCapacity(250);
-			venueService.save(venue);
-            // The test database is configured to reside in memory, so must be initialized
-            // every time.
+            Venue venue = new Venue();
+            venue.setId(1);
+            venue.setName("Kilburn Building");
+            venue.setAddress("Oxford Road");
+            venue.setPostcode("Manchester M13 9PL");
+            venue.setCapacity(350);
+            venueService.save(venue);
+
+            Venue venue2 = new Venue();
+            venue2.setId(2);
+            venue2.setName("Red Chilli");
+            venue2.setAddress("403 Oxford Road");
+            venue2.setPostcode("Manchester M13 9WG");
+            venue2.setCapacity(250);
+            venueService.save(venue2);
+
+            Venue venue3 = new Venue();
+            venue3.setId(3);
+            venue3.setName("Manchester Art Gallery");
+            venue3.setAddress("Mosley Street");
+            venue3.setPostcode("Manchester M2 3JL");
+            venue3.setCapacity(500);
+            venueService.save(venue3);
+
+            // The test database is configured to reside in memory, so must be initialized every time.
             for (int i = 1; i < 4; i++) {
                 Event event = new Event();
                 event.setName("COMP23412 Showcase 0" + i);
                 event.setVenue(venue);
-                event.setDate(LocalDate.parse("2023-05-0" + i));
+                event.setDate(LocalDate.parse("2024-06-0" + i));
                 event.setTime(LocalTime.parse("12:00"));
                 eventService.save(event);
             }
-            
+
             for (int i = 1; i < 4; i++) {
                 Event event = new Event();
                 event.setName("COMP23412 Showcase 4" + i);
                 event.setVenue(venue);
                 event.setDate(LocalDate.parse("2023-01-0" + i));
-                event.setTime(LocalTime.parse("12:00"));
+                event.setTime(LocalTime.parse("13:00"));
                 eventService.save(event);
             }
         };

@@ -15,9 +15,7 @@ import retrofit2.Response;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class VenueServiceImpl implements VenueService {
@@ -117,26 +115,21 @@ public class VenueServiceImpl implements VenueService {
                 numOfEvents.set(index, numOfEvents.get(index) + 1);
             }
         }
-        for (int i = 0; i < 3; i++) {
-            int max = 0;
-            int maxIndex = 0;
-            for (int j = 0; j < numOfEvents.size(); j++) {
-                if (numOfEvents.get(j) > max) {
-                    max = numOfEvents.get(j);
-                    maxIndex = j;
-                }
+
+        Comparator<Venue> venueComparator = (v1, v2) -> numOfEvents.get((int) v2.getId() - 1) - numOfEvents.get((int) v1.getId() - 1);
+        PriorityQueue<Venue> venueQueue = new PriorityQueue<>(venueComparator);
+
+        for (Venue venue : venues) {
+            int index = (int) venue.getId() - 1;
+            if (numOfEvents.get(index) > 0) {
+                venueQueue.offer(venue);
             }
-            if (max == 0) {
-                return (Iterable<Venue>) venueRepository.findAll();
-            }
-            popular3Venues.add(venueRepository.findById((long) maxIndex + 1).get());
-            numOfEvents.set(maxIndex, 0);
         }
-        if (popular3Venues.size() < 3) {
-            return (Iterable<Venue>) venueRepository.findAll();
-        }else{
-            return (Iterable<Venue>) popular3Venues;
+
+        for (int i = 0; i < 3 && !venueQueue.isEmpty(); i++) {
+            popular3Venues.add(venueQueue.poll());
         }
+        return (Iterable<Venue>) popular3Venues;
     }
 
     //get the geolocation of the venue

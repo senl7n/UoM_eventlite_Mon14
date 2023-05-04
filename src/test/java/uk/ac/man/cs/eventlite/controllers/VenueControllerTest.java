@@ -278,5 +278,84 @@ public class VenueControllerTest {
                 .andExpect(view().name("redirect:/venues"));
     }
 
-
+    @Test
+    public void testEditVenueWithInvalidInput() throws Exception {
+        long id = 1;
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "edit Venue")
+                .param("address", "edit Road")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "invalid")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues/edit/" + id + "?error=1"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "")
+                .param("address", "edit Road")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues/edit/" + id + "?error=2"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "test")
+                .param("address", "")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues/edit/" + id + "?error=3"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "test")
+                .param("address", "edit Road")
+                .param("postcode", "")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues/edit/" + id + "?error=4"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "test")
+                .param("address", "edit Road")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "0")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues/edit/" + id + "?error=5"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "test")
+                .param("address", "edit")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues/edit/" + id + "?error=6"));
+    
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "test")
+                .param("address", "edit rd")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "-2")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues/edit/" + id + "?error=5"));
+    }
 }

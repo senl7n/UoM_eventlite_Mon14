@@ -1,5 +1,6 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 
 import uk.ac.man.cs.eventlite.EventLite;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -102,6 +104,55 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         EventServiceImpl.deleteById(event.getId());
         eventsAmountAfter = EventServiceImpl.getNumberOfEvent();
         assertEquals(eventsAmountBefore - 1, eventsAmountAfter);
+    }
+
+    @Test
+    public void testFindUpcoming3Events() {
+        Venue venue = new Venue();
+        venue.setName("Test Venue");
+        venue.setCapacity(100);
+        VenueServiceImpl.save(venue);
+
+        Event event1 = new Event();
+        event1.setId(1L);
+        event1.setName("COMP23412 Showcase 01");
+        event1.setDate(LocalDate.parse("2077-01-01"));
+        event1.setTime(LocalTime.parse("12:00"));
+        event1.setVenue(venue);
+        EventServiceImpl.save(event1);
+
+        Event event2 = new Event();
+        event2.setId(2L);
+        event2.setName("COMP23412 Showcase 02");
+        event2.setDate(LocalDate.parse("2077-01-02"));
+        event2.setTime(LocalTime.parse("12:00"));
+        event2.setVenue(venue);
+        EventServiceImpl.save(event2);
+
+        Event event3 = new Event();
+        event3.setId(3L);
+        event3.setName("COMP23412 Showcase 03");
+        event3.setDate(LocalDate.parse("2077-01-03"));
+        event3.setTime(LocalTime.parse("12:00"));
+        event3.setVenue(venue);
+        EventServiceImpl.save(event3);
+
+        Event event4 = new Event();
+        event4.setId(4L);
+        event4.setName("COMP23412 Showcase 04");
+        event4.setDate(LocalDate.parse("2077-01-04"));
+        event4.setTime(LocalTime.parse("12:00"));
+        event4.setVenue(venue);
+        EventServiceImpl.save(event4);
+
+        List<Event> expected = Arrays.asList(event1, event2, event3);
+        Iterable<Event> actualEvents = EventServiceImpl.findUpcoming3Events();
+        List<Event> actual = new ArrayList<>();
+        for (Event event : actualEvents) {
+            actual.add(event);
+        }
+
+        Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
     }
 
 }

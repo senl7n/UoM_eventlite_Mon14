@@ -136,51 +136,34 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 
     @Test
     public void testFindUpcoming3Events() {
-        Venue venue = new Venue();
-        venue.setName("Test Venue");
-        venue.setCapacity(100);
-        VenueServiceImpl.save(venue);
-
-        Event event1 = new Event();
-        event1.setId(1L);
-        event1.setName("COMP23412 Showcase 01");
-        event1.setDate(LocalDate.parse("2077-01-01"));
-        event1.setTime(LocalTime.parse("12:00"));
-        event1.setVenue(venue);
-        EventServiceImpl.save(event1);
-
-        Event event2 = new Event();
-        event2.setId(2L);
-        event2.setName("COMP23412 Showcase 02");
-        event2.setDate(LocalDate.parse("2077-01-02"));
-        event2.setTime(LocalTime.parse("12:00"));
-        event2.setVenue(venue);
-        EventServiceImpl.save(event2);
-
-        Event event3 = new Event();
-        event3.setId(3L);
-        event3.setName("COMP23412 Showcase 03");
-        event3.setDate(LocalDate.parse("2077-01-03"));
-        event3.setTime(LocalTime.parse("12:00"));
-        event3.setVenue(venue);
-        EventServiceImpl.save(event3);
-
-        Event event4 = new Event();
-        event4.setId(4L);
-        event4.setName("COMP23412 Showcase 04");
-        event4.setDate(LocalDate.parse("2077-01-04"));
-        event4.setTime(LocalTime.parse("12:00"));
-        event4.setVenue(venue);
-        EventServiceImpl.save(event4);
-
-        List<Event> expected = Arrays.asList(event1, event2, event3);
         Iterable<Event> actualEvents = EventServiceImpl.findUpcoming3Events();
         List<Event> actual = new ArrayList<>();
         for (Event event : actualEvents) {
             actual.add(event);
         }
 
-        Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
+        Assertions.assertEquals(3, actual.size());
+    }
+
+    @Test
+    public void testFindUpcomingLessThan3Events() {
+        Iterable<Event> upcomingEvents = EventServiceImpl.findUpcomingEvents();
+        long numOfUpcomingEvents = upcomingEvents.spliterator().getExactSizeIfKnown();
+        long deleteNeed = numOfUpcomingEvents - 2;
+        long counter = 0;
+        for (Event event : upcomingEvents) {
+            if (counter >= deleteNeed) {
+                break;
+            }
+            EventServiceImpl.deleteById(event.getId());
+            counter++;
+        }
+        Iterable<Event> actualEvents = EventServiceImpl.findUpcoming3Events();
+        List<Event> actual = new ArrayList<>();
+        for (Event event : actualEvents) {
+            actual.add(event);
+        }
+        Assertions.assertEquals(numOfUpcomingEvents - deleteNeed, actual.size());
     }
 
     @Test
@@ -191,7 +174,6 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         VenueServiceImpl.save(venue);
 
         Event event1 = new Event();
-        event1.setId(1L);
         event1.setName("COMP23412 Showcase 01");
         event1.setDate(LocalDate.parse("2017-01-01"));
         event1.setTime(LocalTime.parse("12:00"));
@@ -199,7 +181,6 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         EventServiceImpl.save(event1);
 
         Event event2 = new Event();
-        event2.setId(2L);
         event2.setName("COMP23412 Showcase 02");
         event2.setDate(LocalDate.parse("2077-01-02"));
         event2.setTime(LocalTime.parse("12:00"));
@@ -207,7 +188,6 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         EventServiceImpl.save(event2);
 
         Event event3 = new Event();
-        event3.setId(3L);
         event3.setName("COMP23412 Showcase 03");
         event3.setDate(LocalDate.parse("2077-01-03"));
         event3.setTime(LocalTime.parse("12:00"));
@@ -221,8 +201,11 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
             actual.add(event);
         }
 
-        Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
+        Assertions.assertEquals(expected.size() + 3, actual.size());
+        Assertions.assertFalse(actual.contains(event1));
+        Assertions.assertTrue(actual.contains(event2));
     }
+
 
     @Test
     public void testFindPreviousEvents() {

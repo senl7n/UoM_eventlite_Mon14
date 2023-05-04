@@ -361,6 +361,10 @@ public class EventsController {
         Iterable<Event> previousEvents = eventService.findPreviousEvents();
         model.addAttribute("upcomingEvents", upcomingEvents);
         model.addAttribute("previousEvents", previousEvents);
+
+        if (!model.containsAttribute("found")) {
+            model.addAttribute("found", false);
+        }
     }
 
     @GetMapping

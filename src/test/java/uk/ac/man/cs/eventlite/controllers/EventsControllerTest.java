@@ -1,5 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -7,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -72,6 +75,18 @@ public class EventsControllerTest {
 
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
 				.andExpect(view().name("events/index")).andExpect(handler().methodName("getHomePageMessage"));
+
+		verify(eventService).findUpcomingEvents();
+		verify(eventService).findPreviousEvents();
+	}
+
+	@Test
+	public void getSearchResultPageMessageTest() throws Exception {
+		when(eventService.findAll()).thenReturn(Collections.<Event>emptyList());
+		when(venueService.findAll()).thenReturn(Collections.<Venue>emptyList());
+
+		mvc.perform(get("/events/searchResult").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
+				.andExpect(view().name("events/searchResult")).andExpect(handler().methodName("getSearchResultPageMessage"));
 
 		verify(eventService).findUpcomingEvents();
 		verify(eventService).findPreviousEvents();
@@ -159,5 +174,51 @@ public class EventsControllerTest {
 				.andExpect(handler().methodName("search"))
 				.andExpect(model().attribute("found", false));
 	}
+
+	@Test
+	public void testEventTimeHandlingInSearch() throws Exception {
+		Venue venue = new Venue();
+		venue.setName("Example Venue");
+		venue.setCapacity(100);
+		venue.setAddress("123 Example Street");
+		venue.setPostcode("EX1 2PL");
+
+		Event eventWithTime = new Event();
+		eventWithTime.setName("Upcoming Event With Time");
+		eventWithTime.setDate(LocalDate.now().plusDays(1));
+		eventWithTime.setTime(LocalTime.now());
+		eventWithTime.setVenue(venue);
+
+		Event eventWithoutTime = new Event();
+		eventWithoutTime.setName("Upcoming Event Without Time");
+		eventWithoutTime.setDate(LocalDate.now().plusDays(2));
+		eventWithoutTime.setVenue(venue);
+
+		Event pastEventWithTime = new Event();
+		pastEventWithTime.setName("Past Event With Time");
+		pastEventWithTime.setDate(LocalDate.now().minusDays(1));
+		pastEventWithTime.setTime(LocalTime.now());
+		pastEventWithTime.setVenue(venue);
+
+		Event pastEventWithoutTime = new Event();
+		pastEventWithoutTime.setName("Past Event Without Time");
+		pastEventWithoutTime.setDate(LocalDate.now().minusDays(2));
+		pastEventWithoutTime.setVenue(venue);
+
+		List<Event> events = Arrays.asList(eventWithTime, eventWithoutTime, pastEventWithTime, pastEventWithoutTime);
+		when(eventService.findByNameContainingIgnoreCase("event")).thenReturn(events);
+
+		mvc.perform(get("/events/search?q=event").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk())
+				.andExpect(view().name("events/searchResult"))
+				.andExpect(handler().methodName("search"))
+				.andExpect(model().attribute("found", true))
+				.andExpect(model().attribute("searchMessage", "EVENT CONTAINING 'event' FOUND"))
+				.andExpect(model().attribute("upcomingEvents", hasSize(2)))
+				.andExpect(model().attribute("upcomingEvents", contains(eventWithTime, eventWithoutTime)))
+				.andExpect(model().attribute("previousEvents", hasSize(2)))
+				.andExpect(model().attribute("previousEvents", contains(pastEventWithoutTime, pastEventWithTime)));
+	}
+
 
 }

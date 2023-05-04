@@ -61,6 +61,15 @@ public class VenueControllerTest {
         when(eventService.findUpcomingEvents()).thenReturn(new ArrayList<>());
     }
 
-  
+    @Test
+    public void testGetAllVenues() throws Exception {
+        mockMvc.perform(get("/venues"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/index"))
+                .andExpect(model().attributeExists("venues"));
+    }
+    
+
+	
 
 }

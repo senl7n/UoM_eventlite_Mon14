@@ -28,19 +28,6 @@ public class HomepageController {
     public void getJsonRoot() {
     }
 
-    @ExceptionHandler(EventNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String eventNotFoundHandler(EventNotFoundException ex, Model model) {
-        model.addAttribute("not_found_id", ex.getId());
-
-        return "events/not_found";
-    }
-
-    @GetMapping("/event/{id}")
-    public String getEvent(@PathVariable("id") long id, Model model) {
-        throw new EventNotFoundException(id);
-    }
-
     @GetMapping
     public String getHomepage(Model model) {
         Iterable<Event> upcoming3Events = eventService.findUpcoming3Events();
@@ -48,18 +35,6 @@ public class HomepageController {
         model.addAttribute("popular3Venues", venueService.findPopular3Venues());
 
         return "homepage/index";
-    }
-
-    @GetMapping("/description")
-    public String getEventInfomation(@RequestParam(name = "id") long id,
-                                     @RequestParam(name = "error", required = false) String error,
-                                     @RequestParam(name = "comment", required = false) String comment,
-                                     Model model) {
-        Event event = eventService.findById(id);
-        model.addAttribute("error", error);
-        model.addAttribute("event", event);
-        model.addAttribute("comment", comment);
-        return "/events/description";
     }
 
 }

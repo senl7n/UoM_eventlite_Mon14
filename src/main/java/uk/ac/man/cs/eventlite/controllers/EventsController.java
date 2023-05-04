@@ -81,8 +81,12 @@ public class EventsController {
     //delete event
     @DeleteMapping("/{id}")
     public String deleteEvent(@PathVariable("id") long id) {
-        eventService.deleteById(id);
-        return "redirect:/events";
+        if (eventService.findById(id) == null) {
+            throw new EventNotFoundException(id);
+        }else{
+            eventService.deleteById(id);
+            return "redirect:/events";
+        }
     }
 
     //edit event

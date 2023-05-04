@@ -99,6 +99,13 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                     cookies.add(SESSION_KEY, tokens[1]);
                 }).exchange().expectStatus().isFound().expectHeader().value("Location", endsWith("/events"));
 
+        client.method(HttpMethod.DELETE).uri(uriBuilder -> uriBuilder
+                        .path("/events/1")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(cookies -> {
+                    cookies.add(SESSION_KEY, tokens[1]);
+                }).exchange().expectStatus().isNotFound();
     }
 
     @Test

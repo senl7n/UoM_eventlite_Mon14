@@ -69,6 +69,9 @@ public class EventsController {
                                      @RequestParam(name="comment", required=false) String comment,
                                      Model model) {
 		Event event = eventService.findById(id);
+        if (event == null) {
+            throw new EventNotFoundException(id);
+        }
         model.addAttribute("error", error);
 		model.addAttribute("event", event);
         model.addAttribute("comment", comment);

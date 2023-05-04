@@ -14,6 +14,8 @@ import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
+import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -27,6 +29,7 @@ import uk.ac.man.cs.eventlite.config.Security;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.http.MediaType;
 
@@ -202,6 +205,23 @@ public class VenueControllerTest {
 
         
     }
+    
+    @Test
+    public void testEditPageWithNonExistentVenue() throws Exception {
+        // Set an ID for a venue that does not exist
+        long nonExistentVenueId = 999;
+
+        // Mock the venueService.findById method to return an empty Optional
+        when(venueService.findById(nonExistentVenueId)).thenReturn(Optional.empty());
+
+        // Perform a request with the non-existent venue ID and expect an exception
+        mockMvc.perform(get("/venues/edit/{id}", nonExistentVenueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof VenueNotFoundException));
+    }
+
 
 
 

@@ -125,6 +125,27 @@ public class VenueControllerTest {
 //    }
     
     @Test
+    public void testDeleteVenueWhenOccupied() throws Exception {
+        long venueId = 1;
+
+        // Mock the venueService.checkVenueOccupied method to return false
+        when(venueService.checkVenueOccupied(venueId)).thenReturn(false);
+
+        // Perform a delete request with the occupied venue ID
+        mockMvc.perform(delete("/venues/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues/description?id=" + venueId + "&error=1"));
+        
+        // Verify the venueService.deleteById method was not called
+        verify(venueService, never()).deleteById(venueId);
+    }
+
+
+    
+    @Test
     public void testEditPageWithErrors() throws Exception {
         // Assuming the venue with id 1 exists
         long venueId = 1;

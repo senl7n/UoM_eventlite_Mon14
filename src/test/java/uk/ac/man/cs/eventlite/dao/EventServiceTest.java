@@ -1,35 +1,29 @@
 package uk.ac.man.cs.eventlite.dao;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-
-import org.springframework.test.web.servlet.MockMvc;
-import uk.ac.man.cs.eventlite.EventLite;
-import uk.ac.man.cs.eventlite.entities.Event;
-import uk.ac.man.cs.eventlite.entities.Venue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import uk.ac.man.cs.eventlite.EventLite;
+import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EventLite.class)
 @DirtiesContext
 @ActiveProfiles("test")
-
 public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Autowired
@@ -128,11 +122,12 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 
 		Event newEvent = EventServiceImpl.findById(event.getId());
 
-		assertEquals("Test Add Name", newEvent.getName());
-		assertEquals(LocalDate.parse("2077-01-01"), newEvent.getDate());
-		assertEquals(LocalTime.parse("12:00"), newEvent.getTime());
-		assertEquals("Test Add Description", newEvent.getDescription());
-	}
+        assertEquals("Test Add Name", newEvent.getName());
+        assertEquals(LocalDate.parse("2077-01-01"), newEvent.getDate());
+        assertEquals(LocalTime.parse("12:00"), newEvent.getTime());
+        assertEquals("Test Add Description", newEvent.getDescription());
+        assertEquals(LocalDateTime.parse("2077-01-01T12:00"), newEvent.getDateTime());
+    }
 
 	@Test
 	public void testDelete() {
@@ -152,6 +147,5 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		eventsAmountAfter = EventServiceImpl.getNumberOfEvent();
 		assertEquals(eventsAmountBefore - 1, eventsAmountAfter);
 	}
-
 
 }

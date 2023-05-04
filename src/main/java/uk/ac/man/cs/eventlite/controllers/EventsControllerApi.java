@@ -38,10 +38,12 @@ public class EventsControllerApi {
 
 	@GetMapping("/{id}")
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
-        if (eventService.findById(id) == null) {
+        Event event = eventService.findById(id);
+        if (event == null) {
             throw new EventNotFoundException(id);
+        }else{
+            return eventAssembler.toModel(event);
         }
-		return eventAssembler.toModel(eventService.findById(id));
 	}
 
 	@GetMapping
@@ -50,7 +52,7 @@ public class EventsControllerApi {
 				.add(linkTo(methodOn(EventsControllerApi.class).getAllEvents()).withSelfRel());
 	}
 
-    @GetMapping("{id}/venue")
+    @GetMapping("/{id}/venue")
     public ResponseEntity<EntityModel<Venue>> getEventVenue(@PathVariable Long id) {
         Event event = eventService.findById(id);
         Venue venue = event.getVenue();

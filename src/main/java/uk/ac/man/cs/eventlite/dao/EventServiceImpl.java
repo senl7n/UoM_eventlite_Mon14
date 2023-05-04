@@ -92,8 +92,7 @@ public class EventServiceImpl implements EventService {
         if (eventRepository.findById(id) == null || name.isEmpty() || venueRepository.findById(venueId).isEmpty()) {
             return false;
         }
-        deleteById(id);
-        Event event = new Event();
+        Event event = findById(id);
         event.setName(name);
         event.setDate(date);
         event.setTime(time);

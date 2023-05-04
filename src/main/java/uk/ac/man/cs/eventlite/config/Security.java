@@ -37,7 +37,7 @@ public class Security extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().requestMatchers(NO_AUTH).permitAll().anyRequest().hasRole(ADMIN_ROLE);
 
 		// Use form login/logout for the Web.
-		http.formLogin().loginPage("/sign-in").permitAll();
+		http.formLogin().loginPage("/sign-in").defaultSuccessUrl("/", true).permitAll();
 		http.logout().logoutUrl("/sign-out").logoutSuccessUrl("/").permitAll();
 
 		// Use HTTP basic for the API.

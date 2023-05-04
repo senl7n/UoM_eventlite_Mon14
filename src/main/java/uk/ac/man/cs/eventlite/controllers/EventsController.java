@@ -300,7 +300,7 @@ public class EventsController {
 
     @PostMapping("/postComment/{id}")
     public String postComment(@PathVariable("id") long id, @RequestParam("comment") String comment, Model model, RedirectAttributes redirectAttributes) throws Mastodon4jRequestException {
-        String accessToken = "AQHbd7AEwgaFHDARmaYPSPjkIvFrIMu-ZWhnpU2AIN0";
+        String accessToken = "8LyNfRECPSaRI2g4ucFCeVujVBnunxgzX0PqABz6xjg";
 
         MastodonClient mastodonClient = new MastodonClient.Builder("mastodon.online", new OkHttpClient.Builder(), new Gson())
                 .accessToken(accessToken)
@@ -322,7 +322,7 @@ public class EventsController {
         // Mastodon timeline
         List<Status> timeline = new ArrayList<>();
         MastodonClient client = new MastodonClient.Builder("mastodon.online", new OkHttpClient.Builder(), new Gson())
-                .accessToken("AQHbd7AEwgaFHDARmaYPSPjkIvFrIMu-ZWhnpU2AIN0")
+                .accessToken("8LyNfRECPSaRI2g4ucFCeVujVBnunxgzX0PqABz6xjg")
                 .useStreamingApi()
                 .build();
 

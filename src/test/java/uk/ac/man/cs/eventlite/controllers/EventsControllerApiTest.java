@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -17,6 +18,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -34,6 +36,7 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(EventsControllerApi.class)
 @Import({ Security.class, EventModelAssembler.class })
+@AutoConfigureMockMvc
 public class EventsControllerApiTest {
 
     @Autowired
@@ -83,6 +86,34 @@ public class EventsControllerApiTest {
         mvc.perform(get("/api/events/99").accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error", containsString("event 99"))).andExpect(jsonPath("$.id", equalTo(99)))
                 .andExpect(handler().methodName("getEvent"));
+    }
+
+    @Test
+    public void getEventFound() throws Exception {
+        Venue v = new Venue();
+        v.setId(15);
+        v.setName("Venue");
+        v.setCapacity(200);
+        v.setAddress("Address");
+        v.setPostcode("Postcode");
+        venueService.save(v);
+        Event e = new Event();
+        e.setId(10);
+        e.setName("Event");
+        e.setDate(LocalDate.parse("2024-01-01"));
+        e.setTime(LocalTime.parse("12:00:00"));
+        e.setDescription("Description");
+        e.setVenue(v);
+        eventService.save(e);
+        when(eventService.findById(10)).thenReturn(e);
+        when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(e));
+
+        mvc.perform(get("/api/events/10").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(handler().methodName("getEvent"))
+                .andExpect(jsonPath("$.name", equalTo("Event")))
+                .andExpect(jsonPath("$.date", equalTo("2024-01-01")))
+                .andExpect(jsonPath("$.time", equalTo("12:00:00")))
+                .andExpect(jsonPath("$.description", equalTo("Description")));
     }
 
     @Test

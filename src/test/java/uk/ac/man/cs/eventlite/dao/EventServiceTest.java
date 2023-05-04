@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Iterator;
 import java.util.Optional;
@@ -81,6 +82,7 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertEquals(LocalDate.parse("2077-01-01"), newEvent.getDate());
         assertEquals(LocalTime.parse("12:00"), newEvent.getTime());
         assertEquals("Test Add Description", newEvent.getDescription());
+        assertEquals(LocalDateTime.parse("2077-01-01T12:00"), newEvent.getDateTime());
     }
 
     @Test

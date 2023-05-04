@@ -69,7 +69,17 @@ public class VenueControllerTest {
                 .andExpect(model().attributeExists("venues"));
     }
     
-
+    @Test
+	public void testGetVenue() throws Exception {
+	    mockMvc.perform(get("/venues/{id}", 1L))
+	            .andExpect(status().isNotFound())
+	            .andExpect(view().name("venues/not_found"))
+	            .andExpect(model().attribute("not_found_id", 1L));
+	
+	    verify(venueService, times(0)).findById(anyLong());
+	    verifyNoMoreInteractions(venueService);
+	    verifyNoInteractions(eventService);
+	}
 	
 
 }

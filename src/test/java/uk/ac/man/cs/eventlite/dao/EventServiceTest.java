@@ -2,6 +2,7 @@ package uk.ac.man.cs.eventlite.dao;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +33,8 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 @SpringBootTest(classes = EventLite.class)
 @DirtiesContext
 @ActiveProfiles("test")
+
+
 public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     @Autowired
@@ -285,7 +289,15 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         for (Event event : actualEvents) {
             actual.add(event);
         }
-
+	
+	@Test
+	public void testSetDescribtion() {
+		Event event = new Event();
+		String expected_Describtion = "Hello this is a test";
+		event.setDescription("Hello this is a test");
+		String actual_Describtion = event.getDescription();
+		assertEquals(expected_Describtion, actual_Describtion);
+	}
         Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
     }
 }

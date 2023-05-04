@@ -1,5 +1,7 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import uk.ac.man.cs.eventlite.EventLite;
+<<<<<<< HEAD
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
@@ -19,17 +22,43 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+=======
+import uk.ac.man.cs.eventlite.entities.Venue;
+>>>>>>> refs/heads/search_test
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EventLite.class)
 @DirtiesContext
 @ActiveProfiles("test")
+<<<<<<< HEAD
 
+=======
+//@Disabled
+>>>>>>> refs/heads/search_test
 public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	@Autowired
+<<<<<<< HEAD
 	private EventService EventServiceImpl;
+=======
+	private VenueService venueService;
+	
+	
+	@Test
+    public void testLongitudeAndLatitude() {
+        
+        Venue venue = new Venue();
+        double expectedLongitude = 45.1234;
+        double expectedLatitude = 43.8989;
+        venue.setLongitude(expectedLongitude);
+        venue.setLatitude(expectedLatitude);
+        double actualLongitude = venue.getLongitude();
+        double actualLatitude = venue.getLatitude();
+        assertEquals(expectedLongitude, actualLongitude, 1e-9, "The set and retrieved longitude values should be equal.");
+        assertEquals(expectedLatitude, actualLatitude, 1e-9, "The set and retrieved latitude values should be equal.");
+>>>>>>> refs/heads/search_test
 
+<<<<<<< HEAD
 	@Autowired
 	private VenueService VenueServiceImpl;
 
@@ -74,3 +103,22 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 		assertEquals(expectedId, foundVenue.get().getId(), "Found venue has a different ID than expected");
 	}
 }
+=======
+        
+	}
+	// This class is here as a starter for testing any custom methods within the
+	// VenueService. Note: It is currently @Disabled!
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
+>>>>>>> refs/heads/search_test

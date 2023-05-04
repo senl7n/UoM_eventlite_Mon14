@@ -347,7 +347,7 @@ public class EventsController {
         for (Status message : latest3Messages) {
             String messageContent = unescapeHtml(message.getContent());
             messageContents.add(pattern.matcher(messageContent).replaceAll(""));
-            messageURLs.add(pattern.matcher(message.getUrl()).replaceAll(""));
+            messageURLs.add(message.getUrl());
             messageDates.add(message.getCreatedAt().substring(0, 10));
             messageTimes.add(message.getCreatedAt().substring(11, 16));
         }

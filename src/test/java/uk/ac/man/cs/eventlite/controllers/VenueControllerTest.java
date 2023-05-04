@@ -133,7 +133,7 @@ public class VenueControllerTest {
 
         // Perform a delete request with the occupied venue ID
         mockMvc.perform(delete("/venues/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .with(csrf())
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isFound())
@@ -142,6 +142,26 @@ public class VenueControllerTest {
         // Verify the venueService.deleteById method was not called
         verify(venueService, never()).deleteById(venueId);
     }
+    
+    @Test
+    public void testDeleteVenueWhenNotOccupied() throws Exception {
+        long venueId = 1;
+
+        // Mock the venueService.checkVenueOccupied method to return true
+        when(venueService.checkVenueOccupied(venueId)).thenReturn(true);
+
+        // Perform a delete request with the not occupied venue ID
+        mockMvc.perform(delete("/venues/{id}", venueId)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+
+        // Verify the venueService.deleteById method was called with the correct ID
+        verify(venueService).deleteById(venueId);
+    }
+
 
 
     
@@ -162,7 +182,7 @@ public class VenueControllerTest {
 
         // Perform a request with an invalid capacity (non-numeric value)
         mockMvc.perform(get("/venues/edit/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .param("error", "1")
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
@@ -170,7 +190,7 @@ public class VenueControllerTest {
                 .andExpect(view().name("venues/edit"));
         
         mockMvc.perform(get("/venues/edit/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .param("error", "2")
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
@@ -178,7 +198,7 @@ public class VenueControllerTest {
                 .andExpect(view().name("venues/edit"));
         
         mockMvc.perform(get("/venues/edit/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .param("error", "3")
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
@@ -186,7 +206,7 @@ public class VenueControllerTest {
                 .andExpect(view().name("venues/edit"));
         
         mockMvc.perform(get("/venues/edit/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .param("error", "4")
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
@@ -194,7 +214,7 @@ public class VenueControllerTest {
                 .andExpect(view().name("venues/edit"));
         
         mockMvc.perform(get("/venues/edit/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .param("error", "5")
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
@@ -202,7 +222,7 @@ public class VenueControllerTest {
                 .andExpect(view().name("venues/edit"));
         
         mockMvc.perform(get("/venues/edit/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .param("error", "6")
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
@@ -210,14 +230,14 @@ public class VenueControllerTest {
                 .andExpect(view().name("venues/edit"));
         
         mockMvc.perform(get("/venues/edit/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("error", ""))
                 .andExpect(view().name("venues/edit"));
         
         mockMvc.perform(get("/venues/edit/{id}", venueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .param("error", "unknown_error")
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
@@ -237,7 +257,7 @@ public class VenueControllerTest {
 
         // Perform a request with the non-existent venue ID and expect an exception
         mockMvc.perform(get("/venues/edit/{id}", nonExistentVenueId)
-                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .with(user("test").roles(Security.ADMIN_ROLE))
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof VenueNotFoundException));

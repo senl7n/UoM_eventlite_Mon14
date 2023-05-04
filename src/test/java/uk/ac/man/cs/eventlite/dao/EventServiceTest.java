@@ -39,52 +39,80 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
     @Autowired
     private VenueService VenueServiceImpl;
 
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
+    @Test
+    public void testUpdate() {
+        Event event = new Event();
+        event.setName("Test Update Name");
+        event.setDate(LocalDate.parse("2077-01-01"));
+        event.setTime(LocalTime.parse("12:00"));
+        event.setVenue(new Venue());
+        event.setDescription("Test Update Description");
+        EventServiceImpl.save(event);
+
+        Event newEvent = EventServiceImpl.findById(event.getId());
+        boolean updateSuccess = EventServiceImpl.update(event.getId(), "New Name"
+                                                        , LocalDate.parse("2077-01-02")
+                                                        , LocalTime.parse("13:00")
+                                                        , 1L
+                                                        , "New Description");
+        assertTrue(updateSuccess);
+
+        Event updatedEvent = EventServiceImpl.findById(event.getId());
+        assertEquals("New Name", updatedEvent.getName());
+        assertEquals(LocalDate.parse("2077-01-02"), updatedEvent.getDate());
+        assertEquals(LocalTime.parse("13:00"), updatedEvent.getTime());
+        assertEquals("New Description", updatedEvent.getDescription());
+        assertEquals(LocalDateTime.parse("2077-01-02T13:00"), updatedEvent.getDateTime());
     }
 
     @Test
-    public void testUpdate() {
-        Iterator<Event> events = EventServiceImpl.findByNameContainingIgnoreCase("COMP23412 Showcase 01").iterator();
-        Event event = events.next();
-        assertEquals("COMP23412 Showcase 01", event.getName());
+    public void testUpdateError() {
+        String name = "Test Update Name";
+        LocalDate date = LocalDate.parse("2077-01-01");
+        LocalTime time = LocalTime.parse("12:00");
+        long venueId = 1L;
+        String description = "Test Update Description";
 
-        LocalDate oldDate = event.getDate();
+        // Add an event first
+        Event event = new Event();
+        event.setName("Test Event");
+        event.setDate(LocalDate.parse("2077-01-01"));
+        event.setTime(LocalTime.parse("12:00"));
+        event.setVenue(new Venue());
+        event.setDescription("Test Event Description");
+        EventServiceImpl.save(event);
 
-        Event newEvent = new Event();
-        newEvent.setId(event.getId());
-        newEvent.setName("Test Update Name");
-        newEvent.setDate(LocalDate.parse("2077-01-01"));
-        newEvent.setTime(LocalTime.parse("12:00"));
-        newEvent.setVenue(event.getVenue());
-        newEvent.setDescription("Test Update Description");
-        EventServiceImpl.save(newEvent);
-
-        Event AlteredEvent = EventServiceImpl.findById(event.getId());
-
-        assertEquals("Test Update Name", AlteredEvent.getName());
-        assertEquals(event.getId(), AlteredEvent.getId());
-        assertNotEquals(oldDate, AlteredEvent.getDate());
-        assertEquals("Test Update Description", AlteredEvent.getDescription());
+        boolean updateSuccess = EventServiceImpl.update(event.getId() + 1, name, date, time, venueId, description);
+        assertFalse(updateSuccess);
     }
 
     @Test
     public void testAdd() {
-        Event event = new Event();
-        event.setName("Test Add Name");
-        event.setDate(LocalDate.parse("2077-01-01"));
-        event.setTime(LocalTime.parse("12:00"));
-        event.setVenue(new Venue());
-        event.setDescription("Test Add Description");
-        EventServiceImpl.save(event);
+        String name = "Test Add Name";
+        LocalDate date = LocalDate.parse("2077-01-01");
+        LocalTime time = LocalTime.parse("12:00");
+        long venueId = 1L;
+        String description = "Test Add Description";
+        boolean result = EventServiceImpl.add(name, date, time, venueId, description);
+        assertTrue(result);
 
-        Event newEvent = EventServiceImpl.findById(event.getId());
+        Event newEvent = EventServiceImpl.findByNameContainingIgnoreCase("Test Add Name").iterator().next();
 
         assertEquals("Test Add Name", newEvent.getName());
         assertEquals(LocalDate.parse("2077-01-01"), newEvent.getDate());
         assertEquals(LocalTime.parse("12:00"), newEvent.getTime());
         assertEquals("Test Add Description", newEvent.getDescription());
-        assertEquals(LocalDateTime.parse("2077-01-01T12:00"), newEvent.getDateTime());
+    }
+
+    @Test
+    public void testAddError() {
+        String name = "";
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
+        long venueId = 0L;
+        String description = "";
+        boolean result = EventServiceImpl.add(name, date, time, venueId, description);
+        assertFalse(result);
     }
 
     @Test
@@ -155,4 +183,126 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
     }
 
+    @Test
+    public void testFindUpcomingEvents() {
+        Venue venue = new Venue();
+        venue.setName("Test Venue");
+        venue.setCapacity(100);
+        VenueServiceImpl.save(venue);
+
+        Event event1 = new Event();
+        event1.setId(1L);
+        event1.setName("COMP23412 Showcase 01");
+        event1.setDate(LocalDate.parse("2017-01-01"));
+        event1.setTime(LocalTime.parse("12:00"));
+        event1.setVenue(venue);
+        EventServiceImpl.save(event1);
+
+        Event event2 = new Event();
+        event2.setId(2L);
+        event2.setName("COMP23412 Showcase 02");
+        event2.setDate(LocalDate.parse("2077-01-02"));
+        event2.setTime(LocalTime.parse("12:00"));
+        event2.setVenue(venue);
+        EventServiceImpl.save(event2);
+
+        Event event3 = new Event();
+        event3.setId(3L);
+        event3.setName("COMP23412 Showcase 03");
+        event3.setDate(LocalDate.parse("2077-01-03"));
+        event3.setTime(LocalTime.parse("12:00"));
+        event3.setVenue(venue);
+        EventServiceImpl.save(event3);
+
+        List<Event> expected = Arrays.asList(event2, event3);
+        Iterable<Event> actualEvents = EventServiceImpl.findUpcomingEvents();
+        List<Event> actual = new ArrayList<>();
+        for (Event event : actualEvents) {
+            actual.add(event);
+        }
+
+        Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
+    }
+
+    @Test
+    public void testFindPreviousEvents() {
+        Venue venue = new Venue();
+        venue.setName("Test Venue");
+        venue.setCapacity(100);
+        VenueServiceImpl.save(venue);
+
+        Event event1 = new Event();
+        event1.setId(1L);
+        event1.setName("COMP23412 Showcase 01");
+        event1.setDate(LocalDate.parse("2007-01-01"));
+        event1.setTime(LocalTime.parse("12:00"));
+        event1.setVenue(venue);
+        EventServiceImpl.save(event1);
+
+        Event event2 = new Event();
+        event2.setId(2L);
+        event2.setName("COMP23412 Showcase 02");
+        event2.setDate(LocalDate.parse("2017-01-02"));
+        event2.setTime(LocalTime.parse("12:00"));
+        event2.setVenue(venue);
+        EventServiceImpl.save(event2);
+
+        Event event3 = new Event();
+        event3.setId(3L);
+        event3.setName("COMP23412 Showcase 03");
+        event3.setDate(LocalDate.parse("2027-01-03"));
+        event3.setTime(LocalTime.parse("12:00"));
+        event3.setVenue(venue);
+        EventServiceImpl.save(event3);
+
+        List<Event> expected = Arrays.asList(event1, event2);
+        Iterable<Event> actualEvents = EventServiceImpl.findPreviousEvents();
+        List<Event> actual = new ArrayList<>();
+        for (Event event : actualEvents) {
+            actual.add(event);
+        }
+
+        Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
+    }
+
+    @Test
+    public void testFindAll() {
+        Venue venue = new Venue();
+        venue.setName("Test Venue");
+        venue.setCapacity(100);
+        VenueServiceImpl.save(venue);
+
+        Event event1 = new Event();
+        event1.setId(1L);
+        event1.setName("COMP23412 Showcase 01");
+        event1.setDate(LocalDate.parse("2007-01-01"));
+        event1.setTime(LocalTime.parse("12:00"));
+        event1.setVenue(venue);
+        EventServiceImpl.save(event1);
+
+        Event event2 = new Event();
+        event2.setId(2L);
+        event2.setName("COMP23412 Showcase 02");
+        event2.setDate(LocalDate.parse("2017-01-02"));
+        event2.setTime(LocalTime.parse("12:00"));
+        event2.setVenue(venue);
+        EventServiceImpl.save(event2);
+
+        Event event3 = new Event();
+        event3.setId(3L);
+        event3.setName("COMP23412 Showcase 03");
+        event3.setDate(LocalDate.parse("2027-01-03"));
+        event3.setTime(LocalTime.parse("12:00"));
+        event3.setVenue(venue);
+        EventServiceImpl.save(event3);
+
+        List<Event> expected = Arrays.asList(event1, event2, event3);
+        Iterable<Event> actualEvents = EventServiceImpl.findAll();
+        List<Event> actual = new ArrayList<>();
+        for (Event event : actualEvents) {
+            actual.add(event);
+        }
+
+        Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
+    }
 }

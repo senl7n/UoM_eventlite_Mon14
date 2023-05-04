@@ -276,6 +276,61 @@ public class VenueControllerTest {
                 .accept(MediaType.TEXT_HTML))
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/venues"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "edit Venue")
+                .param("address", "edit st")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "edit Venue")
+                .param("address", "edit street")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "edit Venue")
+                .param("address", "edit rd")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "edit Venue")
+                .param("address", "edit avenue")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+        
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "edit Venue")
+                .param("address", "edit ave")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
     }
 
     @Test

@@ -6,6 +6,14 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
+import com.google.gson.Gson;
+import com.sys1yagi.mastodon4j.MastodonClient;
+import com.sys1yagi.mastodon4j.api.Pageable;
+import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
+import com.sys1yagi.mastodon4j.api.method.Statuses;
+import com.sys1yagi.mastodon4j.api.method.Timelines;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +35,9 @@ import org.springframework.util.MultiValueMap;
 import uk.ac.man.cs.eventlite.EventLite;
 import uk.ac.man.cs.eventlite.dao.EventRepository;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -483,6 +494,80 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                 .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
                 .value("Location", containsString("error=3"));
+    }
+
+    @Test
+    public void testPostComment() {
+        String[] tokens = login();
+
+        // Then, attempt to add an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+        String comment_content = "Test Comment " + LocalDateTime.now();
+        client.post().uri(uriBuilder -> uriBuilder
+                .path("/events/postComment/5")
+                .queryParam("comment", comment_content)
+                .build()).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=0"));
+
+        try {
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        String accessToken = "AQHbd7AEwgaFHDARmaYPSPjkIvFrIMu-ZWhnpU2AIN0";
+
+        MastodonClient mastodonClient = new MastodonClient.Builder("mastodon.online", new OkHttpClient.Builder(), new Gson())
+                .accessToken(accessToken)
+                .useStreamingApi()
+                .build();
+
+        Timelines timelines = new Timelines(mastodonClient);
+        Statuses statusesMethod = new Statuses(mastodonClient);
+        Pageable<Status> statuses = null;
+        try {
+            statuses = timelines.getHome().execute();
+        }
+        catch (Mastodon4jRequestException e) {
+            e.printStackTrace();
+        }
+        List<Status> statusesList = statuses.getPart();
+        for (Status status : statusesList) {
+            if (status.getAccount().getDisplayName().equals("MoN14") && status.getContent().contains(comment_content)) {
+                try {
+                    statusesMethod.deleteStatus(status.getId());
+                }
+                catch (Mastodon4jRequestException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+    }
+
+    @Test
+    public void testPostCommentWithBadData() {
+        String[] tokens = login();
+
+        // Then, attempt to add an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                .path("/events/postComment/5")
+                .queryParam("comment", "")
+                .build()).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=1"));
     }
 
 }

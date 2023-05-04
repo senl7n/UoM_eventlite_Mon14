@@ -175,7 +175,7 @@ public class VenueControllerTest {
         testVenue.setId(venueId);
         testVenue.setName("Test Venue");
         testVenue.setAddress("Test Road");
-        testVenue.setPostcode("M15 4UH");
+        testVenue.setPostcode("TE5 4ST");
         testVenue.setCapacity(100);
 
         when(venueService.findById(venueId)).thenReturn(Optional.of(testVenue));
@@ -263,7 +263,20 @@ public class VenueControllerTest {
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof VenueNotFoundException));
     }
 
-
+    @Test
+    public void testEditVenueWithValidInput() throws Exception {
+        long id = 1;
+        mockMvc.perform(post("/venues/edit/{id}", id)
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .param("name", "edit Venue")
+                .param("address", "edit Road")
+                .param("postcode", "TE5 4ST")
+                .param("capacity", "100")
+                .with(csrf())
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+    }
 
 
 }

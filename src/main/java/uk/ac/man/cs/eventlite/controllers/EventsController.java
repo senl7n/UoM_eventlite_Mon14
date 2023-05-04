@@ -71,6 +71,7 @@ public class EventsController {
         model.addAttribute("events", eventService.findAll());
         model.addAttribute("upcomingEvents", upcomingEvents);
         model.addAttribute("previousEvents", previousEvents);
+        prepareModelAttributes(model);
 
         return "events/index";
     }
@@ -358,12 +359,6 @@ public class EventsController {
         Iterable<Event> previousEvents = eventService.findPreviousEvents();
         model.addAttribute("upcomingEvents", upcomingEvents);
         model.addAttribute("previousEvents", previousEvents);
-    }
-
-    @GetMapping
-    public String getHomePageMessage(Model model) {
-        prepareModelAttributes(model);
-        return "events/index";
     }
 
     @GetMapping("/searchResult")

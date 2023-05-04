@@ -53,7 +53,6 @@ public class EventServiceImpl implements EventService {
         List<Event> previousEvents = (List<Event>) eventRepository.findByDateBeforeOrDateEqualsAndTimeBeforeOrderByDateDescTimeDesc(currentDate, currentDate, currentTime);
         previousEvents.sort(Comparator.comparing(Event::getDate).thenComparing(Event::getName).thenComparing(Event::getTime));
         return previousEvents;
-        
     }
 
     //home
@@ -91,15 +90,16 @@ public class EventServiceImpl implements EventService {
     public boolean update(long id, String name, LocalDate date, LocalTime time, long venueId, String description) {
         if (eventRepository.findById(id) == null || name.isEmpty() || venueRepository.findById(venueId).isEmpty()) {
             return false;
+        }else{
+            Event event = findById(id);
+            event.setName(name);
+            event.setDate(date);
+            event.setTime(time);
+            event.setVenue(venueRepository.findById(venueId).get());
+            event.setDescription(description);
+            eventRepository.save(event);
+            return true;
         }
-        Event event = findById(id);
-        event.setName(name);
-        event.setDate(date);
-        event.setTime(time);
-        event.setVenue(venueRepository.findById(venueId).get());
-        event.setDescription(description);
-        eventRepository.save(event);
-        return true;
     }
 
     @Override
@@ -116,16 +116,16 @@ public class EventServiceImpl implements EventService {
     public boolean add(String name, LocalDate date, LocalTime time, long venueId, String description) {
         if (name.isEmpty() || venueRepository.findById(venueId).isEmpty()) {
             return false;
+        }else{
+            Event event = new Event();
+            event.setName(name);
+            event.setDate(date);
+            event.setTime(time);
+            event.setVenue(venueRepository.findById(venueId).get());
+            event.setDescription(description);
+            eventRepository.save(event);
+            return true;
         }
-        Event event = new Event();
-        event.setName(name);
-        event.setDate(date);
-        event.setTime(time);
-        event.setVenue(venueRepository.findById(venueId).get());
-        event.setDescription(description);
-        eventRepository.save(event);
-        return true;
     }
-
 
 }

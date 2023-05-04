@@ -63,6 +63,14 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 				.contentTypeCompatibleWith(MediaType.TEXT_HTML).expectBody(String.class).consumeWith(result -> {
 					assertThat(result.getResponseBody(), containsString("99"));
 				});
+
+        // Execute the GET request for a non-existing event
+        long nonExistingEventId = 99;
+        client.get().uri("/events/description?id=" + nonExistingEventId)
+                .accept(MediaType.TEXT_HTML)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_HTML);
 	}
 
     private String[] login() {

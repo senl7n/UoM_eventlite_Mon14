@@ -127,29 +127,30 @@ public class EventsController {
             return "redirect:/events/edit/" + id + "?error=1";
         }
         long venue_id = Long.parseLong(venue_id_str);
-        if (venue_id==99) return "redirect:/events/edit/" + id + "?error=1";
-        LocalTime time1 = null;
-        try {
-            LocalDate.parse(date);
-            if (!time.isEmpty()){
+        if (venue_id==99) {
+            return "redirect:/events/edit/" + id + "?error=1";
+        }else {
+            LocalTime time1 = null;
+            try {
+                LocalDate.parse(date);
+                if (!time.isEmpty()) {
+                    time1 = LocalTime.parse(time);
+                }
+            } catch (DateTimeParseException e) {
+                return "redirect:/events/edit/" + id + "?error=2";
+            }
+            if (!time.isEmpty()) {
                 time1 = LocalTime.parse(time);
             }
-        }
-        catch (DateTimeParseException e) {
-            return "redirect:/events/edit/" + id + "?error=2";
-        }
-        if (!time.isEmpty()){
-            time1 = LocalTime.parse(time);
-        }
-        LocalDate date1 = LocalDate.parse(date);
-        if (date1.isBefore(LocalDate.now())) {
-            return "redirect:/events/edit/" + id + "?error=3";
-        }
-        if (eventService.update(id, name, date1, time1, venue_id, description)) {
-            return "redirect:/events";
-        }
-        else {
-            return "redirect:/events/edit/" + id + "?error=1";
+            LocalDate date1 = LocalDate.parse(date);
+            if (date1.isBefore(LocalDate.now())) {
+                return "redirect:/events/edit/" + id + "?error=3";
+            }
+            if (eventService.update(id, name, date1, time1, venue_id, description)) {
+                return "redirect:/events";
+            } else {
+                return "redirect:/events/edit/" + id + "?error=1";
+            }
         }
     }
 
@@ -200,29 +201,30 @@ public class EventsController {
             return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id_str;
         }
         long venue_id = Long.parseLong(venue_id_str);
-        if (venue_id==99) return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id_str;
-        LocalTime time1 = null;
-        try {
+        if (venue_id==99) {
+            return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id_str;
+        }else {
+            LocalTime time1 = null;
+            try {
+                LocalDate date1 = LocalDate.parse(date);
+                if (!time.isEmpty()) {
+                    time1 = LocalTime.parse(time);
+                }
+            } catch (Exception e) {
+                return "redirect:/events/add?error=2&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+            }
             LocalDate date1 = LocalDate.parse(date);
-            if (!time.isEmpty()){
+            if (date1.isBefore(LocalDate.now())) {
+                return "redirect:/events/add?error=3&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+            }
+            if (!time.isEmpty()) {
                 time1 = LocalTime.parse(time);
             }
-        }
-        catch (Exception e) {
-            return "redirect:/events/add?error=2&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
-        }
-        LocalDate date1 = LocalDate.parse(date);
-        if (date1.isBefore(LocalDate.now())) {
-            return "redirect:/events/add?error=3&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
-        }
-        if (!time.isEmpty()){
-            time1 = LocalTime.parse(time);
-        }
-        if (eventService.add(name, date1, time1, venue_id, description)) {
-            return "redirect:/events";
-        }
-        else {
-            return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+            if (eventService.add(name, date1, time1, venue_id, description)) {
+                return "redirect:/events";
+            } else {
+                return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+            }
         }
     }
 

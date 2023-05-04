@@ -117,6 +117,39 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
     }
 
     @Test
+    public void testEditPageError() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to open the edit page using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2?error=1")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+                .expectBody(String.class).consumeWith(result -> {
+                    assertThat(result.getResponseBody(), containsString("Please enter a valid name/venue ID."));
+                });
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2?error=2")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+                .expectBody(String.class).consumeWith(result -> {
+                    assertThat(result.getResponseBody(), containsString("Please enter a valid date."));
+                });
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2?error=3")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+                .expectBody(String.class).consumeWith(result -> {
+                    assertThat(result.getResponseBody(), containsString("Please enter a future date."));
+                });
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2?error=4")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+                .expectBody(String.class).consumeWith(result -> {
+                    assertThat(result.getResponseBody(), containsString("Unknown error."));
+                });
+    }
+
+    @Test
     public void testEditEvent() throws Exception {
         String[] tokens = login();
 
@@ -149,6 +182,119 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
     }
 
     @Test
+    public void testEditEventInvalidName() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to edit an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/edit/2")
+                        .queryParam("id", "2")
+                        .queryParam("name", "")
+                        .queryParam("venue_id", "1")
+                        .queryParam("date", "2030-01-01")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=1"));
+    }
+
+    @Test
+    public void testEditEventInvalidVenueId() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to edit an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/edit/2")
+                        .queryParam("id", "2")
+                        .queryParam("name", "Test Event")
+                        .queryParam("venue_id", "")
+                        .queryParam("date", "2030-01-01")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=1"));
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/edit/2")
+                        .queryParam("id", "2")
+                        .queryParam("name", "Test Event")
+                        .queryParam("venue_id", "99")
+                        .queryParam("date", "2030-01-01")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=1"));
+    }
+
+    @Test
+    public void testEditEventInvalidDate() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to edit an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/edit/2")
+                        .queryParam("id", "2")
+                        .queryParam("name", "Test Event")
+                        .queryParam("venue_id", "1")
+                        .queryParam("date", "")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=2"));
+    }
+
+    @Test
+    public void testEditEventFutureDate() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to edit an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/edit/2")
+                        .queryParam("id", "2")
+                        .queryParam("name", "Test Event")
+                        .queryParam("venue_id", "1")
+                        .queryParam("date", "2000-01-01")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=3"));
+    }
+
+    @Test
     public void testAddPage() throws Exception {
         String[] tokens = login();
 
@@ -159,6 +305,39 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
 
+    }
+
+    @Test
+    public void testAddPageError() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to open the edit page using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add?error=1&name=&date=&time=&description=&venue_id=99")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+                .expectBody(String.class).consumeWith(result -> {
+                    assertThat(result.getResponseBody(), containsString("Please enter a valid name/venue ID."));
+                });
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add?error=2&name=Test%20Event&date=&time=&description=&venue_id=2")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+                .expectBody(String.class).consumeWith(result -> {
+                    assertThat(result.getResponseBody(), containsString("Please enter a valid date."));
+                });
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add?error=3&name=Test%20Event&date=2023-05-02&time=&description=&venue_id=2")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+                .expectBody(String.class).consumeWith(result -> {
+                    assertThat(result.getResponseBody(), containsString("Please enter a future date."));
+                });
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add?error=4")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+                .expectBody(String.class).consumeWith(result -> {
+                    assertThat(result.getResponseBody(), containsString("Unknown error."));
+                });
     }
 
     @Test
@@ -183,6 +362,114 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                 .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
                 .value("Location", endsWith("/events"));
+    }
+
+    @Test
+    public void testAddEventInvalidName() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to add an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/add")
+                        .queryParam("name", "")
+                        .queryParam("venue_id", "1")
+                        .queryParam("date", "2030-01-01")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=1"));
+    }
+
+    @Test
+    public void testAddEventInvalidVenueId() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to add an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/add")
+                        .queryParam("name", "Test Event")
+                        .queryParam("venue_id", "")
+                        .queryParam("date", "2030-01-01")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=1"));
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/add")
+                        .queryParam("name", "Test Event")
+                        .queryParam("venue_id", "99")
+                        .queryParam("date", "2030-01-01")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=1"));
+    }
+
+    @Test
+    public void testAddEventInvalidDate() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to add an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/add")
+                        .queryParam("name", "Test Event")
+                        .queryParam("venue_id", "1")
+                        .queryParam("date", "")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=2"));
+    }
+
+    @Test
+    public void testAddEventFutureDate() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to add an event using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+        client.post().uri(uriBuilder -> uriBuilder
+                        .path("/events/add")
+                        .queryParam("name", "Test Event")
+                        .queryParam("venue_id", "1")
+                        .queryParam("date", "2000-01-01")
+                        .queryParam("time", "12:00")
+                        .queryParam("description", "Test Description")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(c -> c.add(SESSION_KEY, tokens[1])).exchange().expectStatus().isFound().expectHeader()
+                .value("Location", containsString("error=3"));
     }
 
 }

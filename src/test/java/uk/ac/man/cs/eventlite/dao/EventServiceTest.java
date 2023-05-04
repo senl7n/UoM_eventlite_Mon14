@@ -55,10 +55,10 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 
         Event newEvent = EventServiceImpl.findById(event.getId());
         boolean updateSuccess = EventServiceImpl.update(event.getId(), "New Name"
-                                                        , LocalDate.parse("2077-01-02")
-                                                        , LocalTime.parse("13:00")
-                                                        , 1L
-                                                        , "New Description");
+                , LocalDate.parse("2077-01-02")
+                , LocalTime.parse("13:00")
+                , 1L
+                , "New Description");
         assertTrue(updateSuccess);
 
         Event updatedEvent = EventServiceImpl.findById(event.getId());
@@ -289,15 +289,16 @@ public class EventServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         for (Event event : actualEvents) {
             actual.add(event);
         }
-	
-	@Test
-	public void testSetDescribtion() {
-		Event event = new Event();
-		String expected_Describtion = "Hello this is a test";
-		event.setDescription("Hello this is a test");
-		String actual_Describtion = event.getDescription();
-		assertEquals(expected_Describtion, actual_Describtion);
-	}
-        Assertions.assertEquals(expected.get(0).getName(), actual.get(0).getName());
     }
+
+    @Test
+    public void testSetDescribtion () {
+        Event event = new Event();
+        String expected_Describtion = "Hello this is a test";
+        event.setDescription("Hello this is a test");
+        String actual_Describtion = event.getDescription();
+        assertEquals(expected_Describtion, actual_Describtion);
+        Assertions.assertEquals(expected_Describtion, actual_Describtion);
+    }
+
 }

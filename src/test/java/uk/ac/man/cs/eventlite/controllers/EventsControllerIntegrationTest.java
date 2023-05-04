@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -99,6 +100,32 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 
         // Finally, check that the event has been deleted.
         client.get().uri("/events/1").accept(MediaType.TEXT_HTML).exchange().expectStatus().isNotFound();
+
+    }
+
+    @Test
+    public void testEditPage() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to open the edit page using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
+
+    }
+
+    @Test
+    public void testAddPage() throws Exception {
+        String[] tokens = login();
+
+        // Then, attempt to open the add page using the authenticated session cookie and CSRF token.
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("_csrf", tokens[0]);
+
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/add")
+                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
 
     }
 

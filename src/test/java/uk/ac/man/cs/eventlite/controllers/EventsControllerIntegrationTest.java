@@ -2,21 +2,17 @@ package uk.ac.man.cs.eventlite.controllers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.security.config.Elements.CSRF;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
-import static uk.ac.man.cs.eventlite.testutil.FormUtil.getCsrfToken;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -95,11 +91,13 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("_csrf", tokens[0]);
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().delete().uri("/events/1")
-                .accept(MediaType.TEXT_HTML).exchange().expectStatus().isFound().expectBody(String.class);
-
-        // Finally, check that the event has been deleted.
-        client.get().uri("/events/1").accept(MediaType.TEXT_HTML).exchange().expectStatus().isNotFound();
+        client.method(HttpMethod.DELETE).uri(uriBuilder -> uriBuilder
+                        .path("/events/5")
+                        .build())
+                .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue(formData).cookies(cookies -> {
+                    cookies.add(SESSION_KEY, tokens[1]);
+                }).exchange().expectStatus().isFound().expectHeader().value("Location", endsWith("/events"));
 
     }
 

@@ -140,5 +140,22 @@ public class EventsControllerTest {
 				.andExpect(model().attribute("searchMessage", "EVENT CONTAINING 'basketball' NOT FOUND, HERE IS ALL THE EVENTS WE HAVE"));
 	}
 
+	@Test
+	public void searchWithEmptyQuery() throws Exception {
+		mvc.perform(get("/events/search?q=").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk())
+				.andExpect(view().name("events/searchResult"))
+				.andExpect(handler().methodName("search"))
+				.andExpect(model().attribute("found", false));
+	}
+
+	@Test
+	public void searchWithNullQuery() throws Exception {
+		mvc.perform(get("/events/search").accept(MediaType.TEXT_HTML))
+				.andExpect(status().isOk())
+				.andExpect(view().name("events/searchResult"))
+				.andExpect(handler().methodName("search"))
+				.andExpect(model().attribute("found", false));
+	}
 
 }

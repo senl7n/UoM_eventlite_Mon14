@@ -249,7 +249,7 @@ public class EventsController {
 
     //search event    
     @GetMapping("/search")
-    public String search(@RequestParam(name="q") String query, Model model) {
+    public String search(@RequestParam(name="q", defaultValue="") String query, Model model) {
         prepareModelAttributes(model);
         if (query == null || query.trim().isEmpty()) {
             model.addAttribute("found", false);

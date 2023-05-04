@@ -100,7 +100,7 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         formData.add("_csrf", tokens[0]);
 
         client.method(HttpMethod.DELETE).uri(uriBuilder -> uriBuilder
-                        .path("/events/5")
+                        .path("/events/6")
                         .build())
                 .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue(formData).cookies(cookies -> {
@@ -108,7 +108,7 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                 }).exchange().expectStatus().isFound().expectHeader().value("Location", endsWith("/events"));
 
         client.method(HttpMethod.DELETE).uri(uriBuilder -> uriBuilder
-                        .path("/events/1")
+                        .path("/events/6")
                         .build())
                 .accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue(formData).cookies(cookies -> {
@@ -124,7 +124,7 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("_csrf", tokens[0]);
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
 
     }
@@ -137,25 +137,25 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("_csrf", tokens[0]);
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2?error=1")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5?error=1")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
                 .expectBody(String.class).consumeWith(result -> {
                     assertThat(result.getResponseBody(), containsString("Please enter a valid name/venue ID."));
                 });
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2?error=2")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5?error=2")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
                 .expectBody(String.class).consumeWith(result -> {
                     assertThat(result.getResponseBody(), containsString("Please enter a valid date."));
                 });
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2?error=3")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5?error=3")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
                 .expectBody(String.class).consumeWith(result -> {
                     assertThat(result.getResponseBody(), containsString("Please enter a future date."));
                 });
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2?error=4")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5?error=4")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
                 .expectBody(String.class).consumeWith(result -> {
                     assertThat(result.getResponseBody(), containsString("Unknown error."));
@@ -170,11 +170,11 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("_csrf", tokens[0]);
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
 
         client.post().uri(uriBuilder -> uriBuilder
-                        .path("/events/edit/2")
+                        .path("/events/edit/5")
                         .queryParam("id", "2")
                         .queryParam("name", "Test Event")
                         .queryParam("venue_id", "1")
@@ -188,7 +188,7 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 
 
         // Finally, check that the event has been edited.
-        client.get().uri("/events/description?id=2").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
+        client.get().uri("/events/description?id=5").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk()
                 .expectBody(String.class).consumeWith(result -> {
                     assertThat(result.getResponseBody(), containsString("Changed Description"));
                 });
@@ -202,11 +202,11 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("_csrf", tokens[0]);
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
 
         client.post().uri(uriBuilder -> uriBuilder
-                        .path("/events/edit/2")
+                        .path("/events/edit/5")
                         .queryParam("id", "2")
                         .queryParam("name", "")
                         .queryParam("venue_id", "1")
@@ -227,11 +227,11 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("_csrf", tokens[0]);
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
 
         client.post().uri(uriBuilder -> uriBuilder
-                        .path("/events/edit/2")
+                        .path("/events/edit/5")
                         .queryParam("id", "2")
                         .queryParam("name", "Test Event")
                         .queryParam("venue_id", "")
@@ -244,7 +244,7 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
                 .value("Location", containsString("error=1"));
 
         client.post().uri(uriBuilder -> uriBuilder
-                        .path("/events/edit/2")
+                        .path("/events/edit/5")
                         .queryParam("id", "2")
                         .queryParam("name", "Test Event")
                         .queryParam("venue_id", "99")
@@ -265,11 +265,11 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("_csrf", tokens[0]);
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
 
         client.post().uri(uriBuilder -> uriBuilder
-                        .path("/events/edit/2")
+                        .path("/events/edit/5")
                         .queryParam("id", "2")
                         .queryParam("name", "Test Event")
                         .queryParam("venue_id", "1")
@@ -290,11 +290,11 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("_csrf", tokens[0]);
 
-        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/2")
+        client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get().uri("/events/edit/5")
                 .accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class);
 
         client.post().uri(uriBuilder -> uriBuilder
-                        .path("/events/edit/2")
+                        .path("/events/edit/5")
                         .queryParam("id", "2")
                         .queryParam("name", "Test Event")
                         .queryParam("venue_id", "1")

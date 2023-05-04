@@ -54,10 +54,8 @@ public class EventsControllerTest {
 		when(venueService.findAll()).thenReturn(Collections.<Venue>emptyList());
 
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
-				.andExpect(view().name("events/index")).andExpect(handler().methodName("getHomePageMessage"));
+				.andExpect(view().name("events/index")).andExpect(handler().methodName("getAllEvents"));
 
-		verify(eventService).findUpcomingEvents();
-		verify(eventService).findPreviousEvents();
 		verifyNoInteractions(event);
 		verifyNoInteractions(venue);
 	}
@@ -71,10 +69,8 @@ public class EventsControllerTest {
 		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(event));
 
 		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
-				.andExpect(view().name("events/index")).andExpect(handler().methodName("getHomePageMessage"));
+				.andExpect(view().name("events/index")).andExpect(handler().methodName("getAllEvents"));
 
-		verify(eventService).findUpcomingEvents();
-		verify(eventService).findPreviousEvents();
 	}
 
 	@Test

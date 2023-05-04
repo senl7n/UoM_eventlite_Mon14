@@ -3,9 +3,11 @@ package uk.ac.man.cs.eventlite.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.man.cs.eventlite.dao.EventService;
@@ -16,6 +18,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import uk.ac.man.cs.eventlite.config.Security;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+import org.springframework.http.MediaType;
+
+
+
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +45,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(VenuesController.class)
+@Import(Security.class)
+
 public class VenueControllerTest {
 
     @Autowired
@@ -81,5 +103,106 @@ public class VenueControllerTest {
 	    verifyNoInteractions(eventService);
 	}
 	
+//    @Test
+//    public void testDeleteVenueOccupied() throws Exception {
+//        when(venueService.checkVenueOccupied(1L)).thenReturn(false);
+//
+//        mockMvc.perform(delete("/venues/{id}", 1L))
+//        		.andExpect(status().isForbidden())
+//                .andExpect(redirectedUrl("/venues/description?id=1L&error=1"));
+//    }
+//
+//    @Test
+//    public void testDeleteVenueNotOccupied() throws Exception {
+//        when(venueService.checkVenueOccupied(1L)).thenReturn(true);
+//
+//        mockMvc.perform(delete("/venues/{id}", 1L))
+//		.andExpect(status().isForbidden())
+//		.andExpect(redirectedUrl("/venues"));
+//    }
+    
+    @Test
+    public void testEditPageWithErrors() throws Exception {
+        // Assuming the venue with id 1 exists
+        long venueId = 1;
+
+        // Mock the venueService.findById method to return a sample Venue
+        Venue testVenue = new Venue();
+        testVenue.setId(venueId);
+        testVenue.setName("Test Venue");
+        testVenue.setAddress("Test Road");
+        testVenue.setPostcode("M15 4UH");
+        testVenue.setCapacity(100);
+
+        when(venueService.findById(venueId)).thenReturn(Optional.of(testVenue));
+
+        // Perform a request with an invalid capacity (non-numeric value)
+        mockMvc.perform(get("/venues/edit/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .param("error", "1")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", "Invalid capacity."))
+                .andExpect(view().name("venues/edit"));
+        
+        mockMvc.perform(get("/venues/edit/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .param("error", "2")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", "Please enter a valid name."))
+                .andExpect(view().name("venues/edit"));
+        
+        mockMvc.perform(get("/venues/edit/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .param("error", "3")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", "Please enter a valid address."))
+                .andExpect(view().name("venues/edit"));
+        
+        mockMvc.perform(get("/venues/edit/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .param("error", "4")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", "Please enter a valid postcode."))
+                .andExpect(view().name("venues/edit"));
+        
+        mockMvc.perform(get("/venues/edit/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .param("error", "5")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", "Please enter a positive capacity."))
+                .andExpect(view().name("venues/edit"));
+        
+        mockMvc.perform(get("/venues/edit/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .param("error", "6")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", "Please include a road name."))
+                .andExpect(view().name("venues/edit"));
+        
+        mockMvc.perform(get("/venues/edit/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", ""))
+                .andExpect(view().name("venues/edit"));
+        
+        mockMvc.perform(get("/venues/edit/{id}", venueId)
+                .with(user("Rob").roles(Security.ADMIN_ROLE))
+                .param("error", "unknown_error")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("error", "Unknown error."))
+                .andExpect(view().name("venues/edit"));
+
+        
+    }
+
+
 
 }

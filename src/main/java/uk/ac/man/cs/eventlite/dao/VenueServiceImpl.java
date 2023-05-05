@@ -43,7 +43,6 @@ public class VenueServiceImpl implements VenueService {
    		return venueRepository.findAll((Sort.by("name")));
    	}
 
-
     @Override
     public Venue save(Venue venue) {
         return venueRepository.save(venue);

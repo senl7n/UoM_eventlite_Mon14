@@ -115,23 +115,7 @@ public class VenueControllerTest {
 	    verifyNoInteractions(eventService);
 	}
 	
-//    @Test
-//    public void testDeleteVenueOccupied() throws Exception {
-//        when(venueService.checkVenueOccupied(1L)).thenReturn(false);
-//
-//        mockMvc.perform(delete("/venues/{id}", 1L))
-//        		.andExpect(status().isForbidden())
-//                .andExpect(redirectedUrl("/venues/description?id=1L&error=1"));
-//    }
-//
-//    @Test
-//    public void testDeleteVenueNotOccupied() throws Exception {
-//        when(venueService.checkVenueOccupied(1L)).thenReturn(true);
-//
-//        mockMvc.perform(delete("/venues/{id}", 1L))
-//		.andExpect(status().isForbidden())
-//		.andExpect(redirectedUrl("/venues"));
-//    }
+
     
     @Test
     public void testDeleteVenueWhenOccupied() throws Exception {

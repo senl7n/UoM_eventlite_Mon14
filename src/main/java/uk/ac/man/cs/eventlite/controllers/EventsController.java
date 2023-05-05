@@ -16,10 +16,14 @@ import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
@@ -342,13 +346,31 @@ public class EventsController {
         List<String> messageDates = new ArrayList<>();
         List<String> messageTimes = new ArrayList<>();
         Pattern pattern = Pattern.compile("<.*?>");
-        for (Status message : latest3Messages) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+        Pattern statsPattern = Pattern.compile(".*\\d+ accounts .*");
+
+        for (Status message : timeline) {
+            ZonedDateTime messageDateTime = ZonedDateTime.parse(message.getCreatedAt(), inputFormatter).withZoneSameInstant(ZoneId.systemDefault());
             String messageContent = unescapeHtml(message.getContent());
-            messageContents.add(pattern.matcher(messageContent).replaceAll(""));
-            messageURLs.add(message.getUrl());
-            messageDates.add(message.getCreatedAt().substring(0, 10));
-            messageTimes.add(message.getCreatedAt().substring(11, 16));
+            Matcher statsMatcher = statsPattern.matcher(messageContent);
+
+            if (!statsMatcher.find()) {
+                messageContents.add(pattern.matcher(messageContent).replaceAll(""));
+                messageURLs.add(message.getUrl());
+                messageDates.add(messageDateTime.format(dateFormatter));
+                messageTimes.add(messageDateTime.format(timeFormatter));
+            }
+
+            if (messageContents.size() >= 3) {
+                break;
+            }
         }
+
+
+
         // Add the message attributes to the model
         model.addAttribute("messageContents", messageContents);
         model.addAttribute("messageTimes", messageTimes);

@@ -1,5 +1,6 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
@@ -137,6 +138,69 @@ public class VenuesControllerApiTest {
     }
 
     @Test
+    public void getVenueEventsFoundWhenNoUpcomingEvents() throws Exception {
+        Venue venue = new Venue();
+        venue.setId(15);
+        venue.setName("Test Venue");
+        venue.setCapacity(200);
+        venue.setAddress("Test Address");
+        venue.setPostcode("TE5 7PC");
+
+        when(venueService.findById(15)).thenReturn(Optional.of(venue));
+        when(eventService.findUpcomingEvents()).thenReturn(Collections.emptyList());
+
+        mvc.perform(get("/api/venues/15/events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.events").doesNotExist());
+
+        verify(venueService).findById(15);
+        verify(eventService).findUpcomingEvents();
+    }
+
+    @Test
+    public void getVenueEventsFoundWhenNoEventsAtVenue() throws Exception {
+        Venue venue = new Venue();
+        venue.setId(15);
+        venue.setName("Test Venue");
+        venue.setCapacity(200);
+        venue.setAddress("Test Address");
+        venue.setPostcode("TE5 7PC");
+
+        Venue otherVenue = new Venue();
+        otherVenue.setId(16);
+        otherVenue.setName("Other Venue");
+        otherVenue.setCapacity(100);
+        otherVenue.setAddress("Other Address");
+        otherVenue.setPostcode("OT5 3AB");
+
+        Event event = createEvent(20, "Test Event", LocalDate.parse("2024-01-01"), LocalTime.parse("12:00:00"), otherVenue);
+
+        when(venueService.findById(15)).thenReturn(Optional.of(venue));
+        when(eventService.findUpcomingEvents()).thenReturn(Collections.singletonList(event));
+
+        mvc.perform(get("/api/venues/15/events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.events").doesNotExist());
+
+        verify(venueService).findById(15);
+        verify(eventService).findUpcomingEvents();
+    }
+
+
+    @Test
+    public void getVenueEventsVenueNotFound() throws Exception {
+        long venueId = 99;
+        when(venueService.findById(venueId)).thenReturn(Optional.empty());
+
+        mvc.perform(get("/api/venues/" + venueId + "/events").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error", containsString("venue " + venueId)))
+                .andExpect(jsonPath("$.id", equalTo((int) venueId)));
+
+        verify(venueService).findById(venueId);
+    }
+
+
+
+    @Test
     public void getVenueNext3EventsFound() throws Exception {
         Venue v = new Venue();
         v.setId(1L);
@@ -166,6 +230,72 @@ public class VenuesControllerApiTest {
         verify(venueService).findById(1L);
         verify(eventService).findUpcomingEvents();
     }
+
+    @Test
+    public void getVenueNext3EventsFoundWhenNoUpcomingEvents() throws Exception {
+        Venue venue = new Venue();
+        venue.setId(15);
+        venue.setName("Test Venue");
+        venue.setCapacity(200);
+        venue.setAddress("Test Address");
+        venue.setPostcode("TE5 7PC");
+
+        when(venueService.findById(15)).thenReturn(Optional.of(venue));
+        when(eventService.findUpcomingEvents()).thenReturn(Collections.emptyList());
+
+        mvc.perform(get("/api/venues/15/next3events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.events").doesNotExist());
+
+        verify(venueService).findById(15);
+        verify(eventService).findUpcomingEvents();
+    }
+
+    @Test
+    public void getVenueNext3EventsFoundWhenNoEventsAtVenue() throws Exception {
+        Venue venue = new Venue();
+        venue.setId(15);
+        venue.setName("Test Venue");
+        venue.setCapacity(200);
+        venue.setAddress("Test Address");
+        venue.setPostcode("TE5 7PC");
+
+        Venue otherVenue = new Venue();
+        otherVenue.setId(16);
+        otherVenue.setName("Other Venue");
+        otherVenue.setCapacity(100);
+        otherVenue.setAddress("Other Address");
+        otherVenue.setPostcode("OT5 3AB");
+
+        Event event = createEvent(20, "Test Event", LocalDate.parse("2024-01-01"), LocalTime.parse("12:00:00"), otherVenue);
+
+        when(venueService.findById(15)).thenReturn(Optional.of(venue));
+        when(eventService.findUpcomingEvents()).thenReturn(Collections.singletonList(event));
+
+        mvc.perform(get("/api/venues/15/next3events").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.events").doesNotExist());
+
+        verify(venueService).findById(15);
+        verify(eventService).findUpcomingEvents();
+    }
+
+
+
+
+
+    @Test
+    public void getVenueNext3EventsVenueNotFound() throws Exception {
+        long venueId = 99;
+        when(venueService.findById(venueId)).thenReturn(Optional.empty());
+
+        mvc.perform(get("/api/venues/" + venueId + "/next3events").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error", containsString("venue " + venueId)))
+                .andExpect(jsonPath("$.id", equalTo((int) venueId)));
+
+        verify(venueService).findById(venueId);
+    }
+
+
 
 
 }

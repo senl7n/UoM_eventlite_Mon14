@@ -19,6 +19,8 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -183,6 +185,46 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 
         boolean occupied = VenueServiceImpl.checkVenueOccupied(venue.getId());
         Assertions.assertTrue(occupied);
+    }
+
+    @Test
+    public void testFindPopular3Venues() {
+        Iterable<Venue> popularVenues = VenueServiceImpl.findPopular3Venues();
+        List<Venue> actual = new ArrayList<>();
+        for (Venue venue : popularVenues) {
+            actual.add(venue);
+        }
+
+        Assertions.assertEquals(3, actual.size());
+    }
+
+    @Test
+    public void testFindPopularLessThan3Venues() {
+        Iterable<Venue> popularVenues = VenueServiceImpl.findPopular3Venues();
+        int numOfPopularVenues = 0;
+        for (Venue venue : popularVenues) {
+            numOfPopularVenues++;
+        }
+        int deleteNeed = numOfPopularVenues - 2;
+        int counter = 0;
+        for (Venue venue : popularVenues) {
+            for (Event event : EventServiceImpl.findAll()) {
+                if (event.getVenue().getId() == venue.getId()) {
+                    EventServiceImpl.deleteById(event.getId());
+                }
+            }
+            VenueServiceImpl.deleteById(venue.getId());
+            counter++;
+            if (counter >= deleteNeed) {
+                break;
+            }
+        }
+        Iterable<Venue> actualVenues = VenueServiceImpl.findPopular3Venues();
+        List<Venue> actual = new ArrayList<>();
+        for (Venue venue : actualVenues) {
+            actual.add(venue);
+        }
+        Assertions.assertEquals(numOfPopularVenues - deleteNeed, actual.size());
     }
 
 

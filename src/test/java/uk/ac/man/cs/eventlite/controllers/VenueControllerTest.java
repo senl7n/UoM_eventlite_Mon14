@@ -26,10 +26,18 @@ import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import uk.ac.man.cs.eventlite.config.Security;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
+import java.util.Arrays;
+import java.util.List;
+import org.hamcrest.Matchers;
 
 import org.springframework.http.MediaType;
 
@@ -39,6 +47,7 @@ import org.springframework.http.MediaType;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -413,4 +422,381 @@ public class VenueControllerTest {
                 .andExpect(status().isFound())
                 .andExpect(view().name("redirect:/venues/edit/" + id + "?error=5"));
     }
+    
+    @Test
+    public void testAddPageWithError() throws Exception {
+
+    	mockMvc.perform(get("/venues/add")
+                .param("error", "1")
+                .param("name", "")
+                .param("address", "")
+                .param("postcode", "")
+                .param("capacity", "")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/add"))
+                .andExpect(model().attribute("error", "Invalid input."))
+                .andExpect(model().attribute("error_id", "1"))
+                .andExpect(model().attribute("name", ""))
+                .andExpect(model().attribute("address", ""))
+                .andExpect(model().attribute("postcode", ""))
+                .andExpect(model().attribute("capacity", ""));
+    	
+    	mockMvc.perform(get("/venues/add")
+                .param("error", "2")
+                .param("name", "")
+                .param("address", "Test st")
+                .param("postcode", "AB12 3CD")
+                .param("capacity", "100")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/add"))
+                .andExpect(model().attribute("error", "Please enter a valid name."))
+                .andExpect(model().attribute("error_id", "2"))
+                .andExpect(model().attribute("name", ""))
+                .andExpect(model().attribute("address", "Test st"))
+                .andExpect(model().attribute("postcode", "AB12 3CD"))
+                .andExpect(model().attribute("capacity", "100"));
+    	
+        mockMvc.perform(get("/venues/add")
+                .param("error", "3")
+                .param("name", "Test Venue")
+                .param("address", "Test Address")
+                .param("postcode", "AB12 3CD")
+                .param("capacity", "100")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/add"))
+                .andExpect(model().attribute("error", "Please enter a valid address."))
+                .andExpect(model().attribute("error_id", "3"))
+                .andExpect(model().attribute("name", "Test Venue"))
+                .andExpect(model().attribute("address", "Test Address"))
+                .andExpect(model().attribute("postcode", "AB12 3CD"))
+                .andExpect(model().attribute("capacity", "100"));
+
+        mockMvc.perform(get("/venues/add")
+                .param("error", "4")
+                .param("name", "Test Venue")
+                .param("address", "Test st")
+                .param("postcode", "")
+                .param("capacity", "100")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/add"))
+                .andExpect(model().attribute("error", "Please enter a valid postcode."))
+                .andExpect(model().attribute("error_id", "4"))
+                .andExpect(model().attribute("name", "Test Venue"))
+                .andExpect(model().attribute("address", "Test st"))
+                .andExpect(model().attribute("postcode", ""))
+                .andExpect(model().attribute("capacity", "100"));
+        
+        mockMvc.perform(get("/venues/add")
+                .param("error", "5")
+                .param("name", "Test Venue")
+                .param("address", "Test st")
+                .param("postcode", "AB12 3CD")
+                .param("capacity", "0")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/add"))
+                .andExpect(model().attribute("error", "Please enter a positive capacity."))
+                .andExpect(model().attribute("error_id", "5"))
+                .andExpect(model().attribute("name", "Test Venue"))
+                .andExpect(model().attribute("address", "Test st"))
+                .andExpect(model().attribute("postcode", "AB12 3CD"))
+                .andExpect(model().attribute("capacity", "0"));
+        
+        mockMvc.perform(get("/venues/add")
+                .param("error", "6")
+                .param("name", "")
+                .param("address", "Test st")
+                .param("postcode", "AB12 3CD")
+                .param("capacity", "100")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/add"))
+                .andExpect(model().attribute("error", "Please include a road name."))
+                .andExpect(model().attribute("error_id", "6"))
+                .andExpect(model().attribute("name", ""))
+                .andExpect(model().attribute("address", "Test st"))
+                .andExpect(model().attribute("postcode", "AB12 3CD"))
+                .andExpect(model().attribute("capacity", "100"));
+        
+        mockMvc.perform(get("/venues/add")
+                .param("error", "")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/add"))
+                .andExpect(model().attribute("error", "Unknown error."));
+        
+        mockMvc.perform(get("/venues/add")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/add"))
+                .andExpect(model().attribute("error", ""));
+                
+        verifyNoInteractions(venueService);
+    }
+    
+    @Test
+    public void testAddVenueWithInvalidInput() throws Exception {
+    	    String name = "Test Venue";
+    	    String address = "test st";
+    	    String postcode = "AB12 3CD";
+    	    String capacity_str = "100";
+    	    
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", "")
+                .param("address", address)
+                .param("postcode", postcode)
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/venues/add?error=2&name=" + "" + "&address=" + address + "&postcode=" + postcode + "&capacity=" + capacity_str));
+        
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", "")
+                .param("postcode", postcode)
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/venues/add?error=3&name=" + name + "&address=" + "" + "&postcode=" + postcode + "&capacity=" + capacity_str));
+        
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", address)
+                .param("postcode", "")
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/venues/add?error=4&name=" + name + "&address=" + address + "&postcode=" + "" + "&capacity=" + capacity_str));
+        
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", address)
+                .param("postcode", postcode)
+                .param("capacity", "0")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/venues/add?error=5&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + "0"));
+        
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", address)
+                .param("postcode", postcode)
+                .param("capacity", "invalid capacity")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/venues/add?error=1&name=" + name + "&address=" + address + "&postcode=" + postcode + "&capacity=" + "invalid capacity"));
+        
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", "test")
+                .param("postcode", postcode)
+                .param("capacity", "100")
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/venues/add?error=6&name=" + name + "&address=" + "test" + "&postcode=" + postcode + "&capacity=" + "100"));
+        
+        verify(venueService, never()).add(anyString(), anyInt(), anyString(), anyString());
+    }
+
+    @Test
+    public void testAddVenueWithValidInput() throws Exception {
+    	String name = "Test Venue";
+	    String address = "test st";
+	    String postcode = "AB12 3CD";
+	    String capacity_str = "100";
+
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", address)
+                .param("postcode", postcode)
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+        
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", "test street")
+                .param("postcode", postcode)
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", "test road")
+                .param("postcode", postcode)
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+        
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", "test rd")
+                .param("postcode", postcode)
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", "test avenue")
+                .param("postcode", postcode)
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+
+        mockMvc.perform(post("/venues/add")
+                .with(user("test").roles(Security.ADMIN_ROLE))
+                .with(csrf())
+                .param("name", name)
+                .param("address", "test ave")
+                .param("postcode", postcode)
+                .param("capacity", capacity_str)
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isFound())
+                .andExpect(view().name("redirect:/venues"));
+
+        verify(venueService, times(1)).add(name, Integer.parseInt(capacity_str), address, postcode);
+    }
+    
+    @Test
+    public void testGetVenueInformation() throws Exception {
+        long id = 1L;
+        Venue testVenue = new Venue();
+        testVenue.setId(id);
+        long venueId = 1;
+        Venue venue = new Venue();
+        venue.setId(venueId);
+        List<Event> eventsAtVenue = new ArrayList<>();
+        Event testEvent = new Event();
+        testEvent.setVenue(testVenue);
+        when(venueService.findById(id)).thenReturn(Optional.of(testVenue));
+        when(eventService.findUpcomingEvents()).thenReturn(eventsAtVenue);
+
+        mockMvc.perform(get("/venues/description")
+                .param("id", String.valueOf(id))
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/description"))
+                .andExpect(model().attribute("venue", testVenue))
+                .andExpect(model().attribute("events", eventsAtVenue));
+
+        when(venueService.findById(id)).thenReturn(Optional.of(venue));
+        when(eventService.findUpcomingEvents()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/venues/description")
+                .param("id", String.valueOf(id))
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/description"))
+                .andExpect(model().attribute("venue", venue))
+                .andExpect(model().attribute("events", Collections.emptyList()))
+                .andExpect(model().attribute("error", ""));
+        
+        mockMvc.perform(get("/venues/description")
+                .param("id", String.valueOf(id))
+                .param("error", "unknown"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/description"))
+                .andExpect(model().attribute("error", "Unknown error."))
+                .andExpect(model().attribute("venue", samePropertyValuesAs(testVenue)));
+
+        verify(venueService, times(3)).findById(id);
+        verify(eventService, times(3)).findUpcomingEvents();
+    
+        long nonExistentId = 2L;
+
+        when(venueService.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/venues/description")
+                .param("id", String.valueOf(nonExistentId))
+                .accept(MediaType.TEXT_HTML))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof VenueNotFoundException))
+                .andExpect(result -> assertEquals("Could not find venue " + nonExistentId, result.getResolvedException().getMessage()));
+
+        verify(venueService, times(1)).findById(nonExistentId);
+
+        
+    }
+    
+    @Test
+    public void testGetVenueInformationWithEventsError() throws Exception {
+        // Prepare the test environment
+        long venueId = 1;
+        Venue testVenue = new Venue();
+        testVenue.setId(venueId);
+        
+        Venue anotherVenue = new Venue();
+        anotherVenue.setId(2L);
+
+        Event eventAtTestVenue = new Event();
+        eventAtTestVenue.setVenue(testVenue);
+
+        Event eventAtAnotherVenue = new Event();
+        eventAtAnotherVenue.setVenue(anotherVenue);
+
+        // Mock the venueService and eventService
+        when(venueService.findById(venueId)).thenReturn(Optional.of(testVenue));
+        when(eventService.findUpcomingEvents()).thenReturn(Arrays.asList(eventAtTestVenue, eventAtAnotherVenue));
+
+        // Perform the GET request
+        mockMvc.perform(get("/venues/description")
+                .param("id", String.valueOf(venueId)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/description"))
+                .andExpect(model().attribute("error", ""))
+                .andExpect(model().attribute("venue", samePropertyValuesAs(testVenue)))
+                .andExpect(model().attribute("events", hasItem(eventAtTestVenue)));
+        mockMvc.perform(get("/venues/description")
+                .param("id", String.valueOf(venueId))
+                .param("error", "1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/description"))
+                .andExpect(model().attribute("error", "The venue cannot be deleted as it is currently being used by one or more events."))
+                .andExpect(model().attribute("venue", testVenue));
+
+        verify(venueService, times(2)).findById(venueId);
+        verifyNoMoreInteractions(venueService);
+        verify(eventService, times(2)).findUpcomingEvents();
+        // Verify interactions with the venueService and eventService
+    
+    }
+    
+    
+
+    
+
+
+    
 }

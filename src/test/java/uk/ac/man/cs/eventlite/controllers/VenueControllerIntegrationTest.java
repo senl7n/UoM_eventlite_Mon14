@@ -47,5 +47,20 @@ public class VenueControllerIntegrationTest extends AbstractTransactionalJUnit4S
 	public void setup() {
 		client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port + "/api").build();
 	}
+	
+	@Test
+	public void testGetAllVenues() {
+		client.get().uri("/venues").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$._links.self.href")
+				.value(endsWith("/api/venues")).jsonPath("$._embedded.venues.length()").value(Matchers.greaterThan(0));
+	}
+
+	@Test
+	public void getVenueNotFound() {
+		client.get().uri("/venues/99").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNotFound()
+				.expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$.error")
+				.value(containsString("venue 99")).jsonPath("$.id").isEqualTo(99);
+	}
+
 
 }

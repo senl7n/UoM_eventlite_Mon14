@@ -26,7 +26,5 @@ public interface VenueService  {
 
     public boolean checkVenueOccupied(long venueId);
 
-    //get the geolocation of the venue
-    public void getGeoLocation(Venue venue);
 }
  

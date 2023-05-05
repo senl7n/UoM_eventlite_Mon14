@@ -793,9 +793,64 @@ public class VenueControllerTest {
     
     }
     
-    
+    @Test
+    public void testSearch() throws Exception {
+        String searchQuery = "Test";
+        Venue testVenue = new Venue();
+        testVenue.setName("Test Venue");
+        // Set other properties as needed
+
+        List<Venue> venueList = Collections.singletonList(testVenue);
+
+        when(venueService.findByNameContainingIgnoreCase(searchQuery)).thenReturn(venueList);
+        when(venueService.findAll()).thenReturn(venueList);
+
+        mockMvc.perform(get("/venues/search")
+                .param("q", searchQuery))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/searchResult"))
+                .andExpect(model().attribute("found", true))
+                .andExpect(model().attribute("venues", venueList))
+                .andExpect(model().attribute("searchMessage", "VENUE CONTAINING '" + searchQuery + "' FOUND"));
+        
+        searchQuery = "NonExistent";
+        mockMvc.perform(get("/venues/search")
+                .param("q", searchQuery))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/searchResult"))
+                .andExpect(model().attribute("found", false))
+                .andExpect(model().attribute("venues", venueList))
+                .andExpect(model().attribute("searchMessage", "VENUE CONTAINING '"+ searchQuery + "' NOT FOUND, HERE IS ALL THE VENUES WE HAVE"));
+        
+        
+        
+        verify(venueService, times(1)).findByNameContainingIgnoreCase(searchQuery);
+        verify(venueService, times(1)).findAll();
+    }
 
     
+    @Test
+    public void testSearchEmptyQuery() throws Exception {
+        String searchQuery = "";
+        Venue testVenue = new Venue();
+        testVenue.setName("Test Venue");
+        // Set other properties as needed
+
+        List<Venue> venueList = Collections.singletonList(testVenue);
+
+        when(venueService.findAll()).thenReturn(venueList);
+
+        mockMvc.perform(get("/venues/search")
+                .param("q", searchQuery))
+                .andExpect(status().isOk())
+                .andExpect(view().name("venues/searchResult"))
+                .andExpect(model().attribute("found", false))
+                .andExpect(model().attribute("venues", venueList));
+
+        verify(venueService, times(0)).findByNameContainingIgnoreCase(anyString());
+        verify(venueService, times(1)).findAll();
+        verifyNoMoreInteractions(venueService);
+    }
 
 
     

@@ -56,7 +56,15 @@ public class EventsControllerApi {
     public ResponseEntity<EntityModel<Venue>> getEventVenue(@PathVariable Long id) {
         Event event = eventService.findById(id);
         Venue venue = event.getVenue();
-        EntityModel<Venue> venueModel = EntityModel.of(venue, linkTo(methodOn(VenuesControllerApi.class).getVenue(venue.getId())).withSelfRel());
+
+        // Create a new Venue object with only the desired attributes
+        Venue venueResponse = new Venue();
+        venueResponse.setName(venue.getName());
+        venueResponse.setCapacity(venue.getCapacity());
+        venueResponse.setAddress(venue.getAddress());
+        venueResponse.setPostcode(venue.getPostcode());
+
+        EntityModel<Venue> venueModel = EntityModel.of(venueResponse, linkTo(methodOn(VenuesControllerApi.class).getVenue(venue.getId())).withSelfRel());
         return ResponseEntity.ok(venueModel);
     }
 

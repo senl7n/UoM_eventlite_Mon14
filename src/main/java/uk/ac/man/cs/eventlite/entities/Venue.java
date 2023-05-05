@@ -1,5 +1,6 @@
 package uk.ac.man.cs.eventlite.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -75,18 +76,22 @@ public class Venue {
         this.postcode = postcode;
     }
 
+    @JsonIgnore
     public double getLongitude() {
         return longitude;
     }
 
+    @JsonIgnore
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
+    @JsonIgnore
     public double getLatitude() {
         return latitude;
     }
 
+    @JsonIgnore
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }

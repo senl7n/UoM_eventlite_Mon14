@@ -22,6 +22,4 @@ public class EventModelAssembler implements RepresentationModelAssembler<Event, 
         return EntityModel.of(event, selfLink, eventsLink, venueLink);
     }
 
-
-
 }

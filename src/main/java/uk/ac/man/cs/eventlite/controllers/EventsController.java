@@ -63,54 +63,50 @@ public class EventsController {
         throw new EventNotFoundException(id);
     }
 
+    @GetMapping
+    public String getAllEvents(Model model) {
+        Iterable<Event> upcomingEvents = eventService.findUpcomingEvents();
+        Iterable<Event> previousEvents = eventService.findPreviousEvents();
 
-    @GetMapping("/home")
-    public String getHomepage(Model model) {
-        Iterable<Event> upcoming3Events = eventService.findUpcoming3Events();
-        model.addAttribute("upcoming3Events", upcoming3Events);
-        model.addAttribute("popular3Venues", venueService.findPopular3Venues());
+        model.addAttribute("events", eventService.findAll());
+        model.addAttribute("upcomingEvents", upcomingEvents);
+        model.addAttribute("previousEvents", previousEvents);
+        prepareModelAttributes(model);
 
-        return "events/home";
+        return "events/index";
     }
 
     @GetMapping("/description")
     public String getEventInfomation(@RequestParam(name="id") long id,
                                      @RequestParam(name="error", required=false) String error,
                                      @RequestParam(name="comment", required=false) String comment,
-                                     Model model) throws EventNotFoundException {
-        Event event = eventService.findById(id);
-
+                                     Model model) {
+		Event event = eventService.findById(id);
         if (event == null) {
             throw new EventNotFoundException(id);
         }
-
         model.addAttribute("error", error);
-        model.addAttribute("event", event);
+		model.addAttribute("event", event);
         model.addAttribute("comment", comment);
-        return "/events/description";
-    }
-
-
+		return "/events/description";
+	}
 
     //delete event
     @DeleteMapping("/{id}")
     public String deleteEvent(@PathVariable("id") long id) {
-        eventService.deleteById(id);
-        return "redirect:/events";
+        if (eventService.findById(id) == null) {
+            throw new EventNotFoundException(id);
+        }else{
+            eventService.deleteById(id);
+            return "redirect:/events";
+        }
     }
 
     //edit event
     @GetMapping("/edit/{id}")
     public String editPage(@PathVariable("id") long id,
                            @RequestParam(value = "error", required = false) String error,
-                           Model model) throws EventNotFoundException {
-
-        Event event = eventService.findById(id);
-
-        if (event == null) {
-            throw new EventNotFoundException(id);
-        }
-
+                           Model model) {
         model.addAttribute("event", eventService.findById(id));
         model.addAttribute("venues", venueService.findAll());
         if (error == null) {
@@ -148,29 +144,30 @@ public class EventsController {
             return "redirect:/events/edit/" + id + "?error=1";
         }
         long venue_id = Long.parseLong(venue_id_str);
-        if (venue_id==99) return "redirect:/events/edit/" + id + "?error=1";
-        LocalTime time1 = null;
-        try {
-            LocalDate.parse(date);
-            if (!time.isEmpty()){
+        if (venue_id==99) {
+            return "redirect:/events/edit/" + id + "?error=1";
+        }else {
+            LocalTime time1 = null;
+            try {
+                LocalDate.parse(date);
+                if (!time.isEmpty()) {
+                    time1 = LocalTime.parse(time);
+                }
+            } catch (DateTimeParseException e) {
+                return "redirect:/events/edit/" + id + "?error=2";
+            }
+            if (!time.isEmpty()) {
                 time1 = LocalTime.parse(time);
             }
-        }
-        catch (DateTimeParseException e) {
-            return "redirect:/events/edit/" + id + "?error=2";
-        }
-        if (!time.isEmpty()){
-            time1 = LocalTime.parse(time);
-        }
-        LocalDate date1 = LocalDate.parse(date);
-        if (date1.isBefore(LocalDate.now())) {
-            return "redirect:/events/edit/" + id + "?error=3";
-        }
-        if (eventService.update(id, name, date1, time1, venue_id, description)) {
-            return "redirect:/events";
-        }
-        else {
-            return "redirect:/events/edit/" + id + "?error=1";
+            LocalDate date1 = LocalDate.parse(date);
+            if (date1.isBefore(LocalDate.now())) {
+                return "redirect:/events/edit/" + id + "?error=3";
+            }
+            if (eventService.update(id, name, date1, time1, venue_id, description)) {
+                return "redirect:/events";
+            } else {
+                return "redirect:/events/edit/" + id + "?error=1";
+            }
         }
     }
 
@@ -221,29 +218,30 @@ public class EventsController {
             return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id_str;
         }
         long venue_id = Long.parseLong(venue_id_str);
-        if (venue_id==99) return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id_str;
-        LocalTime time1 = null;
-        try {
+        if (venue_id==99) {
+            return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id_str;
+        }else {
+            LocalTime time1 = null;
+            try {
+                LocalDate date1 = LocalDate.parse(date);
+                if (!time.isEmpty()) {
+                    time1 = LocalTime.parse(time);
+                }
+            } catch (Exception e) {
+                return "redirect:/events/add?error=2&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+            }
             LocalDate date1 = LocalDate.parse(date);
-            if (!time.isEmpty()){
+            if (date1.isBefore(LocalDate.now())) {
+                return "redirect:/events/add?error=3&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+            }
+            if (!time.isEmpty()) {
                 time1 = LocalTime.parse(time);
             }
-        }
-        catch (Exception e) {
-            return "redirect:/events/add?error=2&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
-        }
-        LocalDate date1 = LocalDate.parse(date);
-        if (date1.isBefore(LocalDate.now())) {
-            return "redirect:/events/add?error=3&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
-        }
-        if (!time.isEmpty()){
-            time1 = LocalTime.parse(time);
-        }
-        if (eventService.add(name, date1, time1, venue_id, description)) {
-            return "redirect:/events";
-        }
-        else {
-            return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+            if (eventService.add(name, date1, time1, venue_id, description)) {
+                return "redirect:/events";
+            } else {
+                return "redirect:/events/add?error=1&name=" + name + "&date=" + date + "&time=" + time + "&description=" + description + "&venue_id=" + venue_id;
+            }
         }
     }
 
@@ -347,7 +345,7 @@ public class EventsController {
         for (Status message : latest3Messages) {
             String messageContent = unescapeHtml(message.getContent());
             messageContents.add(pattern.matcher(messageContent).replaceAll(""));
-            messageURLs.add(pattern.matcher(message.getUrl()).replaceAll(""));
+            messageURLs.add(message.getUrl());
             messageDates.add(message.getCreatedAt().substring(0, 10));
             messageTimes.add(message.getCreatedAt().substring(11, 16));
         }
@@ -365,12 +363,6 @@ public class EventsController {
         if (!model.containsAttribute("found")) {
             model.addAttribute("found", false);
         }
-    }
-
-    @GetMapping
-    public String getHomePageMessage(Model model) {
-        prepareModelAttributes(model);
-        return "events/index";
     }
 
     @GetMapping("/searchResult")

@@ -1,17 +1,10 @@
 package uk.ac.man.cs.eventlite.dao;
 
-import com.mapbox.api.geocoding.v5.MapboxGeocoding;
-import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
-import com.mapbox.geojson.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
@@ -42,7 +35,6 @@ public class VenueServiceImpl implements VenueService {
    	public Iterable<Venue> findAll() {
    		return venueRepository.findAll((Sort.by("name")));
    	}
-
 
     @Override
     public Venue save(Venue venue) {
@@ -99,7 +91,6 @@ public class VenueServiceImpl implements VenueService {
         return true;
     }
 
-
     @Override
     public Iterable<Venue> findPopular3Venues() {
         ArrayList<Venue> popular3Venues = new ArrayList<>();
@@ -132,35 +123,4 @@ public class VenueServiceImpl implements VenueService {
         return (Iterable<Venue>) popular3Venues;
     }
 
-    //get the geolocation of the venue
-    @Override
-    public void getGeoLocation(Venue venue) {
-        if (venue.getAddress() == null || venue.getPostcode() == null) {
-            return;
-        }
-        MapboxGeocoding mapboxGeocoding = MapboxGeocoding.builder()
-                .accessToken("pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g")
-                .query(venue.getAddress() + ", " + venue.getPostcode())
-                .build();
-
-        mapboxGeocoding.enqueueCall(new Callback<GeocodingResponse>() {
-            @Override
-            public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-                List<CarmenFeature> results = response.body().features();
-                if (results.size() > 0) {
-                    CarmenFeature feature = results.get(0);
-                    Point point = feature.center();
-                    venue.setLongitude(point.longitude());
-                    venue.setLatitude(point.latitude());
-                } else {
-                    log.debug("No results found");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
-                log.debug("Geocoding Failure: " + throwable.getMessage());
-            }
-        });
-    }
 }

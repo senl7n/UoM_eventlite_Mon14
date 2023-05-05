@@ -75,11 +75,6 @@ public class Venue {
         this.postcode = postcode;
     }
 
-    // get all events at this venue
-    public Iterable<Event> getEventsByVenue() {
-    	return events;
-    }
-
     public double getLongitude() {
         return longitude;
     }

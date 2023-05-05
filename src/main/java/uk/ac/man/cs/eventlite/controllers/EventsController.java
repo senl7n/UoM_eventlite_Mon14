@@ -16,6 +16,9 @@ import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -342,13 +345,21 @@ public class EventsController {
         List<String> messageDates = new ArrayList<>();
         List<String> messageTimes = new ArrayList<>();
         Pattern pattern = Pattern.compile("<.*?>");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
         for (Status message : latest3Messages) {
+            ZonedDateTime messageDateTime = ZonedDateTime.parse(message.getCreatedAt(), inputFormatter).withZoneSameInstant(ZoneId.systemDefault());
+
             String messageContent = unescapeHtml(message.getContent());
             messageContents.add(pattern.matcher(messageContent).replaceAll(""));
             messageURLs.add(message.getUrl());
-            messageDates.add(message.getCreatedAt().substring(0, 10));
-            messageTimes.add(message.getCreatedAt().substring(11, 16));
+            messageDates.add(messageDateTime.format(dateFormatter));
+            messageTimes.add(messageDateTime.format(timeFormatter));
         }
+
+
         // Add the message attributes to the model
         model.addAttribute("messageContents", messageContents);
         model.addAttribute("messageTimes", messageTimes);

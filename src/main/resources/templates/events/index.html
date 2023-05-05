@@ -110,8 +110,12 @@
     <div id="map"></div>
         <script>
             const upcomingEventNames = [];
+            const upcomingEventTimes = [];
             const upcomingEventElements = document.querySelectorAll('.location-row .upcoming_events');
-            upcomingEventElements.forEach(element => upcomingEventNames.push(element.textContent));
+            upcomingEventElements.forEach(element => {
+                upcomingEventNames.push(element.textContent);
+                upcomingEventTimes.push(element.parentNode.parentNode.querySelector('td:nth-child(4)').textContent);
+            });
 
             const locations = {};
             const locationElements = document.querySelectorAll('.location-row .location-cell');
@@ -140,13 +144,16 @@
                 }
 
                 if (index < upcomingEventNames.length) {
-                    locations[location].events.push(upcomingEventNames[index]);
+                    locations[location].events.push({
+                        name: upcomingEventNames[index],
+                        time: upcomingEventTimes[index]
+                    });
                     locations[location].hasUpcomingEvents = true;
                 }
             });
 
 
-            console.log(locations);
+            const upcomingLocations = Object.values(locations).filter(location => location.hasUpcomingEvents);
 
             mapboxgl.accessToken = 'pk.eyJ1IjoiN3Nlbmxpbi1taWFvIiwiYSI6ImNsZjhnOTBnNTBncm4zc252anM4ZHhmYmEifQ.8Xkazn-qXfFkT0yk_SDb8g';
 
@@ -159,7 +166,7 @@
 
             const bounds = new mapboxgl.LngLatBounds();
 
-            Object.values(venues).forEach(venue => {
+            upcomingLocations.forEach(venue => {
                 const location = locations[venue.name];
                 fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent( venue.postcode + ', ' +  venue.name)}.json?access_token=${mapboxgl.accessToken}`)
                     .then(response => response.json())
@@ -171,7 +178,7 @@
                                 .setLngLat(feature.center)
                                 .addTo(map);
 
-                            const eventList = location && location.events.map(event => `<p style='text-align:center;'>${event}</p>`).join('');
+                            const eventList = location && location.events.map(event => `<p style='text-align:center;'>${event.name} - ${event.time}</p>`).join('');
                             const noUpcomingEventsMessage = `<p style='text-align:center;'><em>No Upcoming Events</em></p>`;
                             const popupContent = (location && location.hasUpcomingEvents) ? eventList : noUpcomingEventsMessage;
 
@@ -182,7 +189,7 @@
                             marker.setPopup(popup);
 
                             const popupContentElement = popup._content;
-                            popupContentElement.style.width = "250px";
+                            popupContentElement.style.width = "300px";
                             popupContentElement.style.height = "100px";
                             popupContentElement.style.overflowY = "auto";
                         }
@@ -190,7 +197,7 @@
             });
 
             map.on('load', () => {
-                if (Object.keys(locations).length === 1) {
+                if (upcomingLocations.length === 1) {
                     map.fitBounds(bounds, { padding: 30, maxZoom: 16 });
                 } else {
                     map.fitBounds(bounds, { padding: 30 });

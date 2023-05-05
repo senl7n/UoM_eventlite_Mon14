@@ -76,6 +76,18 @@
                                 <td style="width: 30px"><b>Date:</b></td>
                                 <td th:text="${{event.date}}">Event Date</td>
                             </tr>
+                            <tr>
+                                <td style="width: 30px"><b>Time:</b></td>
+                                <td th:text="${{event.time}}">Event Time</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 30px"><b>Venue:</b></td>
+                                <td th:text="${{event.venue.name}}">Event Venue</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 30px"><b></b></td>
+                                <td></td>
+                            </tr>
                         </th:block>
                     </tbody>
                 </table>

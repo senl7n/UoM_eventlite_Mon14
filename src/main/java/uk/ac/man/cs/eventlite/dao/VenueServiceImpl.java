@@ -98,7 +98,6 @@ public class VenueServiceImpl implements VenueService {
         return true;
     }
 
-
     @Override
     public Iterable<Venue> findPopular3Venues() {
         ArrayList<Venue> popular3Venues = new ArrayList<>();

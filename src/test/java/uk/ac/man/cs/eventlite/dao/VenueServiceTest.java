@@ -14,7 +14,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import uk.ac.man.cs.eventlite.EventLite;
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,6 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext
 @ActiveProfiles("test")
 public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTests {
+
+    @Autowired
+    private EventService EventServiceImpl;
 
     @Autowired
     private VenueService VenueServiceImpl;
@@ -143,6 +150,39 @@ public class VenueServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertEquals(capacity, newVenue.getCapacity());
         assertEquals(address, newVenue.getAddress());
         assertEquals(postcode, newVenue.getPostcode());
+    }
+
+    @Test
+    public void testCheckVenueOccupied() {
+        Venue venue = new Venue();
+        venue.setName("Test Venue");
+        venue.setCapacity(100);
+        venue.setAddress("123 Main Street");
+        venue.setPostcode("12345");
+        VenueServiceImpl.save(venue);
+
+        Event event = new Event();
+        event.setName("Test Event");
+        event.setDate(LocalDate.parse("2077-03-01"));
+        event.setTime(LocalTime.parse("12:00:00"));
+        event.setVenue(venue);
+        EventServiceImpl.save(event);
+
+        boolean occupied = VenueServiceImpl.checkVenueOccupied(venue.getId());
+        Assertions.assertFalse(occupied);
+    }
+
+    @Test
+    public void testCheckVenueNotOccupied() {
+        Venue venue = new Venue();
+        venue.setName("Test Venue");
+        venue.setCapacity(100);
+        venue.setAddress("123 Main Street");
+        venue.setPostcode("12345");
+        VenueServiceImpl.save(venue);
+
+        boolean occupied = VenueServiceImpl.checkVenueOccupied(venue.getId());
+        Assertions.assertTrue(occupied);
     }
 
 
